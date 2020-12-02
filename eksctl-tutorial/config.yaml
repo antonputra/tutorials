@@ -1,0 +1,57 @@
+---
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+metadata:
+  name: cluster-v3
+  region: us-east-1
+  version: "1.18"
+vpc:
+  id: vpc-07f9e63e6d810046b
+  subnets:
+    public:
+      public-us-east-1a:
+        id: subnet-02a66819c97ed449c
+      public-us-east-1b:
+        id: subnet-0a12f612e00e615fc
+    private:
+      private-us-east-1a:
+        id: subnet-0efe867c24439ccad
+      private-us-east-1b:
+        id: subnet-053623dbb9c372a81
+nodeGroups:
+- name: general-v2
+  labels:
+    role: general
+  instanceType: t3.small
+  desiredCapacity: 1
+  privateNetworking: true
+  ssh:
+    publicKeyName: devops
+  subnets:
+  - private-us-east-1a
+  - private-us-east-1b
+- name: spot-v2
+  labels:
+    role: spot
+  minSize: 1
+  maxSize: 1
+  instancesDistribution:
+    instanceTypes:
+    - t3.small
+    onDemandBaseCapacity: 0
+    onDemandPercentageAboveBaseCapacity: 0
+    spotInstancePools: 20
+  privateNetworking: true
+  taints:
+    spot: "true:NoSchedule"
+  subnets:
+  - private-us-east-1a
+  - private-us-east-1b
+managedNodeGroups:
+- name: managed
+  instanceType: t3.small
+  desiredCapacity: 1
+  privateNetworking: true
+  subnets:
+    - private-us-east-1a
+    - private-us-east-1b
