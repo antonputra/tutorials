@@ -1,1 +1,2 @@
-# Terraform AWS VPC Tutorial (Create AWS VPC for EKS cluster with DNS support) Ep 1
+# Terraform EKS Cluster Creation
+**YouTube** [Playlist](https://youtube.com/playlist?list=PLiMWaCMwGJXkeBzos8QuUxiYT6j8JYGE5)
