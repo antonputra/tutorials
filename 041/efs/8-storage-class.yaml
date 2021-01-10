@@ -1,0 +1,12 @@
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: efs
+provisioner: efs-storage
+parameters:
+  archiveOnDelete: "false"
+  # run "id -G <username>"
+  # gidMin: "5555"
+  # gidMax: "5555"
+  # gidAllocate: "true"
