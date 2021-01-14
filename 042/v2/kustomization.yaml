@@ -1,0 +1,5 @@
+---
+secretGenerator:
+- name: creds-v7
+  literals:
+  - token=secrettoken123

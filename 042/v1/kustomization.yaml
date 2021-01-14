@@ -1,0 +1,5 @@
+---
+secretGenerator:
+- name: creds-v6
+  files:
+  - token
