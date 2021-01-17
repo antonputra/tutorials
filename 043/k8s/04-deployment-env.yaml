@@ -1,0 +1,26 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-env
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: test
+  template:
+    metadata:
+      labels:
+        app: test
+    spec:
+      containers:
+      - name: test
+        image: antonputra/043:v0.1.5
+        ports:
+        - containerPort: 9090
+        env:
+        - name: MY_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: credentials
+              key: password

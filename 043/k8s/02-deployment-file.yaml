@@ -1,0 +1,28 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-file
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: test
+  template:
+    metadata:
+      labels:
+        app: test
+    spec:
+      containers:
+      - name: test
+        image: antonputra/043:v0.1.5
+        ports:
+        - containerPort: 9090
+        volumeMounts:
+        - name: credentials-volume
+          mountPath: "/etc/credentials"
+          readOnly: true
+      volumes:
+      - name: credentials-volume
+        secret:
+          secretName: credentials
