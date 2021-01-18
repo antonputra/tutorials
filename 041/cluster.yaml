@@ -10,7 +10,7 @@ availabilityZones:
 nodeGroups:
 - name: nodes-general
   labels:
-      role: workers
+    role: workers
   instanceType: t2.small
   desiredCapacity: 1
   volumeSize: 20
