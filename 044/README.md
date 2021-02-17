@@ -2,10 +2,10 @@
 
 ## Create EKS Cluster
 ```bash
-$ eksctl create cluster -f cluster.yaml
+$ eksctl create cluster -f eks.yaml
 ```
 
 ## Delete EKS Cluster
 ```bash
-$ eksctl delete cluster -f cluster.yaml
+$ eksctl delete cluster -f eks.yaml
 ```

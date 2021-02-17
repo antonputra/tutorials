@@ -1,0 +1,32 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bar
+  namespace: production
+  labels:
+    app: bar
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: bar
+  template:
+    metadata:
+      labels:
+        app: bar
+    spec:
+      containers:
+      - name: bar
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 80
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: role
+                operator: In
+                values:
+                - on-demand
