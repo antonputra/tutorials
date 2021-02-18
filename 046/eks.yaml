@@ -1,0 +1,16 @@
+---
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+metadata:
+  name: cluster
+  region: us-east-1
+availabilityZones: 
+- us-east-1a
+- us-east-1b
+managedNodeGroups:
+- name: on-demand
+  labels:
+    role: on-demand
+  instanceType: t2.small
+  desiredCapacity: 1
+  volumeSize: 20

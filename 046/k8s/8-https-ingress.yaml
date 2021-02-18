@@ -1,0 +1,22 @@
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: https-express
+  namespace: staging
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/issuer: letsencrypt-prod
+spec:
+  rules:
+  - host: express.antonputra.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: express
+          servicePort: 8080
+  tls:
+  - hosts:
+    - express.antonputra.com
+    secretName: express-antonputra-com-tls
