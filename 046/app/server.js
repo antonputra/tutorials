@@ -1,5 +1,4 @@
 'use strict';
-
 const express = require('express');
 
 // Constants

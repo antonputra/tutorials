@@ -1,6 +1,6 @@
 {
-  "name": "app",
-  "version": "1.0.0",
+  "name": "express",
+  "version": "0.1.0",
   "description": "",
   "main": "server.js",
   "scripts": {

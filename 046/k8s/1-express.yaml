@@ -1,4 +1,9 @@
 ---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: staging
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -29,3 +34,15 @@ spec:
           limits:
             memory: 128Mi
             cpu: 300m
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: express
+  namespace: staging
+spec:
+  selector:
+    app: express
+  ports:
+  - protocol: TCP
+    port: 8080

@@ -6,9 +6,9 @@ metadata:
   namespace: staging
 spec:
   acme:
-    server: https://acme-staging-v02.api.letsencrypt.org/directory
-    # server: https://acme-v02.api.letsencrypt.org/directory
-    email: me@antonputra.com
+    # server: https://acme-staging-v02.api.letsencrypt.org/directory
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: me@youremail.com
     privateKeySecretRef:
       name: letsencrypt-prod
     solvers:
