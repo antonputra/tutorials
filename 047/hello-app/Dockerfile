@@ -4,4 +4,4 @@ COPY app.js package*.json /var/task/
 
 RUN npm ci --only=production
 
-CMD [ "app.handler" ]  
+CMD [ "app.hello" ]
