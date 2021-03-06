@@ -1,0 +1,43 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: drage
+  namespace: staging
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: drage
+  template:
+    metadata:
+      labels:
+        app: drage
+    spec:
+      containers:
+      - name: drage
+        image: 424432388155.dkr.ecr.us-east-1.amazonaws.com/drage:v0.1.5
+        ports:
+        - name: http
+          containerPort: 5000
+        env:
+        - name: MONGODB_HOSTNAME
+          value: mongodb-0.mongodb-headless.database
+        - name: MONGODB_PORT
+          value: "27017"
+        - name: MONGODB_DATABASE
+          value: inventory
+        - name: MONGODB_USERNAME
+          value: drage
+        - name: MONGODB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: creds
+              key: db-password
+        resources:
+          limits:
+            cpu: 200m
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi

@@ -1,0 +1,196 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongodb
+  namespace: database
+spec:
+  serviceName: mongodb-headless
+  podManagementPolicy: OrderedReady
+  replicas: 2
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: mongodb
+      app.kubernetes.io/component: mongodb
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: mongodb
+        app.kubernetes.io/component: mongodb
+    spec:
+      serviceAccountName: mongodb
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: mongodb
+              namespaces:
+              - database
+              topologyKey: kubernetes.io/hostname
+            weight: 1
+      securityContext:
+        fsGroup: 1001
+        sysctls: []
+      containers:
+      - name: mongodb
+        image: docker.io/bitnami/mongodb:4.4.4
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1001
+        command:
+        - /scripts/setup.sh
+        env:
+        - name: BITNAMI_DEBUG
+          value: "false"
+        - name: MY_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: MY_POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: K8S_SERVICE_NAME
+          value: "mongodb-headless"
+        - name: MONGODB_INITIAL_PRIMARY_HOST
+          value: "mongodb-0.$(K8S_SERVICE_NAME).$(MY_POD_NAMESPACE).svc.cluster.local"
+        - name: MONGODB_ADVERTISED_HOSTNAME
+          value: "$(MY_POD_NAME).$(K8S_SERVICE_NAME).$(MY_POD_NAMESPACE).svc.cluster.local"
+        - name: MONGODB_USERNAME
+          value: "drage"
+        - name: MONGODB_DATABASE
+          value: "inventory"
+        - name: MONGODB_REPLICA_SET_NAME
+          value: "rs0"
+        - name: MONGODB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mongodb
+              key: mongodb-password
+        - name: MONGODB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mongodb
+              key: mongodb-root-password
+        - name: MONGODB_REPLICA_SET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: mongodb
+              key: mongodb-replica-set-key
+        - name: ALLOW_EMPTY_PASSWORD
+          value: "no"
+        - name: MONGODB_SYSTEM_LOG_VERBOSITY
+          value: "0"
+        - name: MONGODB_DISABLE_SYSTEM_LOG
+          value: "no"
+        - name: MONGODB_ENABLE_IPV6
+          value: "no"
+        - name: MONGODB_ENABLE_DIRECTORY_PER_DB
+          value: "no"
+        ports:
+        - containerPort: 27017
+          name: mongodb
+        livenessProbe:
+          exec:
+            command:
+            - mongo
+            - --disableImplicitSessions
+            - --eval
+            - "db.adminCommand('ping')"
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 6
+        readinessProbe:
+          exec:
+            command:
+            - bash
+            - -ec
+            - |
+              mongo --disableImplicitSessions $TLS_OPTIONS --eval 'db.hello().isWritablePrimary || db.hello().secondary' | grep -q 'true'
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 6
+        resources:
+          limits:
+            cpu: 500m
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        volumeMounts:
+        - name: datadir
+          mountPath: /bitnami/mongodb
+          subPath: 
+        - name: scripts
+          mountPath: /scripts/setup.sh
+          subPath: setup.sh
+      - name: metrics
+        image: docker.io/bitnami/mongodb-exporter:0.11.2
+        imagePullPolicy: "IfNotPresent"
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1001
+        command:
+        - /bin/bash
+        - -ec
+        args:
+        - |
+          /bin/mongodb_exporter --web.listen-address ":9216" --mongodb.uri "mongodb://root:$(echo $MONGODB_ROOT_PASSWORD | sed -r "s/@/%40/g;s/:/%3A/g")@localhost:27017/admin?" 
+        env:
+        - name: MONGODB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mongodb
+              key: mongodb-root-password
+        volumeMounts:
+        ports:
+        - name: metrics
+          containerPort: 9216
+        livenessProbe:
+          httpGet:
+            path: /
+            port: metrics
+          initialDelaySeconds: 15
+          periodSeconds: 5
+          timeoutSeconds: 5
+          failureThreshold: 3
+          successThreshold: 1
+        readinessProbe:
+          httpGet:
+            path: /
+            port: metrics
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 1
+          failureThreshold: 3
+          successThreshold: 1
+        resources:
+          limits:
+            cpu: 500m
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+      volumes:
+      - name: scripts
+        configMap:
+          name: mongodb-scripts
+          defaultMode: 0755
+  volumeClaimTemplates:
+  - metadata:
+      name: datadir
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 20Gi
