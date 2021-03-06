@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-arbiter-headless
+  namespace: database
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+  - name: tcp-mongodb
+    port: 27017
+    targetPort: mongodb
+  selector:
+    app.kubernetes.io/name: mongodb
+    app.kubernetes.io/component: arbiter

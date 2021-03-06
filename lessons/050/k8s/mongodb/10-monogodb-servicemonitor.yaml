@@ -1,0 +1,18 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: mongodb
+  namespace: monitoring
+  labels:
+    team: devops-by-example
+spec:
+  endpoints:
+  - port: http-metrics
+    interval: 30s
+  namespaceSelector:
+    matchNames:
+    - database
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: mongodb

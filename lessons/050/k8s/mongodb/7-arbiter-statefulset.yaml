@@ -1,0 +1,99 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongodb-arbiter
+  namespace: database
+spec:
+  serviceName: mongodb-arbiter-headless
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: mongodb
+      app.kubernetes.io/component: arbiter
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: mongodb
+        app.kubernetes.io/component: arbiter
+    spec:
+      serviceAccountName: mongodb
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: mongodb
+              namespaces:
+              - database
+              topologyKey: kubernetes.io/hostname
+            weight: 1
+      securityContext:
+        fsGroup: 1001
+        sysctls: []
+      initContainers:
+      containers:
+      - name: mongodb-arbiter
+        image: docker.io/bitnami/mongodb:4.4.4
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          runAsUser: 1001
+        env:
+        - name: BITNAMI_DEBUG
+          value: "false"
+        - name: MY_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: MY_POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: MONGODB_REPLICA_SET_NAME
+          value: "rs0"
+        - name: K8S_SERVICE_NAME
+          value: "mongodb-arbiter-headless"
+        - name: MONGODB_REPLICA_SET_MODE
+          value: "arbiter"
+        - name: MONGODB_INITIAL_PRIMARY_HOST
+          value: "mongodb-0.mongodb-headless.$(MY_POD_NAMESPACE).svc.cluster.local"
+        - name: MONGODB_ADVERTISED_HOSTNAME
+          value: "$(MY_POD_NAME).$(K8S_SERVICE_NAME).$(MY_POD_NAMESPACE).svc.cluster.local"
+        - name: MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mongodb
+              key: mongodb-root-password
+        - name: MONGODB_REPLICA_SET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: mongodb
+              key: mongodb-replica-set-key
+        - name: ALLOW_EMPTY_PASSWORD
+          value: "no"
+        ports:
+        - containerPort: 27017
+          name: mongodb
+        livenessProbe:
+          tcpSocket:
+            port: mongodb
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 6
+        readinessProbe:
+          tcpSocket:
+            port: mongodb
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 6
+        resources:
+          limits:
+            cpu: 200m
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
