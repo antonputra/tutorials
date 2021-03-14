@@ -1,0 +1,13 @@
+{
+  "signing": {
+    "default": {
+      "expiry": "8760h"
+    },
+    "profiles": {
+      "devops": {
+        "usages": ["signing", "server auth", "client auth"],
+        "expiry": "8760h"
+      }
+    }
+  }
+}
