@@ -12,7 +12,7 @@ resource "google_compute_subnetwork" "private" {
   name                     = "private"
   project                  = google_compute_shared_vpc_host_project.host.project
   ip_cidr_range            = "10.5.0.0/20"
-  region                   = "us-west2"
+  region                   = local.region
   network                  = google_compute_network.main.self_link
   private_ip_google_access = true
 
@@ -27,7 +27,7 @@ resource "google_compute_subnetwork" "private" {
   # }
 
   dynamic "secondary_ip_range" {
-    for_each = local.k8s_subnet_secondary_ip_ranges
+    for_each = local.secondary_ip_ranges
 
     content {
       range_name    = secondary_ip_range.key

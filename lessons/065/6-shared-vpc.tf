@@ -5,26 +5,10 @@ resource "google_compute_shared_vpc_host_project" "host" {
 
 # https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_shared_vpc_service_project
 resource "google_compute_shared_vpc_service_project" "service" {
-  host_project    = "${local.host_project}-${random_integer.int.result}"
-  service_project = "${local.service_project}-${random_integer.int.result}"
+  host_project    = local.host_project_id
+  service_project = local.service_project_id
 
   depends_on = [google_compute_shared_vpc_host_project.host]
-}
-
-# https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_project_service
-resource "google_project_service" "host" {
-  for_each = local.project_apis
-
-  project = google_compute_shared_vpc_host_project.host.project
-  service = each.value
-}
-
-# https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_project_service
-resource "google_project_service" "service" {
-  for_each = local.project_apis
-
-  project = google_project.k8s-staging.number
-  service = each.value
 }
 
 # https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_subnetwork_iam

@@ -15,3 +15,15 @@ resource "google_project" "k8s-staging" {
   org_id              = local.org_id
   auto_create_network = false
 }
+
+# https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_project_service
+resource "google_project_service" "host" {
+  project = google_compute_shared_vpc_host_project.host.project
+  service = local.projects_api
+}
+
+# https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_project_service
+resource "google_project_service" "service" {
+  project = google_project.k8s-staging.number
+  service = local.projects_api
+}
