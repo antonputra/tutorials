@@ -2,6 +2,6 @@
 resource "google_compute_router" "router" {
   name    = "router"
   region  = local.region
-  project = google_compute_shared_vpc_host_project.host.project
+  project = local.host_project_id
   network = google_compute_network.main.self_link
 }

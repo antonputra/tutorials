@@ -18,7 +18,7 @@ resource "google_project" "k8s-staging" {
 
 # https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_project_service
 resource "google_project_service" "host" {
-  project = google_compute_shared_vpc_host_project.host.project
+  project = google_project.host-staging.number
   service = local.projects_api
 }
 

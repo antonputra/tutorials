@@ -34,5 +34,4 @@ resource "google_compute_subnetwork" "private" {
       ip_cidr_range = secondary_ip_range.value
     }
   }
-
 }
