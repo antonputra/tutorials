@@ -1,6 +1,3 @@
-# How to Create GKE Cluster Using TERRAFORM from Scratch? 🥺 (Shared VPC | Host and Service Projects) 
+# IAM Roles for Service Accounts & Pods: (IRSA EKS | IAM OIDC Provider | AWS EKS | Kubernetes)
 
-## Set Up Default Credentials
-```bash
-gcloud auth application-default login
-```
+[Step by Step Tutorial](https://youtu.be/bu0M2y2g1m8)

@@ -19,7 +19,6 @@ resource "google_compute_subnetwork_iam_binding" "binding" {
 
   role = "roles/compute.networkUser"
   members = [
-    "user:me@antonputra.com",
     "serviceAccount:${google_service_account.k8s-staging.email}",
     "serviceAccount:${google_project.k8s-staging.number}@cloudservices.gserviceaccount.com",
     "serviceAccount:service-${google_project.k8s-staging.number}@container-engine-robot.iam.gserviceaccount.com"

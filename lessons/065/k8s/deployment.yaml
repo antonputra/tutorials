@@ -1,0 +1,26 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      serviceAccountName: app
+      initContainers:
+      - name: aws-cli
+        image: amazon/aws-cli
+        command: ['aws', 's3', 'cp', 's3://antonputra-test/README.md', '-']
+      containers:
+      - name: nginx  
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 80
