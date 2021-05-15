@@ -1,0 +1,14 @@
+  
+# You can create a "default" policy for a namespace which prevents all ingress 
+# AND egress traffic by creating the following NetworkPolicy in that namespace.
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+  namespace: production
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress

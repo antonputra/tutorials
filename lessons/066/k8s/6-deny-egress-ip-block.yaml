@@ -1,0 +1,19 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: deny-egress-ip-block
+  namespace: staging
+spec:
+  podSelector:
+    matchLabels:
+      app: service-a
+  policyTypes:
+  - Egress
+  egress:
+  - to:
+    - ipBlock:
+        cidr: 151.101.0.0/16
+    ports:
+    - protocol: TCP
+      port: 80
