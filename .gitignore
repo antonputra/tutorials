@@ -154,3 +154,5 @@ dist
 
 # python
 .venv
+
+.DS_Store
