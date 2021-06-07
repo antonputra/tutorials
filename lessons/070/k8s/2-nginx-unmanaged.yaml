@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-unmanaged
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx-unmanaged
+  template:
+    metadata:
+      labels:
+        app: nginx-unmanaged
+    spec:
+      containers:
+      - name: nginx-unmanaged
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 80
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: role
+                operator: In
+                values:
+                - unmanaged-nodes
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - nginx-unmanaged
+            topologyKey: kubernetes.io/hostname
+            namespaces:
+            - default

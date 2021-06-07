@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-managed
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx-managed
+  template:
+    metadata:
+      labels:
+        app: nginx-managed
+    spec:
+      containers:
+      - name: nginx-managed
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 80
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: role
+                operator: In
+                values:
+                - managed-nodes
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - nginx-managed
+            topologyKey: kubernetes.io/hostname
+            namespaces:
+            - default

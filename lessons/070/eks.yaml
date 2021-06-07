@@ -1,0 +1,28 @@
+---
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+metadata:
+  name: antonputra
+  region: us-east-1
+  version: "1.20"
+availabilityZones:
+- us-east-1a
+- us-east-1b
+managedNodeGroups:
+- name: managed-nodes
+  labels:
+    role: managed-nodes
+  instanceType: t3.medium
+  minSize: 1
+  maxSize: 10
+  desiredCapacity: 1
+  volumeSize: 20
+nodeGroups:
+- name: unmanaged-nodes
+  labels:
+    role: unmanaged-nodes
+  instanceType: t3.medium
+  minSize: 1
+  maxSize: 10
+  desiredCapacity: 1
+  volumeSize: 20
