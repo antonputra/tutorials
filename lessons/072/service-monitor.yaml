@@ -1,0 +1,20 @@
+---
+# https://github.com/prometheus-operator/prometheus-operator
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: postgres-postgresql
+  namespace: db
+  labels:
+    prometheus: devops
+spec:
+  endpoints:
+  - port: http-metrics
+    interval: 60s
+    scrapeTimeout: 30s
+  namespaceSelector:
+    matchNames:
+    - db
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: postgres
