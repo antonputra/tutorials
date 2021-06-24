@@ -1,6 +1,6 @@
 # How to Install Prometheus on Kubernetes Cluster?
 
-[YouTube Tutorial](https://youtu.be/)
+[YouTube Tutorial](https://youtu.be/bwUECsVDbMA)
 
 ## Steps
 
