@@ -1,0 +1,76 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: custom-metrics-prometheus-adapter
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus-adapter
+  template:
+    metadata:
+      labels:
+        app: prometheus-adapter
+      name: prometheus-adapter
+      annotations:
+        checksum/config: 4b70a56e35e56c8038b94f63f0515e79f22bd49456902c2f3c3d2dd9b2474ece
+    spec:
+      serviceAccountName: custom-metrics-prometheus-adapter
+      containers:
+      - name: prometheus-adapter
+        image: "directxman12/k8s-prometheus-adapter-amd64:v0.8.4"
+        imagePullPolicy: IfNotPresent
+        args:
+        - /adapter
+        - --secure-port=6443
+        - --cert-dir=/tmp/cert
+        - --logtostderr=true
+        - --prometheus-url=http://prometheus-operated.monitoring.svc:9090
+        - --metrics-relist-interval=1m
+        - --v=4
+        - --config=/etc/adapter/config.yaml
+        ports:
+        - containerPort: 6443
+          name: https
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: https
+            scheme: HTTPS
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: https
+            scheme: HTTPS
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+        resources:
+          limits:
+            cpu: 100m
+            memory: 128Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["all"]
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 10001
+        volumeMounts:
+        - mountPath: /etc/adapter/
+          name: config
+          readOnly: true
+        - mountPath: /tmp
+          name: tmp
+      volumes:
+      - name: config
+        configMap:
+          name: custom-metrics-prometheus-adapter
+      - name: tmp
+        emptyDir: {}

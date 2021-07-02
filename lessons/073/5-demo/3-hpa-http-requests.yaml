@@ -1,0 +1,32 @@
+---
+kind: HorizontalPodAutoscaler
+apiVersion: autoscaling/v2beta2
+metadata:
+  name: http
+  namespace: demo
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: express
+  minReplicas: 1
+  maxReplicas: 10
+  metrics:
+  # use a "Pods" metric, which takes the average of the
+  # given metric across all pods controlled by the autoscaling target
+  - type: Pods
+    pods:
+      metric:
+        # use the metric that you used above: pods/http_requests
+        name: http_requests
+      target:
+        # target 500 milli-requests per second,
+        # which is 1 request every two seconds
+        type: AverageValue
+        averageValue: 500m
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 80
