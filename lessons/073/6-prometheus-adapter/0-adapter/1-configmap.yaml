@@ -1,0 +1,48 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: custom-metrics-prometheus-adapter
+  namespace: monitoring
+  labels:
+    app: prometheus-adapter
+data:
+  config.yaml: |
+    rules:
+    - seriesQuery: 'http_requests_total{namespace!="",pod!=""}'
+      resources:
+        overrides:
+          namespace:
+            resource: namespace
+          pod: 
+            resource: pod
+      name:
+        matches: "^(.*)_total"
+        as: "${1}_per_second"
+      metricsQuery: 'sum(rate(<<.Series>>{<<.LabelMatchers>>}[2m])) by (<<.GroupBy>>)'
+    resourceRules:
+      cpu:
+        containerQuery: sum(rate(container_cpu_usage_seconds_total{<<.LabelMatchers>>, container_label_io_kubernetes_container_name!=""}[3m])) by (<<.GroupBy>>)
+        nodeQuery: sum(rate(container_cpu_usage_seconds_total{<<.LabelMatchers>>, id='/'}[3m])) by (<<.GroupBy>>) by (<<.GroupBy>>)
+        resources:
+          overrides:
+            container_label_io_kubernetes_pod_namespace:
+              resource: namespace
+            node:
+              resource: node
+            container_label_io_kubernetes_pod_name:
+              resource: pod
+        containerLabel: container_label_io_kubernetes_container_name
+      memory:
+        containerQuery: sum(container_memory_working_set_bytes{<<.LabelMatchers>>, container_label_io_kubernetes_container_name!=""}) by (<<.GroupBy>>)
+        nodeQuery: sum(container_memory_working_set_bytes{<<.LabelMatchers>>,id='/'}) by (<<.GroupBy>>)
+        resources:
+          overrides:
+            container_label_io_kubernetes_pod_namespace:
+              resource: namespace
+            node:
+              resource: node
+            container_label_io_kubernetes_pod_name:
+              resource: pod
+        containerLabel: container_label_io_kubernetes_container_name
+      window: 3m
