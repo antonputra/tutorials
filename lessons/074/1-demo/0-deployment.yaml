@@ -1,0 +1,30 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hamster
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: hamster
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: hamster
+    spec:
+      containers:
+        - name: hamster
+          image: k8s.gcr.io/ubuntu-slim:0.1
+          resources:
+            requests:
+              cpu: 180m
+              memory: 50Mi
+            limits:
+              cpu: 600m
+              memory: 100Mi
+          command: ["/bin/sh"]
+          args:
+            - "-c"
+            - "while true; do timeout 0.2s yes >/dev/null; sleep 0.5s; done"
