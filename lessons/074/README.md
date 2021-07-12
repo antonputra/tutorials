@@ -1,6 +1,6 @@
 # Vertical Pod Autoscaling
 
-[YouTube Tutorial]()
+[YouTube Tutorial](https://youtu.be/3h-vDDTZrm8)
 
 ## 1. Create EKS Cluster Using eksctl
 
