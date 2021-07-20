@@ -1,0 +1,79 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: AWS SAM Tutorial
+
+Globals:
+  Function:
+    MemorySize: 128
+
+Resources:
+  APIFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: nodejs14.x
+      Handler: function.lambdaHandler
+      CodeUri: api/
+      Timeout: 3
+      Events:
+        Hello:
+          Type: Api
+          Properties:
+            Path: /hello
+            Method: POST
+            RestApiId: 
+              Ref: HelloAPI
+
+  HelloAPI:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: staging
+      OpenApiVersion: 3.0.3
+
+  S3Function:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: nodejs14.x
+      Handler: function.lambdaHandler
+      CodeUri: s3/
+      Timeout: 60
+      Policies: AWSLambdaExecute
+      Events:
+        PrintEvent:
+          Type: S3
+          Properties:
+            Bucket: !Ref ExampleBucket
+            Events: s3:ObjectCreated:*
+
+  ExampleBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: test-antonputra
+
+  SNSFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      PackageType: Image
+      CodeUri: sns/
+      Events:
+        HelloWorld:
+          Type: SNS
+          Properties:
+            Topic: arn:aws:sns:us-east-1:424432388155:sns-topic-for-lambda
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./sns
+      DockerTag: python3.8-v1
+
+Outputs:
+  APIFunction:
+    Description: "Api Lambda Function ARN"
+    Value: !GetAtt APIFunction.Arn
+  S3Function:
+    Description: "S3 Lambda Function ARN"
+    Value: !GetAtt S3Function.Arn
+  SNSFunction:
+    Description: "SNS Lambda Function ARN"
+    Value: !GetAtt SNSFunction.Arn
+  Tutorials:
+    Description: "YouTube Channel"
+    Value: https://www.youtube.com/antonputra

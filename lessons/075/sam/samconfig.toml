@@ -1,0 +1,11 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "sam"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-1us5x6uea9tu2"
+s3_prefix = "sam"
+region = "us-east-1"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+image_repositories = ["SNSFunction=424432388155.dkr.ecr.us-east-1.amazonaws.com/sns"]
