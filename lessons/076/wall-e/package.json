@@ -1,0 +1,19 @@
+{
+  "name": "wall-e",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^27.0.6"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.953.0",
+    "axios": "^0.21.1",
+    "uuid": "^8.3.2"
+  }
+}
