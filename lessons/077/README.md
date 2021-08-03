@@ -1,6 +1,6 @@
 # AWS Lambda Secrets Manager Example: 2 Ways to Grant Access | Resource Permissions
 
-[YouTube Tutorial]()
+[YouTube Tutorial](https://youtu.be/_VI2JkSo3DY)
 
 ## 1. Create Secret in AWS Secrets Manager
 - Create `SLACK_BOT_TOKEN` secret with random value
