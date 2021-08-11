@@ -1,0 +1,12 @@
+---
+apiVersion: storage.k8s.io/v1
+kind: CSIDriver
+metadata:
+  name: secrets-store.csi.k8s.io
+spec:
+  podInfoOnMount: true
+  attachRequired: false
+  # Added in Kubernetes 1.16 with default mode of Persistent. 
+  # Secrets store csi driver needs Ephermeral to be set.
+  volumeLifecycleModes:
+  - Ephemeral

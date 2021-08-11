@@ -1,0 +1,50 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  namespace: kube-system
+  name: csi-secrets-store-provider-aws
+  labels:
+    app: csi-secrets-store-provider-aws
+spec:
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: csi-secrets-store-provider-aws
+  template:
+    metadata:
+      labels:
+        app: csi-secrets-store-provider-aws
+    spec:
+      serviceAccountName: csi-secrets-store-provider-aws
+      hostNetwork: true
+      containers:
+        - name: provider-aws-installer
+          image: public.ecr.aws/aws-secrets-manager/secrets-store-csi-driver-provider-aws:1.0.r1-10-g1942553-2021.06.04.00.07-linux-amd64
+          imagePullPolicy: Always
+          args:
+            - --provider-volume=/etc/kubernetes/secrets-store-csi-providers
+          resources:
+            requests:
+              cpu: 50m
+              memory: 100Mi
+            limits:
+              cpu: 50m
+              memory: 100Mi
+          volumeMounts:
+            - mountPath: "/etc/kubernetes/secrets-store-csi-providers"
+              name: providervol
+            - name: mountpoint-dir
+              mountPath: /var/lib/kubelet/pods
+              mountPropagation: HostToContainer
+      volumes:
+        - name: providervol
+          hostPath:
+            path: "/etc/kubernetes/secrets-store-csi-providers"
+        - name: mountpoint-dir
+          hostPath:
+            path: /var/lib/kubelet/pods
+            type: DirectoryOrCreate
+      nodeSelector:
+        kubernetes.io/os: linux
