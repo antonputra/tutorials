@@ -1,0 +1,28 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: bar
+  name: bar
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bar
+  template:
+    metadata:
+      labels:
+        app: bar
+    spec:
+      containers:
+      - name: bar
+        image: aputrabay/lesson-082:v0.1.6
+        args:
+        - -name
+        - bar
+        - -port
+        - "8956"
+        ports:
+        - name: http
+          containerPort: 8956
+          protocol: TCP

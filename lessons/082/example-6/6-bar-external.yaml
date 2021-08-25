@@ -1,0 +1,9 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: bar-external
+  namespace: foo
+spec:
+  type: ExternalName
+  externalName: bar.bar.svc.cluster.local

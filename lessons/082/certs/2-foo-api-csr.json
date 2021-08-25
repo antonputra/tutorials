@@ -1,0 +1,15 @@
+{
+    "CN": "foo-api.devopsbyexample.io",
+    "hosts": [
+        "foo-api.devopsbyexample.io"
+    ],
+    "names": [
+        {
+            "C": "US",
+            "L": "San Jose",
+            "O": "Demo",
+            "OU": "API",
+            "ST": "California"
+        }
+    ]
+}

@@ -1,0 +1,50 @@
+---
+# Source: ingress-nginx/templates/admission-webhooks/job-patch/job-patchWebhook.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: my-ing-ingress-nginx-admission-patch
+  namespace: ingress
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    helm.sh/chart: ingress-nginx-3.35.0
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/instance: my-ing
+    app.kubernetes.io/version: "0.48.1"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: admission-webhook
+spec:
+  template:
+    metadata:
+      name: my-ing-ingress-nginx-admission-patch
+      labels:
+        helm.sh/chart: ingress-nginx-3.35.0
+        app.kubernetes.io/name: ingress-nginx
+        app.kubernetes.io/instance: my-ing
+        app.kubernetes.io/version: "0.48.1"
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/component: admission-webhook
+    spec:
+      containers:
+        - name: patch
+          image: "docker.io/jettech/kube-webhook-certgen:v1.5.1"
+          imagePullPolicy: IfNotPresent
+          args:
+            - patch
+            - --webhook-name=my-ing-ingress-nginx-admission
+            - --namespace=$(POD_NAMESPACE)
+            - --patch-mutating=false
+            - --secret-name=my-ing-ingress-nginx-admission
+            - --patch-failure-policy=Fail
+          env:
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+      restartPolicy: OnFailure
+      serviceAccountName: my-ing-ingress-nginx-admission
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 2000
