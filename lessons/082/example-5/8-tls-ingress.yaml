@@ -1,0 +1,23 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: foo-api
+  namespace: staging
+spec:
+  ingressClassName: external-nginx
+  tls:
+  - hosts:
+      - foo-api.devopsbyexample.io
+    secretName: foo-api-devopsbyexample-io-tls
+  rules:
+  - host: foo-api.devopsbyexample.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: foo
+            port:
+              number: 5698

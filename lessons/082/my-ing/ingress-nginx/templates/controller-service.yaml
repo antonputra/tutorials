@@ -1,0 +1,31 @@
+---
+# Source: ingress-nginx/templates/controller-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+  labels:
+    helm.sh/chart: ingress-nginx-3.35.0
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/instance: my-ing
+    app.kubernetes.io/version: "0.48.1"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: controller
+  name: my-ing-ingress-nginx-controller
+  namespace: ingress
+spec:
+  type: LoadBalancer
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: http
+    - name: https
+      port: 443
+      protocol: TCP
+      targetPort: https
+  selector:
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/instance: my-ing
+    app.kubernetes.io/component: controller

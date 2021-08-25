@@ -1,0 +1,22 @@
+---
+# Source: ingress-nginx/templates/controller-rolebinding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    helm.sh/chart: ingress-nginx-3.35.0
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/instance: my-ing
+    app.kubernetes.io/version: "0.48.1"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: controller
+  name: my-ing-ingress-nginx
+  namespace: ingress
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: my-ing-ingress-nginx
+subjects:
+  - kind: ServiceAccount
+    name: my-ing-ingress-nginx
+    namespace: "ingress"

@@ -1,0 +1,24 @@
+---
+# Source: ingress-nginx/templates/controller-service-metrics.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    helm.sh/chart: ingress-nginx-3.35.0
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/instance: my-ing
+    app.kubernetes.io/version: "0.48.1"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: controller
+  name: my-ing-ingress-nginx-controller-metrics
+  namespace: ingress
+spec:
+  type: ClusterIP
+  ports:
+    - name: metrics
+      port: 10254
+      targetPort: metrics
+  selector:
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/instance: my-ing
+    app.kubernetes.io/component: controller

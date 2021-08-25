@@ -1,0 +1,28 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: simple-fanout-ns
+  namespace: foo
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  ingressClassName: external-nginx
+  rules:
+  - host: api-ns.devopsbyexample.io
+    http:
+      paths:
+      - path: /foo(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: foo
+            port:
+              number: 5698
+      - path: /bar(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: bar-external
+            port:
+              number: 8956

@@ -1,0 +1,26 @@
+---
+# Source: ingress-nginx/templates/controller-servicemonitor.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: my-ing-ingress-nginx-controller
+  labels:
+    helm.sh/chart: ingress-nginx-3.35.0
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/instance: my-ing
+    app.kubernetes.io/version: "0.48.1"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: controller
+    lesson: "082"
+spec:
+  endpoints:
+    - port: metrics
+      interval: 30s
+  namespaceSelector:
+    matchNames:
+      - ingress
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ingress-nginx
+      app.kubernetes.io/instance: my-ing
+      app.kubernetes.io/component: controller

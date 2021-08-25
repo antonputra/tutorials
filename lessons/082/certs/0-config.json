@@ -1,0 +1,16 @@
+{
+    "signing": {
+        "default": {
+            "expiry": "26280h"
+        },
+        "profiles": {
+            "demo": {
+                "usages": [
+                    "signing",
+                    "server auth"
+                ],
+                "expiry": "8760h"
+            }
+        }
+    }
+}

@@ -1,0 +1,32 @@
+---
+controller:
+  config:
+    compute-full-forwarded-for: "true"
+    use-forwarded-headers: "true"
+    proxy-body-size: "0"    
+  ingressClass: external-nginx
+  ingressClassResource:
+    enabled: true
+    default: false
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+            - key: app.kubernetes.io/name
+              operator: In
+              values:
+                - ingress-nginx
+        topologyKey: "kubernetes.io/hostname"
+  replicaCount: 1
+  admissionWebhooks:
+    enabled: true
+  service:
+    annotations:
+      service.beta.kubernetes.io/aws-load-balancer-type: nlb
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+      additionalLabels:
+        lesson: "082"
