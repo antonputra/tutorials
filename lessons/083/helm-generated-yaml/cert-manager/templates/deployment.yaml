@@ -1,0 +1,54 @@
+---
+# Source: cert-manager/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cert-083-cert-manager
+  namespace: "cert-manager"
+  labels:
+    app: cert-manager
+    app.kubernetes.io/name: cert-manager
+    app.kubernetes.io/instance: cert-083
+    app.kubernetes.io/component: "controller"
+    app.kubernetes.io/version: "v1.5.3"
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: cert-manager-v1.5.3
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: cert-manager
+      app.kubernetes.io/instance: cert-083
+      app.kubernetes.io/component: "controller"
+  template:
+    metadata:
+      labels:
+        app: cert-manager
+        app.kubernetes.io/name: cert-manager
+        app.kubernetes.io/instance: cert-083
+        app.kubernetes.io/component: "controller"
+        app.kubernetes.io/version: "v1.5.3"
+        app.kubernetes.io/managed-by: Helm
+        helm.sh/chart: cert-manager-v1.5.3
+    spec:
+      serviceAccountName: cert-083-cert-manager
+      securityContext:
+        runAsNonRoot: true
+      containers:
+        - name: cert-manager
+          image: "quay.io/jetstack/cert-manager-controller:v1.5.3"
+          imagePullPolicy: IfNotPresent
+          args:
+          - --v=2
+          - --cluster-resource-namespace=$(POD_NAMESPACE)
+          - --leader-election-namespace=kube-system
+          ports:
+          - containerPort: 9402
+            protocol: TCP
+          env:
+          - name: POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          resources:
+            {}

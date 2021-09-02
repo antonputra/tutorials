@@ -1,0 +1,567 @@
+---
+# Source: cert-manager/templates/rbac.yaml
+# Issuer controller role
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: cert-083-cert-manager-controller-issuers
+  labels:
+    app: cert-manager
+    app.kubernetes.io/name: cert-manager
+    app.kubernetes.io/instance: cert-083
+    app.kubernetes.io/component: "controller"
+    app.kubernetes.io/version: "v1.5.3"
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: cert-manager-v1.5.3
+rules:
+  - apiGroups: ["cert-manager.io"]
+    resources: ["issuers", "issuers/status"]
+    verbs: ["update"]
+  - apiGroups: ["cert-manager.io"]
+    resources: ["issuers"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "list", "watch", "create", "update", "delete"]
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["create", "patch"]
+---
+# Source: cert-manager/templates/rbac.yaml
+# ClusterIssuer controller role
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: cert-083-cert-manager-controller-clusterissuers
+  labels:
+    app: cert-manager
+    app.kubernetes.io/name: cert-manager
+    app.kubernetes.io/instance: cert-083
+    app.kubernetes.io/component: "controller"
+    app.kubernetes.io/version: "v1.5.3"
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: cert-manager-v1.5.3
+rules:
+  - apiGroups: ["cert-manager.io"]
+    resources: ["clusterissuers", "clusterissuers/status"]
+    verbs: ["update"]
+  - apiGroups: ["cert-manager.io"]
+    resources: ["clusterissuers"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "list", "watch", "create", "update", "delete"]
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["create", "patch"]
+---
+# Source: cert-manager/templates/rbac.yaml
+# Certificates controller role
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: cert-083-cert-manager-controller-certificates
+  labels:
+    app: cert-manager
+    app.kubernetes.io/name: cert-manager
+    app.kubernetes.io/instance: cert-083
+    app.kubernetes.io/component: "controller"
+    app.kubernetes.io/version: "v1.5.3"
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: cert-manager-v1.5.3
+rules:
+  - apiGroups: ["cert-manager.io"]
+    resources: ["certificates", "certificates/status", "certificaterequests", "certificaterequests/status"]
+    verbs: ["update"]
+  - apiGroups: ["cert-manager.io"]
+    resources: ["certificates", "certificaterequests", "clusterissuers", "issuers"]
+    verbs: ["get", "list", "watch"]
+  # We require these rules to support users with the OwnerReferencesPermissionEnforcement
+  # admission controller enabled:
+  # https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#ownerreferencespermissionenforcement
+  - apiGroups: ["cert-manager.io"]
+    resources: ["certificates/finalizers", "certificaterequests/finalizers"]
+    verbs: ["update"]
+  - apiGroups: ["acme.cert-manager.io"]
+    resources: ["orders"]
+    verbs: ["create", "delete", "get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "list", "watch", "create", "update", "delete"]
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["create", "patch"]
+---
+# Source: cert-manager/templates/rbac.yaml
+# Orders controller role
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: cert-083-cert-manager-controller-orders
+  labels:
+    app: cert-manager
+    app.kubernetes.io/name: cert-manager
+    app.kubernetes.io/instance: cert-083
+    app.kubernetes.io/component: "controller"
+    app.kubernetes.io/version: "v1.5.3"
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: cert-manager-v1.5.3
+rules:
+  - apiGroups: ["acme.cert-manager.io"]
+    resources: ["orders", "orders/status"]
+    verbs: ["update"]
+  - apiGroups: ["acme.cert-manager.io"]
+    resources: ["orders", "challenges"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["cert-manager.io"]
+    resources: ["clusterissuers", "issuers"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["acme.cert-manager.io"]
+    resources: ["challenges"]
+    verbs: ["create", "delete"]
+  # We require these rules to support users with the OwnerReferencesPermissionEnforcement
+  # admission controller enabled:
+  # https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#ownerreferencespermissionenforcement
+  - apiGroups: ["acme.cert-manager.io"]
+    resources: ["orders/finalizers"]
+    verbs: ["update"]
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["create", "patch"]
+---
+# Source: cert-manager/templates/rbac.yaml
+# Challenges controller role
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: cert-083-cert-manager-controller-challenges
+  labels:
+    app: cert-manager
+    app.kubernetes.io/name: cert-manager
+    app.kubernetes.io/instance: cert-083
+    app.kubernetes.io/component: "controller"
+    app.kubernetes.io/version: "v1.5.3"
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: cert-manager-v1.5.3
+rules:
+  # Use to update challenge resource status
+  - apiGroups: ["acme.cert-manager.io"]
+    resources: ["challenges", "challenges/status"]
+    verbs: ["update"]
+  # Used to watch challenge resources
+  - apiGroups: ["acme.cert-manager.io"]
+    resources: ["challenges"]
+    verbs: ["get", "list", "watch"]
+  # Used to watch challenges, issuer and clusterissuer resources
+  - apiGroups: ["cert-manager.io"]
+    resources: ["issuers", "clusterissuers"]
+    verbs: ["get", "list", "watch"]
+  # Need to be able to retrieve ACME account private key to complete challenges
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "list", "watch"]
+  # Used to create events
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["create", "patch"]
+  # HTTP01 rules
+  - apiGroups: [""]
+    resources: ["pods", "services"]
+    verbs: ["get", "list", "watch", "create", "delete"]
+  - apiGroups: ["networking.k8s.io"]
+    resources: ["ingresses"]
+    verbs: ["get", "list", "watch", "create", "delete", "update"]
+  - apiGroups: [ "networking.x-k8s.io" ]
+    resources: [ "httproutes" ]
+    verbs: ["get", "list", "watch", "create", "delete", "update"]
+  # We require the ability to specify a custom hostname when we are creating
+  # new ingress resources.
+  # See: https://github.com/openshift/origin/blob/21f191775636f9acadb44fa42beeb4f75b255532/pkg/route/apiserver/admission/ingress_admission.go#L84-L148
+  - apiGroups: ["route.openshift.io"]
+    resources: ["routes/custom-host"]
+    verbs: ["create"]
+  # We require these rules to support users with the OwnerReferencesPermissionEnforcement
+  # admission controller enabled:
+  # https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#ownerreferencespermissionenforcement
+  - apiGroups: ["acme.cert-manager.io"]
+    resources: ["challenges/finalizers"]
+    verbs: ["update"]
+  # DNS01 rules (duplicated above)
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "list", "watch"]
+---
+# Source: cert-manager/templates/rbac.yaml
+# ingress-shim controller role
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: cert-083-cert-manager-controller-ingress-shim
+  labels:
+    app: cert-manager
+    app.kubernetes.io/name: cert-manager
+    app.kubernetes.io/instance: cert-083
+    app.kubernetes.io/component: "controller"
+    app.kubernetes.io/version: "v1.5.3"
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: cert-manager-v1.5.3
+rules:
+  - apiGroups: ["cert-manager.io"]
+    resources: ["certificates", "certificaterequests"]
+    verbs: ["create", "update", "delete"]
+  - apiGroups: ["cert-manager.io"]
+    resources: ["certificates", "certificaterequests", "issuers", "clusterissuers"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["networking.k8s.io"]
+    resources: ["ingresses"]
+    verbs: ["get", "list", "watch"]
+  # We require these rules to support users with the OwnerReferencesPermissionEnforcement
+  # admission controller enabled:
+  # https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#ownerreferencespermissionenforcement
+  - apiGroups: ["networking.k8s.io"]
+    resources: ["ingresses/finalizers"]
+    verbs: ["update"]
+  - apiGroups: ["networking.x-k8s.io"]
+    resources: ["gateways", "httproutes"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["networking.x-k8s.io"]
+    resources: ["gateways/finalizers", "httproutes/finalizers"]
+    verbs: ["update"]
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["create", "patch"]
+---
+# Source: cert-manager/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: cert-083-cert-manager-view
+  labels:
+    app: cert-manager
+    app.kubernetes.io/name: cert-manager
+    app.kubernetes.io/instance: cert-083
+    app.kubernetes.io/component: "controller"
+    app.kubernetes.io/version: "v1.5.3"
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: cert-manager-v1.5.3
+    rbac.authorization.k8s.io/aggregate-to-view: "true"
+    rbac.authorization.k8s.io/aggregate-to-edit: "true"
+    rbac.authorization.k8s.io/aggregate-to-admin: "true"
+rules:
+  - apiGroups: ["cert-manager.io"]
+    resources: ["certificates", "certificaterequests", "issuers"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["acme.cert-manager.io"]
+    resources: ["challenges", "orders"]
+    verbs: ["get", "list", "watch"]
+---
+# Source: cert-manager/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: cert-083-cert-manager-edit
+  labels:
+    app: cert-manager
+    app.kubernetes.io/name: cert-manager
+    app.kubernetes.io/instance: cert-083
+    app.kubernetes.io/component: "controller"
+    app.kubernetes.io/version: "v1.5.3"
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: cert-manager-v1.5.3
+    rbac.authorization.k8s.io/aggregate-to-edit: "true"
+    rbac.authorization.k8s.io/aggregate-to-admin: "true"
+rules:
+  - apiGroups: ["cert-manager.io"]
+    resources: ["certificates", "certificaterequests", "issuers"]
+    verbs: ["create", "delete", "deletecollection", "patch", "update"]
+  - apiGroups: ["acme.cert-manager.io"]
+    resources: ["challenges", "orders"]
+    verbs: ["create", "delete", "deletecollection", "patch", "update"]
+---
+# Source: cert-manager/templates/rbac.yaml
+# Permission to approve CertificateRequests referencing cert-manager.io Issuers and ClusterIssuers
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: cert-083-cert-manager-controller-approve:cert-manager-io
+  labels:
+    app: cert-manager
+    app.kubernetes.io/name: cert-manager
+    app.kubernetes.io/instance: cert-083
+    app.kubernetes.io/component: "cert-manager"
+    app.kubernetes.io/version: "v1.5.3"
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: cert-manager-v1.5.3
+rules:
+  - apiGroups: ["cert-manager.io"]
+    resources: ["signers"]
+    verbs: ["approve"]
+    resourceNames: ["issuers.cert-manager.io/*", "clusterissuers.cert-manager.io/*"]
+---
+# Source: cert-manager/templates/rbac.yaml
+# Permission to:
+# - Update and sign CertificatSigningeRequests referencing cert-manager.io Issuers and ClusterIssuers
+# - Perform SubjectAccessReviews to test whether users are able to reference Namespaced Issuers
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: cert-083-cert-manager-controller-certificatesigningrequests
+  labels:
+    app: cert-manager
+    app.kubernetes.io/name: cert-manager
+    app.kubernetes.io/instance: cert-083
+    app.kubernetes.io/component: "cert-manager"
+    app.kubernetes.io/version: "v1.5.3"
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: cert-manager-v1.5.3
+rules:
+  - apiGroups: ["certificates.k8s.io"]
+    resources: ["certificatesigningrequests"]
+    verbs: ["get", "list", "watch", "update"]
+  - apiGroups: ["certificates.k8s.io"]
+    resources: ["certificatesigningrequests/status"]
+    verbs: ["update"]
+  - apiGroups: ["certificates.k8s.io"]
+    resources: ["signers"]
+    resourceNames: ["issuers.cert-manager.io/*", "clusterissuers.cert-manager.io/*"]
+    verbs: ["sign"]
+  - apiGroups: ["authorization.k8s.io"]
+    resources: ["subjectaccessreviews"]
+    verbs: ["create"]
+---
+# Source: cert-manager/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cert-083-cert-manager-controller-issuers
+  labels:
+    app: cert-manager
+    app.kubernetes.io/name: cert-manager
+    app.kubernetes.io/instance: cert-083
+    app.kubernetes.io/component: "controller"
+    app.kubernetes.io/version: "v1.5.3"
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: cert-manager-v1.5.3
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cert-083-cert-manager-controller-issuers
+subjects:
+  - name: cert-083-cert-manager
+    namespace: "cert-manager"
+    kind: ServiceAccount
+---
+# Source: cert-manager/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cert-083-cert-manager-controller-clusterissuers
+  labels:
+    app: cert-manager
+    app.kubernetes.io/name: cert-manager
+    app.kubernetes.io/instance: cert-083
+    app.kubernetes.io/component: "controller"
+    app.kubernetes.io/version: "v1.5.3"
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: cert-manager-v1.5.3
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cert-083-cert-manager-controller-clusterissuers
+subjects:
+  - name: cert-083-cert-manager
+    namespace: "cert-manager"
+    kind: ServiceAccount
+---
+# Source: cert-manager/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cert-083-cert-manager-controller-certificates
+  labels:
+    app: cert-manager
+    app.kubernetes.io/name: cert-manager
+    app.kubernetes.io/instance: cert-083
+    app.kubernetes.io/component: "controller"
+    app.kubernetes.io/version: "v1.5.3"
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: cert-manager-v1.5.3
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cert-083-cert-manager-controller-certificates
+subjects:
+  - name: cert-083-cert-manager
+    namespace: "cert-manager"
+    kind: ServiceAccount
+---
+# Source: cert-manager/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cert-083-cert-manager-controller-orders
+  labels:
+    app: cert-manager
+    app.kubernetes.io/name: cert-manager
+    app.kubernetes.io/instance: cert-083
+    app.kubernetes.io/component: "controller"
+    app.kubernetes.io/version: "v1.5.3"
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: cert-manager-v1.5.3
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cert-083-cert-manager-controller-orders
+subjects:
+  - name: cert-083-cert-manager
+    namespace: "cert-manager"
+    kind: ServiceAccount
+---
+# Source: cert-manager/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cert-083-cert-manager-controller-challenges
+  labels:
+    app: cert-manager
+    app.kubernetes.io/name: cert-manager
+    app.kubernetes.io/instance: cert-083
+    app.kubernetes.io/component: "controller"
+    app.kubernetes.io/version: "v1.5.3"
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: cert-manager-v1.5.3
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cert-083-cert-manager-controller-challenges
+subjects:
+  - name: cert-083-cert-manager
+    namespace: "cert-manager"
+    kind: ServiceAccount
+---
+# Source: cert-manager/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cert-083-cert-manager-controller-ingress-shim
+  labels:
+    app: cert-manager
+    app.kubernetes.io/name: cert-manager
+    app.kubernetes.io/instance: cert-083
+    app.kubernetes.io/component: "controller"
+    app.kubernetes.io/version: "v1.5.3"
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: cert-manager-v1.5.3
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cert-083-cert-manager-controller-ingress-shim
+subjects:
+  - name: cert-083-cert-manager
+    namespace: "cert-manager"
+    kind: ServiceAccount
+---
+# Source: cert-manager/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cert-083-cert-manager-controller-approve:cert-manager-io
+  labels:
+    app: cert-manager
+    app.kubernetes.io/name: cert-manager
+    app.kubernetes.io/instance: cert-083
+    app.kubernetes.io/component: "cert-manager"
+    app.kubernetes.io/version: "v1.5.3"
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: cert-manager-v1.5.3
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cert-083-cert-manager-controller-approve:cert-manager-io
+subjects:
+  - name: cert-083-cert-manager
+    namespace: "cert-manager"
+    kind: ServiceAccount
+---
+# Source: cert-manager/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cert-083-cert-manager-controller-certificatesigningrequests
+  labels:
+    app: cert-manager
+    app.kubernetes.io/name: cert-manager
+    app.kubernetes.io/instance: cert-083
+    app.kubernetes.io/component: "cert-manager"
+    app.kubernetes.io/version: "v1.5.3"
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: cert-manager-v1.5.3
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cert-083-cert-manager-controller-certificatesigningrequests
+subjects:
+  - name: cert-083-cert-manager
+    namespace: "cert-manager"
+    kind: ServiceAccount
+---
+# Source: cert-manager/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: cert-083-cert-manager:leaderelection
+  namespace: kube-system
+  labels:
+    app: cert-manager
+    app.kubernetes.io/name: cert-manager
+    app.kubernetes.io/instance: cert-083
+    app.kubernetes.io/component: "controller"
+    app.kubernetes.io/version: "v1.5.3"
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: cert-manager-v1.5.3
+rules:
+  # Used for leader election by the controller
+  # See also: https://github.com/kubernetes-sigs/controller-runtime/pull/1144#discussion_r480173688
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    resourceNames: ["cert-manager-controller"]
+    verbs: ["get", "update", "patch"]
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["create"]
+  - apiGroups: ["coordination.k8s.io"]
+    resources: ["leases"]
+    resourceNames: ["cert-manager-controller"]
+    verbs: ["get", "update", "patch"]
+  - apiGroups: ["coordination.k8s.io"]
+    resources: ["leases"]
+    verbs: ["create"]
+---
+# Source: cert-manager/templates/rbac.yaml
+# grant cert-manager permission to manage the leaderelection configmap in the
+# leader election namespace
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: cert-083-cert-manager:leaderelection
+  namespace: kube-system
+  labels:
+    app: cert-manager
+    app.kubernetes.io/name: cert-manager
+    app.kubernetes.io/instance: cert-083
+    app.kubernetes.io/component: "controller"
+    app.kubernetes.io/version: "v1.5.3"
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: cert-manager-v1.5.3
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: cert-083-cert-manager:leaderelection
+subjects:
+  - apiGroup: ""
+    kind: ServiceAccount
+    name: cert-083-cert-manager
+    namespace: cert-manager

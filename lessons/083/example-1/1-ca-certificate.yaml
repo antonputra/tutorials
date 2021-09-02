@@ -1,0 +1,18 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: devopsbyexample-io-ca
+  namespace: cert-manager
+spec:
+  isCA: true
+  duration: 43800h # 5 years
+  commonName: devopsbyexample.io
+  secretName: devopsbyexample-io-key-pair
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+  issuerRef:
+    name: selfsigned
+    kind: ClusterIssuer
+    group: cert-manager.io

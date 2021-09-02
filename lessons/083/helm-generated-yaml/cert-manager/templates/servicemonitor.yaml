@@ -1,0 +1,31 @@
+---
+# Source: cert-manager/templates/servicemonitor.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: cert-083-cert-manager
+  namespace: "cert-manager"
+  labels:
+    app: cert-manager
+    app.kubernetes.io/name: cert-manager
+    app.kubernetes.io/instance: cert-083
+    app.kubernetes.io/component: "controller"
+    app.kubernetes.io/version: "v1.5.3"
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: cert-manager-v1.5.3
+    prometheus: lesson-083
+spec:
+  jobLabel: cert-083-cert-manager
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: cert-manager
+      app.kubernetes.io/instance: cert-083
+      app.kubernetes.io/component: "controller"
+  namespaceSelector:
+    matchNames:
+      - cert-manager
+  endpoints:
+  - targetPort: 9402
+    path: /metrics
+    interval: 60s
+    scrapeTimeout: 30s

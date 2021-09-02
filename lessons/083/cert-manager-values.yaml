@@ -1,0 +1,13 @@
+---
+installCRDs: true
+prometheus:
+  enabled: true
+  servicemonitor:
+    enabled: true
+    prometheusInstance: lesson-083
+# DNS-01 Route53
+serviceAccount:
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::424432388155:role/cert-manager-acme
+extraArgs: 
+- --issuer-ambient-credentials
