@@ -1,0 +1,17 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: letsencrypt-dns01-prod
+  namespace: monitoring
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: me@antonputra.com
+    privateKeySecretRef:
+      name: letsencrypt-prod-dns01-key-pair
+    solvers:
+    - dns01:
+        route53:
+          region: us-east-1
+          hostedZoneID: Z01441853PKSGFWG4KH2B

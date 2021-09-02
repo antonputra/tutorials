@@ -1,0 +1,37 @@
+0000  10 0c 6b 47 76 f3 14 98 77 56 d4 6a 08 00 45 00   ..kGv...wV.j..E.
+0010  02 31 00 00 40 00 40 06 4c af c0 a8 01 03 2c c5   .1..@.@.L.....,.
+0020  fd a7 c5 84 00 50 26 91 80 83 ed f8 33 d2 80 18   .....P&.....3...
+0030  08 0a 50 77 00 00 01 01 08 0a 94 2d 17 8e ab c6   ..Pw.......-....
+0040  68 82 50 4f 53 54 20 2f 6c 6f 67 69 6e 20 48 54   h.POST /login HT
+0050  54 50 2f 31 2e 31 0d 0a 48 6f 73 74 3a 20 67 72   TP/1.1..Host: gr
+0060  61 66 61 6e 61 2e 64 65 76 6f 70 73 62 79 65 78   afana.devopsbyex
+0070  61 6d 70 6c 65 2e 69 6f 0d 0a 43 6f 6e 6e 65 63   ample.io..Connec
+0080  74 69 6f 6e 3a 20 6b 65 65 70 2d 61 6c 69 76 65   tion: keep-alive
+0090  0d 0a 43 6f 6e 74 65 6e 74 2d 4c 65 6e 67 74 68   ..Content-Length
+00a0  3a 20 33 39 0d 0a 61 63 63 65 70 74 3a 20 61 70   : 39..accept: ap
+00b0  70 6c 69 63 61 74 69 6f 6e 2f 6a 73 6f 6e 2c 20   plication/json, 
+00c0  74 65 78 74 2f 70 6c 61 69 6e 2c 20 2a 2f 2a 0d   text/plain, */*.
+00d0  0a 55 73 65 72 2d 41 67 65 6e 74 3a 20 4d 6f 7a   .User-Agent: Moz
+00e0  69 6c 6c 61 2f 35 2e 30 20 28 4d 61 63 69 6e 74   illa/5.0 (Macint
+00f0  6f 73 68 3b 20 49 6e 74 65 6c 20 4d 61 63 20 4f   osh; Intel Mac O
+0100  53 20 58 20 31 30 5f 31 35 5f 37 29 20 41 70 70   S X 10_15_7) App
+0110  6c 65 57 65 62 4b 69 74 2f 35 33 37 2e 33 36 20   leWebKit/537.36 
+0120  28 4b 48 54 4d 4c 2c 20 6c 69 6b 65 20 47 65 63   (KHTML, like Gec
+0130  6b 6f 29 20 43 68 72 6f 6d 65 2f 39 32 2e 30 2e   ko) Chrome/92.0.
+0140  34 35 31 35 2e 31 35 39 20 53 61 66 61 72 69 2f   4515.159 Safari/
+0150  35 33 37 2e 33 36 0d 0a 63 6f 6e 74 65 6e 74 2d   537.36..content-
+0160  74 79 70 65 3a 20 61 70 70 6c 69 63 61 74 69 6f   type: applicatio
+0170  6e 2f 6a 73 6f 6e 0d 0a 4f 72 69 67 69 6e 3a 20   n/json..Origin: 
+0180  68 74 74 70 3a 2f 2f 67 72 61 66 61 6e 61 2e 64   http://grafana.d
+0190  65 76 6f 70 73 62 79 65 78 61 6d 70 6c 65 2e 69   evopsbyexample.i
+01a0  6f 0d 0a 52 65 66 65 72 65 72 3a 20 68 74 74 70   o..Referer: http
+01b0  3a 2f 2f 67 72 61 66 61 6e 61 2e 64 65 76 6f 70   ://grafana.devop
+01c0  73 62 79 65 78 61 6d 70 6c 65 2e 69 6f 2f 6c 6f   sbyexample.io/lo
+01d0  67 69 6e 0d 0a 41 63 63 65 70 74 2d 45 6e 63 6f   gin..Accept-Enco
+01e0  64 69 6e 67 3a 20 67 7a 69 70 2c 20 64 65 66 6c   ding: gzip, defl
+01f0  61 74 65 0d 0a 41 63 63 65 70 74 2d 4c 61 6e 67   ate..Accept-Lang
+0200  75 61 67 65 3a 20 65 6e 2d 55 53 2c 65 6e 3b 71   uage: en-US,en;q
+0210  3d 30 2e 39 0d 0a 0d 0a 7b 22 75 73 65 72 22 3a   =0.9....{"user":
+0220  22 61 64 6d 69 6e 22 2c 22 70 61 73 73 77 6f 72   "admin","passwor
+0230  64 22 3a 22 64 65 76 6f 70 73 31 32 33 22 7d      d":"devops123"}
+

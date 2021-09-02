@@ -1,0 +1,690 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: monitoring
+  name: kubernetes-dashboards
+data:
+  cert-manager.json: |-
+    {
+    "annotations": {
+        "list": [
+        {
+            "builtIn": 1,
+            "datasource": "-- Grafana --",
+            "enable": true,
+            "hide": true,
+            "iconColor": "rgba(0, 211, 255, 1)",
+            "name": "Annotations & Alerts",
+            "target": {
+            "limit": 100,
+            "matchAny": false,
+            "tags": [],
+            "type": "dashboard"
+            },
+            "type": "dashboard"
+        }
+        ]
+    },
+    "description": "",
+    "editable": true,
+    "gnetId": null,
+    "graphTooltip": 1,
+    "links": [],
+    "panels": [
+        {
+        "datasource": null,
+        "description": "The number of certificates in the ready state.",
+        "fieldConfig": {
+            "defaults": {
+            "mappings": [],
+            "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                {
+                    "color": "green",
+                    "value": null
+                },
+                {
+                    "color": "red",
+                    "value": 1
+                }
+                ]
+            }
+            },
+            "overrides": [
+            {
+                "matcher": {
+                "id": "byName",
+                "options": "True"
+                },
+                "properties": [
+                {
+                    "id": "thresholds",
+                    "value": {
+                    "mode": "absolute",
+                    "steps": [
+                        {
+                        "color": "green",
+                        "value": null
+                        }
+                    ]
+                    }
+                }
+                ]
+            }
+            ]
+        },
+        "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 0
+        },
+        "id": 2,
+        "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+            "calcs": [
+                "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+            },
+            "text": {},
+            "textMode": "auto"
+        },
+        "pluginVersion": "8.1.2",
+        "targets": [
+            {
+            "exemplar": true,
+            "expr": "sum by (condition) (certmanager_certificate_ready_status)",
+            "interval": "",
+            "legendFormat": "{{condition}}",
+            "refId": "A"
+            }
+        ],
+        "timeFrom": null,
+        "timeShift": null,
+        "title": "Certificates Ready",
+        "transparent": true,
+        "type": "stat"
+        },
+        {
+        "datasource": null,
+        "fieldConfig": {
+            "defaults": {
+            "decimals": 1,
+            "mappings": [],
+            "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                {
+                    "color": "red",
+                    "value": null
+                },
+                {
+                    "color": "#EAB839",
+                    "value": 604800
+                },
+                {
+                    "color": "green",
+                    "value": 1209600
+                }
+                ]
+            },
+            "unit": "dtdurations"
+            },
+            "overrides": []
+        },
+        "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 0
+        },
+        "id": 4,
+        "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+            "calcs": [
+                "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+            },
+            "text": {},
+            "textMode": "auto"
+        },
+        "pluginVersion": "8.1.2",
+        "targets": [
+            {
+            "expr": "min(certmanager_certificate_expiration_timestamp_seconds > 0) - time()",
+            "hide": false,
+            "instant": true,
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+            },
+            {
+            "expr": "vector(1250000)",
+            "hide": true,
+            "instant": true,
+            "interval": "",
+            "legendFormat": "",
+            "refId": "B"
+            }
+        ],
+        "timeFrom": null,
+        "timeShift": null,
+        "title": "Soonest Cert Expiry",
+        "transparent": true,
+        "type": "stat"
+        },
+        {
+        "datasource": null,
+        "description": "Status of the certificates. Values are True, False or Unknown.",
+        "fieldConfig": {
+            "defaults": {
+            "custom": {
+                "align": null,
+                "displayMode": "auto",
+                "filterable": false
+            },
+            "mappings": [
+                {
+                "options": {
+                    "": {
+                    "text": "Yes"
+                    }
+                },
+                "type": "value"
+                }
+            ],
+            "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                {
+                    "color": "green",
+                    "value": null
+                },
+                {
+                    "color": "red",
+                    "value": 80
+                }
+                ]
+            },
+            "unit": "none"
+            },
+            "overrides": [
+            {
+                "matcher": {
+                "id": "byName",
+                "options": "Ready Status"
+                },
+                "properties": [
+                {
+                    "id": "custom.width",
+                    "value": 100
+                }
+                ]
+            },
+            {
+                "matcher": {
+                "id": "byName",
+                "options": "Valid Until"
+                },
+                "properties": [
+                {
+                    "id": "unit",
+                    "value": "dateTimeAsIso"
+                }
+                ]
+            },
+            {
+                "matcher": {
+                "id": "byName",
+                "options": "Valid Until"
+                },
+                "properties": [
+                {
+                    "id": "unit",
+                    "value": "dateTimeAsIso"
+                }
+                ]
+            }
+            ]
+        },
+        "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 8
+        },
+        "id": 9,
+        "options": {
+            "showHeader": true,
+            "sortBy": [
+            {
+                "desc": false,
+                "displayName": "Valid Until"
+            }
+            ]
+        },
+        "pluginVersion": "8.1.2",
+        "targets": [
+            {
+            "expr": "label_join(avg by (name, namespace, condition, exported_namespace) (certmanager_certificate_ready_status == 1), \"namespaced_name\", \"-\", \"namespace\", \"exported_namespace\", \"name\")",
+            "format": "table",
+            "instant": true,
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+            },
+            {
+            "expr": "label_join(avg by (name, namespace, exported_namespace) (certmanager_certificate_expiration_timestamp_seconds) * 1000, \"namespaced_name\", \"-\", \"namespace\", \"exported_namespace\", \"name\")",
+            "format": "table",
+            "instant": true,
+            "interval": "",
+            "legendFormat": "",
+            "refId": "B"
+            }
+        ],
+        "timeFrom": null,
+        "timeShift": null,
+        "title": "Certificates",
+        "transformations": [
+            {
+            "id": "seriesToColumns",
+            "options": {
+                "byField": "namespaced_name"
+            }
+            },
+            {
+            "id": "organize",
+            "options": {
+                "excludeByName": {
+                "Time": true,
+                "Time 1": true,
+                "Time 2": true,
+                "Value #A": true,
+                "exported_namespace": false,
+                "exported_namespace 1": false,
+                "exported_namespace 2": true,
+                "name 1": true,
+                "namespace 2": true,
+                "namespaced_name": true
+                },
+                "indexByName": {
+                "Time 1": 8,
+                "Time 2": 10,
+                "Value #A": 6,
+                "Value #B": 5,
+                "condition": 4,
+                "exported_namespace 1": 1,
+                "exported_namespace 2": 11,
+                "name 1": 9,
+                "name 2": 3,
+                "namespace": 0,
+                "namespace 1": 2,
+                "namespaced_name": 7
+                },
+                "renameByName": {
+                "Time 1": "",
+                "Value #B": "Valid Until",
+                "condition": "Ready Status",
+                "exported_namespace": "Certificate Namespace",
+                "exported_namespace 1": "Certificate Namespace",
+                "exported_namespace 2": "",
+                "name": "Certificate",
+                "name 2": "Certificate",
+                "namespace": "Namespace",
+                "namespace 1": "Namespace",
+                "namespaced_name": ""
+                }
+            }
+            }
+        ],
+        "transparent": true,
+        "type": "table"
+        },
+        {
+        "aliasColors": {},
+        "bars": false,
+        "dashLength": 10,
+        "dashes": false,
+        "datasource": null,
+        "description": "The rate of controller sync requests.",
+        "fieldConfig": {
+            "defaults": {
+            "links": []
+            },
+            "overrides": []
+        },
+        "fill": 1,
+        "fillGradient": 0,
+        "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 8
+        },
+        "hiddenSeries": false,
+        "id": 7,
+        "interval": "20s",
+        "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+        },
+        "lines": true,
+        "linewidth": 1,
+        "maxDataPoints": 250,
+        "nullPointMode": "null",
+        "options": {
+            "alertThreshold": true
+        },
+        "percentage": false,
+        "pluginVersion": "8.1.2",
+        "pointradius": 2,
+        "points": false,
+        "renderer": "flot",
+        "seriesOverrides": [],
+        "spaceLength": 10,
+        "stack": false,
+        "steppedLine": false,
+        "targets": [
+            {
+            "expr": "sum by (controller) (\n  rate(certmanager_controller_sync_call_count[$__rate_interval])\n)",
+            "interval": "",
+            "legendFormat": "{{controller}}",
+            "refId": "A"
+            }
+        ],
+        "thresholds": [],
+        "timeFrom": null,
+        "timeRegions": [],
+        "timeShift": null,
+        "title": "Controller Sync Requests/sec",
+        "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+        },
+        "transparent": true,
+        "type": "graph",
+        "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+        },
+        "yaxes": [
+            {
+            "format": "reqps",
+            "label": null,
+            "logBase": 1,
+            "max": null,
+            "min": "0",
+            "show": true
+            },
+            {
+            "format": "short",
+            "label": null,
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": true
+            }
+        ],
+        "yaxis": {
+            "align": false,
+            "alignLevel": null
+        }
+        },
+        {
+        "aliasColors": {},
+        "bars": false,
+        "dashLength": 10,
+        "dashes": false,
+        "datasource": null,
+        "description": "Rate of requests to ACME provider.",
+        "fieldConfig": {
+            "defaults": {
+            "links": []
+            },
+            "overrides": []
+        },
+        "fill": 1,
+        "fillGradient": 0,
+        "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 16
+        },
+        "hiddenSeries": false,
+        "id": 6,
+        "interval": "20s",
+        "legend": {
+            "avg": false,
+            "current": false,
+            "hideEmpty": true,
+            "hideZero": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+        },
+        "lines": true,
+        "linewidth": 1,
+        "maxDataPoints": 250,
+        "nullPointMode": "null",
+        "options": {
+            "alertThreshold": true
+        },
+        "percentage": false,
+        "pluginVersion": "8.1.2",
+        "pointradius": 2,
+        "points": false,
+        "renderer": "flot",
+        "seriesOverrides": [],
+        "spaceLength": 10,
+        "stack": false,
+        "steppedLine": false,
+        "targets": [
+            {
+            "expr": "sum by (method, path, status) (\n  rate(certmanager_http_acme_client_request_count[$__rate_interval])\n)",
+            "interval": "",
+            "legendFormat": "{{method}} {{path}} {{status}}",
+            "refId": "A"
+            }
+        ],
+        "thresholds": [],
+        "timeFrom": null,
+        "timeRegions": [],
+        "timeShift": null,
+        "title": "ACME HTTP Requests/sec",
+        "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+        },
+        "transparent": true,
+        "type": "graph",
+        "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+        },
+        "yaxes": [
+            {
+            "format": "reqps",
+            "label": null,
+            "logBase": 1,
+            "max": null,
+            "min": "0",
+            "show": true
+            },
+            {
+            "format": "short",
+            "label": null,
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": true
+            }
+        ],
+        "yaxis": {
+            "align": false,
+            "alignLevel": null
+        }
+        },
+        {
+        "aliasColors": {},
+        "bars": false,
+        "dashLength": 10,
+        "dashes": false,
+        "datasource": null,
+        "description": "Average duration of requests to ACME provider. ",
+        "fieldConfig": {
+            "defaults": {
+            "links": []
+            },
+            "overrides": []
+        },
+        "fill": 1,
+        "fillGradient": 0,
+        "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 16
+        },
+        "hiddenSeries": false,
+        "id": 10,
+        "interval": "30s",
+        "legend": {
+            "avg": false,
+            "current": false,
+            "hideEmpty": true,
+            "hideZero": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+        },
+        "lines": true,
+        "linewidth": 1,
+        "maxDataPoints": 250,
+        "nullPointMode": "null",
+        "options": {
+            "alertThreshold": true
+        },
+        "percentage": false,
+        "pluginVersion": "8.1.2",
+        "pointradius": 2,
+        "points": false,
+        "renderer": "flot",
+        "seriesOverrides": [],
+        "spaceLength": 10,
+        "stack": false,
+        "steppedLine": false,
+        "targets": [
+            {
+            "expr": "sum by (method, path, status) (rate(certmanager_http_acme_client_request_duration_seconds_sum[$__rate_interval]))\n/\nsum by (method, path, status) (rate(certmanager_http_acme_client_request_duration_seconds_count[$__rate_interval]))",
+            "interval": "",
+            "legendFormat": "{{method}} {{path}} {{status}}",
+            "refId": "A"
+            }
+        ],
+        "thresholds": [],
+        "timeFrom": null,
+        "timeRegions": [],
+        "timeShift": null,
+        "title": "ACME HTTP Request avg duration",
+        "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+        },
+        "transparent": true,
+        "type": "graph",
+        "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+        },
+        "yaxes": [
+            {
+            "format": "s",
+            "label": null,
+            "logBase": 1,
+            "max": null,
+            "min": "0",
+            "show": true
+            },
+            {
+            "format": "short",
+            "label": null,
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": true
+            }
+        ],
+        "yaxis": {
+            "align": false,
+            "alignLevel": null
+        }
+        }
+    ],
+    "refresh": "10s",
+    "schemaVersion": 30,
+    "style": "dark",
+    "tags": [
+        "cert-manager",
+        "infra"
+    ],
+    "templating": {
+        "list": []
+    },
+    "time": {
+        "from": "now-3h",
+        "to": "now"
+    },
+    "timepicker": {
+        "refresh_intervals": [
+        "10s",
+        "30s",
+        "1m",
+        "5m",
+        "15m",
+        "30m",
+        "1h",
+        "2h",
+        "1d"
+        ]
+    },
+    "timezone": "",
+    "title": "Cert Manager",
+    "uid": "TvuRo2iMk",
+    "version": 1
+    }

@@ -1,0 +1,16 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: letsencrypt-http01-staging
+  namespace: monitoring
+spec:
+  acme:
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    email: me@antonputra.com
+    privateKeySecretRef:
+      name: letsencrypt-staging-http01-key-pair
+    solvers:
+    - http01:
+        ingress:
+          class: external-nginx
