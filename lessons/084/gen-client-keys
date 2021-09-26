@@ -1,0 +1,47 @@
+#!/bin/bash
+
+set -e
+
+if [[ $# -lt 1 ]]; then
+  echo "$0 <user-name>"
+  exit 1
+fi
+
+mkdir -p /etc/openvpn/keys/
+mkdir -p /opt/vpnkeys/
+
+touch /etc/openvpn/keys/$1.ovpn
+
+cat > /etc/openvpn/keys/$1.ovpn <<EOF
+client
+dev tun
+proto udp
+remote <ip> 1194
+resolv-retry infinite
+nobind
+persist-key
+persist-tun
+remote-cert-tls server
+cipher AES-256-GCM
+auth SHA256
+key-direction 1
+verb 3
+tls-crypt ta.key
+ca ca.crt
+cert $1.crt
+key $1.key
+EOF
+
+yes "" | easyrsa gen-req $1 nopass
+yes "yes" | easyrsa sign-req client $1
+
+cp /etc/openvpn/easy-rsa/pki/ca.crt /etc/openvpn/keys/
+cp /etc/openvpn/easy-rsa/ta.key /etc/openvpn/keys/
+cp /etc/openvpn/easy-rsa/pki/issued/$1.crt /etc/openvpn/keys/
+cp /etc/openvpn/easy-rsa/pki/private/$1.key /etc/openvpn/keys/
+
+cd /etc/openvpn/keys/ && tar zcf $1.tar.gz ca.crt $1.crt $1.key $1.ovpn ta.key
+chmod 0600 $1.tar.gz
+
+cp $1.tar.gz /opt/vpnkeys/
+rm $1.*
