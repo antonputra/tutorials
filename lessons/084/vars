@@ -1,0 +1,8 @@
+set_var EASYRSA_REQ_COUNTRY    "US"
+set_var EASYRSA_REQ_PROVINCE   "CA"
+set_var EASYRSA_REQ_CITY       "San Jose"
+set_var EASYRSA_REQ_ORG        "DevOpsbyExample"
+set_var EASYRSA_REQ_EMAIL      "me@antonputra.com"
+set_var EASYRSA_REQ_OU         "Tutorial"
+set_var EASYRSA_ALGO           "ec"
+set_var EASYRSA_DIGEST         "sha512"
