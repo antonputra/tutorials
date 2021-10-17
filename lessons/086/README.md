@@ -1,6 +1,6 @@
 # Build a Docker Image and Publish It to AWS ECR using Github Actions
 
-[YouTube Tutorial]()
+[YouTube Tutorial](https://youtu.be/Hv5UcBYseus)
 
 ## Content
 This guide contains instructions on how to:
