@@ -30,6 +30,7 @@
 - [084 - AWS Point to Site VPN Setup (Free OpenVPN AWS Setup | EC2 | Route53 Private DNS | Ubuntu 20.04)](lessons/084)
 - [085 - How to Deploy React App on Firebase Hosting? (CI/CD with GitHub Actions | Preview | Custom Domain)](lessons/085)
 - [086 - Build a Docker Image and Publish It to AWS ECR using Github Actions](lessons/086)
+- [087 - Build a Docker Image and Publish It to GCP GCR & Artifact Registry using Github Actions](lessons/087)
 
 # Social
 
