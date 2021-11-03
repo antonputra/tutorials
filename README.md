@@ -32,6 +32,7 @@
 - [086 - Build a Docker Image and Publish It to AWS ECR using Github Actions](lessons/086)
 - [087 - Build a Docker Image and Publish It to GCP GCR & Artifact Registry using Github Actions](lessons/087)
 - [088 - How to Create Your Own GitHub Actions?](lessons/088)
+- [089 - GitHub Actions Self Hosted Runner (Autoscaling with Kubernetes)](lessons/089)
 
 
 # Social

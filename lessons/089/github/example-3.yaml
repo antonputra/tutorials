@@ -1,0 +1,56 @@
+---
+name: Example 3
+on:
+  push:
+    branches: [ main ]
+jobs:
+  build:
+    name: Build Docker
+    runs-on: my-custom-runner
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Build docker
+      run: |
+        docker build -t test .
+  build-2:
+    name: Build Docker
+    runs-on: my-custom-runner
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Build docker
+      run: |
+        docker build -t test .
+  build-3:
+    name: Build Docker
+    runs-on: my-custom-runner
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Build docker
+      run: |
+        docker build -t test .
+  build-4:
+    name: Build Docker
+    runs-on: my-custom-runner
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Build docker
+      run: |
+        docker build -t test .
+  build-5:
+    name: Build Docker
+    runs-on: my-custom-runner
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Build docker
+      run: |
+        docker build -t test .

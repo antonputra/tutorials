@@ -1,0 +1,16 @@
+---
+name: Example 1
+on:
+  push:
+    branches: [ main ]
+jobs:
+  build:
+    name: Build
+    runs-on: self-hosted
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Hello
+      run: |
+        echo "Hello World from self hosted runner!"

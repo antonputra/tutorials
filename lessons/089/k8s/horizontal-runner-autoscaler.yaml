@@ -1,0 +1,16 @@
+---
+apiVersion: actions.summerwind.dev/v1alpha1
+kind: HorizontalRunnerAutoscaler
+metadata:
+  name: k8s-runners-autoscaler
+  namespace: actions
+spec:
+  scaleTargetRef:
+    name: k8s-runners
+  scaleDownDelaySecondsAfterScaleOut: 300
+  minReplicas: 1
+  maxReplicas: 10
+  metrics:
+  - type: TotalNumberOfQueuedAndInProgressWorkflowRuns
+    repositoryNames:
+    - antonputra/lesson-089
