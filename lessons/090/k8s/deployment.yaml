@@ -1,0 +1,29 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: express
+  namespace: api
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: express
+  template:
+    metadata:
+      labels:
+        app: express
+    spec:
+      containers:
+      - image: aputra/express-073:latest
+        name: express
+        ports:
+        - name: http
+          containerPort: 8081
+        resources:
+          limits:
+            cpu: 500m
+            memory: 256Mi
+          requests:
+            cpu: 200m
+            memory: 128Mi

@@ -6,10 +6,6 @@
 
 ☕ - [Buy Me a Coffe](https://www.buymeacoffee.com/antonputra)
 
-# Books to Read
-
-📚 - [CompTIA Network+](https://amzn.to/3ESRN9n)
-
 # Contents
 
 - [069 - How to Create GKE Cluster Using TERRAFORM from Scratch?](lessons/069)
@@ -33,7 +29,7 @@
 - [087 - Build a Docker Image and Publish It to GCP GCR & Artifact Registry using Github Actions](lessons/087)
 - [088 - How to Create Your Own GitHub Actions?](lessons/088)
 - [089 - GitHub Actions Self Hosted Runner (Autoscaling with Kubernetes)](lessons/089)
-
+- [090 - GitHub Actions Self Hosted Runner (Autoscaling with Kubernetes)](lessons/090)
 
 # Social
 
@@ -43,7 +39,3 @@
 🎙 - [Twitter](https://twitter.com/antonvputra)  
 👥 - [Facebook](https://www.facebook.com/profile.php?id=100037229408982)  
 📨 - me@antonputra.com  
-
-
-## DISCLAIMER
-This description contains affiliate links, which means that if you click on one of the product links, I’ll receive a small commission. This helps support the channel and allows me to continue to make videos like this. Thank you for the support!
