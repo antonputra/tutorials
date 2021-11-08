@@ -29,7 +29,8 @@
 - [087 - Build a Docker Image and Publish It to GCP GCR & Artifact Registry using Github Actions](lessons/087)
 - [088 - How to Create Your Own GitHub Actions?](lessons/088)
 - [089 - GitHub Actions Self Hosted Runner (Autoscaling with Kubernetes)](lessons/089)
-- [090 - GitHub Actions Self Hosted Runner (Autoscaling with Kubernetes)](lessons/090)
+- [090 - Kubernetes Terminal: 6 Must-Have Tools to Install & Examples](lessons/090)
+- [090 - Kubernetes NodePort vs LoadBalancer vs Ingress?](lessons/091)
 
 # Social
 
