@@ -33,6 +33,7 @@
 - [091 - Kubernetes NodePort vs LoadBalancer vs Ingress?](lessons/091)
 - [092 - Kubernetes Namespaces vs. Virtual Clusters](lessons/092)
 - [093 - Kubernetes Basics: Pods, Nodes, Containers, Deployments and Clusters](lessons/093)
+- [094 - Kubernetes Quality of Service (QoS) Classes for Pods](lessons/094)
 
 # Social
 

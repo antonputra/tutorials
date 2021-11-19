@@ -1,0 +1,13 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: burstable-no-limit-pod
+spec:
+  containers:
+  - name: app
+    image: nginx:1.14.2
+    resources:
+      requests:
+        memory: 64Mi
+        cpu: 200m
