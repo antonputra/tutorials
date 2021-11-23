@@ -34,6 +34,7 @@
 - [092 - Kubernetes Namespaces vs. Virtual Clusters](lessons/092)
 - [093 - Kubernetes Basics: Pods, Nodes, Containers, Deployments and Clusters](lessons/093)
 - [094 - Kubernetes Quality of Service (QoS) Classes for Pods](lessons/094)
+- [095 - Kubernetes Pod Priority](lessons/095)
 
 # Social
 
