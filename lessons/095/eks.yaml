@@ -1,0 +1,17 @@
+---
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+metadata:
+  name: qos
+  region: us-east-1
+  version: "1.21"
+availabilityZones:
+- us-east-1a
+- us-east-1b
+managedNodeGroups:
+- name: general
+  instanceType: t3.small
+  desiredCapacity: 1
+  minSize: 1
+  maxSize: 10
+  volumeSize: 20
