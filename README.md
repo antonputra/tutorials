@@ -36,6 +36,7 @@
 - [094 - Kubernetes Quality of Service (QoS) Classes for Pods](lessons/094)
 - [095 - Kubernetes Pod Priority](lessons/095)
 - [096 - Kubernetes Affinity and Anti Affinity vs NodeSelector](lessons/096)
+- [097 - Kubernetes Taints and Tolerations (Examples)](lessons/097)
 
 # Social
 
