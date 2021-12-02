@@ -37,6 +37,7 @@
 - [095 - Kubernetes Pod Priority](lessons/095)
 - [096 - Kubernetes Affinity and Anti Affinity vs NodeSelector](lessons/096)
 - [097 - Kubernetes Taints and Tolerations (Examples)](lessons/097)
+- [098 - Kubernetes Pod Disruption Budget](lessons/098)
 
 # Social
 
