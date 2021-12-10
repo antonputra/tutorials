@@ -1,0 +1,40 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: local-volume-provisioner
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: local-volume-provisioner 
+  template:
+    metadata:
+      labels:
+        app: local-volume-provisioner
+    spec:
+      serviceAccountName: local-storage-admin
+      containers:
+      - image: "k8s.gcr.io/sig-storage/local-volume-provisioner:v2.4.0"
+        name: provisioner 
+        securityContext:
+          privileged: true
+        env:
+        - name: MY_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        volumeMounts:
+        - mountPath: /etc/provisioner/config
+          name: provisioner-config
+          readOnly: true
+        - mountPath:  /mnt/ssd-disks
+          name: ssd-disks
+          mountPropagation: HostToContainer
+      volumes:
+      - name: provisioner-config
+        configMap:
+          name: local-provisioner-config         
+      - name: ssd-disks
+        hostPath:
+          path: /mnt/ssd-disks 
