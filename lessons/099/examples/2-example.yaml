@@ -1,0 +1,52 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: database-postgresql
+spec:
+  serviceName: postgresql
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: postgresql
+  template:
+    metadata:
+      name: database-postgresql
+      labels:
+        app.kubernetes.io/name: postgresql
+    spec:                
+      containers:
+      - name: database-postgresql
+        image: docker.io/bitnami/postgresql:11.14.0-debian-10-r17
+        securityContext:
+          runAsUser: 0
+        env:
+        - name: POSTGRESQL_VOLUME_DIR
+          value: /bitnami/postgresql
+        - name: PGDATA
+          value: /bitnami/postgresql/data
+        - name: POSTGRES_USER
+          value: postgres
+        - name: POSTGRES_PASSWORD
+          value: secret123
+        ports:
+        - name: tcp-postgresql
+          containerPort: 5432
+        volumeMounts:
+        - name: dshm
+          mountPath: /dev/shm
+        - name: local-disk
+          mountPath: /bitnami/postgresql
+          subPath: 
+      volumes:
+      - name: dshm
+        emptyDir:
+          medium: Memory
+  volumeClaimTemplates:
+  - metadata:
+      name: local-disk
+    spec:
+      storageClassName: ssd-disks
+      accessModes: [ ReadWriteOnce ]
+      resources:
+        requests:
+          storage: 49Gi
