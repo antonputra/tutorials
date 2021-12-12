@@ -4,7 +4,7 @@
 
 # Support
 
-☕ - [Buy Me a Coffe](https://www.buymeacoffee.com/antonputra)
+☕ - [Buy Me a Coffee](https://www.buymeacoffee.com/antonputra)
 
 # Contents
 
