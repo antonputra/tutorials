@@ -1,0 +1,26 @@
+---
+name: Build and Deploy React App to GitHub Pages
+on:
+  push:
+    branches: [ main ]
+jobs:
+  build-push-gcr:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Build
+      run: npm install
+
+    - name: Test
+      run: npm run test
+
+    - name: Deploy
+      run: |
+        git config --global user.name 'Anton Putra'
+        git config --global user.email 'me@antonputra.com'
+        git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}    
+        npm run deploy
