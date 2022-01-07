@@ -43,8 +43,9 @@ ETH: 0x8C53Fcc561a25151d7922a69675c3Fb4bE912E9c
 - [099 - Kubernetes Local Persistent Volume: DON'T use hostPath!](lessons/099)
 - [100 - How to Deploy Create React App to GitHub Pages?](lessons/100)
 - [101 - Terraform Ansible Integration: GCP Example & Multiple VMs](lessons/101)
-- [102 - How to Create EKS Cluster Using Terraform](lessons/102)
-- [103 - How to Add IAM User and IAM Role to AWS EKS Cluster](lessons/103)
+- [102 - How to Create EKS Cluster Using Terraform?](lessons/102)
+- [103 - How to Add IAM User and IAM Role to AWS EKS Cluster?](lessons/103)
+- [104 - How to Install Prometheus and Grafana on Ubuntu?](lessons/104)
 
 # Social
 
