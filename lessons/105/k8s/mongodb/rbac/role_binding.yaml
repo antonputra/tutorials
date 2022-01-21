@@ -1,0 +1,13 @@
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: mongodb-kubernetes-operator
+  namespace: mongodb
+subjects:
+- kind: ServiceAccount
+  name: mongodb-kubernetes-operator
+roleRef:
+  kind: Role
+  name: mongodb-kubernetes-operator
+  apiGroup: rbac.authorization.k8s.io

@@ -1,0 +1,46 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongodb-exporter
+  namespace: mongodb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb-exporter
+  template:
+    metadata:
+      labels:
+        app: mongodb-exporter
+    spec:
+      containers:
+      - name: mongodb-exporter
+        image: percona/mongodb_exporter:0.30
+        args:
+        - "--mongodb.direct-connect=false"
+        - "--mongodb.uri=mongodb+srv://admin-user:admin123@my-mongodb-svc.mongodb.svc.cluster.local/admin?ssl=true&tlsCAFile=/var/lib/tls/ca/ca.crt&tlsCertificateKeyFile=/var/lib/tls/server/certificateKey.pem"
+        ports:
+        - name: metrics
+          containerPort: 9216
+        resources:
+          requests:
+            memory: 128Mi
+            cpu: 250m
+        volumeMounts:
+        - mountPath: /var/lib/tls/ca/
+          name: tls-ca
+          readOnly: true
+        - mountPath: /var/lib/tls/server/certificateKey.pem
+          name: tls-secret
+          subPathExpr: 847a4797b0b13045ba3c76ff71dd689334b2f15b25857791c0e88ac39983d03e.pem
+          readOnly: true
+      volumes:
+      - name: tls-ca
+        secret:
+          defaultMode: 416
+          secretName: mongodb-external-key-pair
+      - name: tls-secret
+        secret:
+          defaultMode: 416
+          secretName: my-mongodb-server-certificate-key
