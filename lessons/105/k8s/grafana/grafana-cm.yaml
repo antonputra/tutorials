@@ -1,0 +1,30 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: monitoring
+  name: grafana
+data:
+  grafana.ini: |
+    [grafana_net]
+    url = https://grafana.net
+
+    [paths]
+    data = /var/lib/grafana/data
+    logs = /var/log/grafana
+    plugins = /var/lib/grafana/plugins
+    provisioning = /etc/grafana/provisioning
+
+    [analytics]
+    reporting_enabled = false
+    check_for_updates = true
+
+    [auth.basic]
+    enabled = true
+
+    [log]
+    mode = console
+
+    [metrics]
+    enabled = true
+    disable_total_stats = false

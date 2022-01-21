@@ -1,0 +1,73 @@
+---
+apiVersion: mongodbcommunity.mongodb.com/v1
+kind: MongoDBCommunity
+metadata:
+  name: my-mongodb
+  namespace: mongodb
+spec:
+  members: 3
+  type: ReplicaSet
+  version: "5.0.5"
+  security:
+    authentication:
+      modes:
+      - SCRAM
+  users:
+  - name: admin-user
+    db: admin
+    passwordSecretRef:
+      name: external-admin-user-password
+    roles:
+    - name: clusterAdmin
+      db: admin
+    - name: userAdminAnyDatabase
+      db: admin
+    scramCredentialsSecretName: my-scram
+  replicaSetHorizons:
+  - horizon: my-mongodb-0.devopsbyexample.io:27017
+  - horizon: my-mongodb-1.devopsbyexample.io:27017
+  - horizon: my-mongodb-2.devopsbyexample.io:27017
+  security:
+    tls:
+      enabled: true
+      certificateKeySecretRef:
+        name: mongodb-external-key-pair
+      caCertificateSecretRef:
+        name: mongodb-external-key-pair
+    authentication:
+      modes:
+      - SCRAM
+  additionalMongodConfig:
+    storage.wiredTiger.engineConfig.journalCompressor: zlib
+  statefulSet:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: mongod
+            resources:
+              limits:
+                cpu: "1"
+                memory: 2Gi
+              requests:
+                cpu: 500m
+                memory: 1Gi      
+          affinity:
+            podAntiAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+              - labelSelector:
+                  matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                    - my-mongodb
+                topologyKey: "kubernetes.io/hostname"
+      volumeClaimTemplates:
+      - metadata:
+          name: data-volume
+        spec:
+          accessModes:
+          - ReadWriteOnce
+          resources:
+            requests:
+              storage: 40G

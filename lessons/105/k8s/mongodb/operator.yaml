@@ -1,0 +1,68 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: mongodb
+  name: mongodb-kubernetes-operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: mongodb-kubernetes-operator
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        name: mongodb-kubernetes-operator
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: name
+                operator: In
+                values:
+                - mongodb-kubernetes-operator
+            topologyKey: kubernetes.io/hostname
+      containers:
+      - command:
+        - /usr/local/bin/entrypoint
+        env:
+        - name: WATCH_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: OPERATOR_NAME
+          value: mongodb-kubernetes-operator
+        - name: AGENT_IMAGE
+          value: quay.io/mongodb/mongodb-agent:11.0.5.6963-1
+        - name: VERSION_UPGRADE_HOOK_IMAGE
+          value: quay.io/mongodb/mongodb-kubernetes-operator-version-upgrade-post-start-hook:1.0.3
+        - name: READINESS_PROBE_IMAGE
+          value: quay.io/mongodb/mongodb-kubernetes-readinessprobe:1.0.6
+        - name: MONGODB_IMAGE
+          value: mongo
+        - name: MONGODB_REPO_URL
+          value: docker.io
+        image: quay.io/mongodb/mongodb-kubernetes-operator:0.7.2
+        imagePullPolicy: Always
+        name: mongodb-kubernetes-operator
+        resources:
+          limits:
+            cpu: 1100m
+            memory: 1Gi
+          requests:
+            cpu: 500m
+            memory: 200Mi
+        securityContext:
+          readOnlyRootFilesystem: true
+          runAsUser: 2000
+      serviceAccountName: mongodb-kubernetes-operator

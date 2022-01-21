@@ -1,0 +1,8 @@
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: devopsbyexample-io-ca
+spec:
+  ca:
+    secretName: devopsbyexample-io-key-pair

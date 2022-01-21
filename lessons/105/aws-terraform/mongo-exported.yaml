@@ -1,0 +1,232 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  creationTimestamp: "2022-01-09T12:56:00Z"
+  generation: 3
+  labels:
+    app: mongodb-standalone-svc
+  name: mongodb-standalone
+  namespace: mongodb
+  ownerReferences:
+  - apiVersion: mongodbcommunity.mongodb.com/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: MongoDBCommunity
+    name: mongodb-standalone
+    uid: b8f8a662-fbb2-4d99-af4a-6f5839231a39
+  resourceVersion: "89209"
+  uid: 7bec549c-d31e-4f46-aec3-b83192e6618a
+spec:
+  podManagementPolicy: OrderedReady
+  replicas: 3
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: mongodb-standalone-svc
+  serviceName: mongodb-standalone-svc
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: mongodb-standalone-svc
+    spec:
+      containers:
+      - command:
+        - /bin/sh
+        - -c
+        - |2+
+
+          #run post-start hook to handle version changes
+          /hooks/version-upgrade
+
+          # wait for config and keyfile to be created by the agent
+           while ! [ -f /data/automation-mongod.conf -a -f /var/lib/mongodb-mms-automation/authentication/keyfile ]; do sleep 3 ; done ; sleep 2 ;
+
+          # with mongod configured to append logs, we need to provide them to stdout as
+          # mongod does not write to stdout and a log file
+          tail -F /var/log/mongodb-mms-automation/mongodb.log > /dev/stdout &
+
+          # start mongod with this configuration
+          exec mongod -f /data/automation-mongod.conf;
+
+        env:
+        - name: AGENT_STATUS_FILEPATH
+          value: /healthstatus/agent-health-status.json
+        image: docker.io/mongo:5.0.5
+        imagePullPolicy: IfNotPresent
+        name: mongod
+        resources:
+          limits:
+            cpu: "1"
+            memory: 500M
+          requests:
+            cpu: 500m
+            memory: 400M
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 2000
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /data
+          name: data-volume
+        - mountPath: /healthstatus
+          name: healthstatus
+        - mountPath: /hooks
+          name: hooks
+        - mountPath: /var/log/mongodb-mms-automation
+          name: logs-volume
+        - mountPath: /var/lib/mongodb-mms-automation/authentication
+          name: mongodb-standalone-keyfile
+      - command:
+        - /bin/bash
+        - -c
+        - |-
+          current_uid=$(id -u)
+          AGENT_API_KEY="$(cat /mongodb-automation/agent-api-key/agentApiKey)"
+          declare -r current_uid
+          if ! grep -q "${current_uid}" /etc/passwd ; then
+          sed -e "s/^mongodb:/builder:/" /etc/passwd > /tmp/passwd
+          echo "mongodb:x:$(id -u):$(id -g):,,,:/:/bin/bash" >> /tmp/passwd
+          export NSS_WRAPPER_PASSWD=/tmp/passwd
+          export LD_PRELOAD=libnss_wrapper.so
+          export NSS_WRAPPER_GROUP=/etc/group
+          fi
+          agent/mongodb-agent -cluster=/var/lib/automation/config/cluster-config.json -healthCheckFilePath=/var/log/mongodb-mms-automation/healthstatus/agent-health-status.json -serveStatusPort=5000 -skipMongoStart -noDaemonize -useLocalMongoDbTools
+        env:
+        - name: AGENT_STATUS_FILEPATH
+          value: /var/log/mongodb-mms-automation/healthstatus/agent-health-status.json
+        - name: AUTOMATION_CONFIG_MAP
+          value: mongodb-standalone-config
+        - name: HEADLESS_AGENT
+          value: "true"
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+        image: quay.io/mongodb/mongodb-agent:11.0.5.6963-1
+        imagePullPolicy: Always
+        name: mongodb-agent
+        readinessProbe:
+          exec:
+            command:
+            - /opt/scripts/readinessprobe
+          failureThreshold: 40
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        resources:
+          limits:
+            cpu: "1"
+            memory: 500M
+          requests:
+            cpu: 500m
+            memory: 400M
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 2000
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /opt/scripts
+          name: agent-scripts
+        - mountPath: /var/lib/automation/config
+          name: automation-config
+          readOnly: true
+        - mountPath: /data
+          name: data-volume
+        - mountPath: /var/log/mongodb-mms-automation/healthstatus
+          name: healthstatus
+        - mountPath: /var/log/mongodb-mms-automation
+          name: logs-volume
+        - mountPath: /var/lib/mongodb-mms-automation/authentication
+          name: mongodb-standalone-keyfile
+      dnsPolicy: ClusterFirst
+      initContainers:
+      - command:
+        - cp
+        - version-upgrade-hook
+        - /hooks/version-upgrade
+        image: quay.io/mongodb/mongodb-kubernetes-operator-version-upgrade-post-start-hook:1.0.3
+        imagePullPolicy: Always
+        name: mongod-posthook
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /hooks
+          name: hooks
+      - command:
+        - cp
+        - /probes/readinessprobe
+        - /opt/scripts/readinessprobe
+        image: quay.io/mongodb/mongodb-kubernetes-readinessprobe:1.0.6
+        imagePullPolicy: Always
+        name: mongodb-agent-readinessprobe
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /opt/scripts
+          name: agent-scripts
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext:
+        fsGroup: 2000
+      serviceAccount: mongodb-database
+      serviceAccountName: mongodb-database
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - emptyDir: {}
+        name: agent-scripts
+      - name: automation-config
+        secret:
+          defaultMode: 416
+          secretName: mongodb-standalone-config
+      - emptyDir: {}
+        name: healthstatus
+      - emptyDir: {}
+        name: hooks
+      - emptyDir: {}
+        name: mongodb-standalone-keyfile
+  updateStrategy:
+    type: RollingUpdate
+  volumeClaimTemplates:
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      creationTimestamp: null
+      name: data-volume
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 40G
+      volumeMode: Filesystem
+    status:
+      phase: Pending
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      creationTimestamp: null
+      name: logs-volume
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 2G
+      volumeMode: Filesystem
+    status:
+      phase: Pending
+status:
+  collisionCount: 0
+  currentReplicas: 1
+  currentRevision: mongodb-standalone-6484677d47
+  observedGeneration: 3
+  replicas: 1
+  updateRevision: mongodb-standalone-6484677d47
+  updatedReplicas: 1

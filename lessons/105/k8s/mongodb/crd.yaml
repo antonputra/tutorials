@@ -1,0 +1,353 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.4.1
+  creationTimestamp: null
+  name: mongodbcommunity.mongodbcommunity.mongodb.com
+spec:
+  group: mongodbcommunity.mongodb.com
+  names:
+    kind: MongoDBCommunity
+    listKind: MongoDBCommunityList
+    plural: mongodbcommunity
+    shortNames:
+    - mdbc
+    singular: mongodbcommunity
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - description: Current state of the MongoDB deployment
+      jsonPath: .status.phase
+      name: Phase
+      type: string
+    - description: Version of MongoDB server
+      jsonPath: .status.version
+      name: Version
+      type: string
+    name: v1
+    schema:
+      openAPIV3Schema:
+        description: MongoDBCommunity is the Schema for the mongodbs API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: MongoDBCommunitySpec defines the desired state of MongoDB
+            properties:
+              additionalMongodConfig:
+                description: 'AdditionalMongodConfig is additional configuration that
+                  can be passed to each data-bearing mongod at runtime. Uses the same
+                  structure as the mongod configuration file: https://docs.mongodb.com/manual/reference/configuration-options/'
+                nullable: true
+                type: object
+                x-kubernetes-preserve-unknown-fields: true
+              arbiters:
+                description: Arbiters is the number of arbiters (each counted as a
+                  member) in the replica set
+                type: integer
+              featureCompatibilityVersion:
+                description: FeatureCompatibilityVersion configures the feature compatibility
+                  version that will be set for the deployment
+                type: string
+              members:
+                description: Members is the number of members in the replica set
+                type: integer
+              replicaSetHorizons:
+                description: ReplicaSetHorizons Add this parameter and values if you
+                  need your database to be accessed outside of Kubernetes. This setting
+                  allows you to provide different DNS settings within the Kubernetes
+                  cluster and to the Kubernetes cluster. The Kubernetes Operator uses
+                  split horizon DNS for replica set members. This feature allows communication
+                  both within the Kubernetes cluster and from outside Kubernetes.
+                items:
+                  additionalProperties:
+                    type: string
+                  type: object
+                type: array
+              security:
+                description: Security configures security features, such as TLS, and
+                  authentication settings for a deployment
+                properties:
+                  authentication:
+                    properties:
+                      ignoreUnknownUsers:
+                        default: true
+                        nullable: true
+                        type: boolean
+                      modes:
+                        description: Modes is an array specifying which authentication
+                          methods should be enabled.
+                        items:
+                          enum:
+                          - SCRAM
+                          - SCRAM-SHA-256
+                          - SCRAM-SHA-1
+                          type: string
+                        type: array
+                    required:
+                    - modes
+                    type: object
+                  roles:
+                    description: User-specified custom MongoDB roles that should be
+                      configured in the deployment.
+                    items:
+                      description: CustomRole defines a custom MongoDB role.
+                      properties:
+                        authenticationRestrictions:
+                          description: The authentication restrictions the server
+                            enforces on the role.
+                          items:
+                            description: AuthenticationRestriction specifies a list
+                              of IP addresses and CIDR ranges users are allowed to
+                              connect to or from.
+                            properties:
+                              clientSource:
+                                items:
+                                  type: string
+                                type: array
+                              serverAddress:
+                                items:
+                                  type: string
+                                type: array
+                            required:
+                            - clientSource
+                            - serverAddress
+                            type: object
+                          type: array
+                        db:
+                          description: The database of the role.
+                          type: string
+                        privileges:
+                          description: The privileges to grant the role.
+                          items:
+                            description: Privilege defines the actions a role is allowed
+                              to perform on a given resource.
+                            properties:
+                              actions:
+                                items:
+                                  type: string
+                                type: array
+                              resource:
+                                description: Resource specifies specifies the resources
+                                  upon which a privilege permits actions. See https://docs.mongodb.com/manual/reference/resource-document
+                                  for more.
+                                properties:
+                                  anyResource:
+                                    type: boolean
+                                  cluster:
+                                    type: boolean
+                                  collection:
+                                    type: string
+                                  db:
+                                    type: string
+                                type: object
+                            required:
+                            - actions
+                            - resource
+                            type: object
+                          type: array
+                        role:
+                          description: The name of the role.
+                          type: string
+                        roles:
+                          description: An array of roles from which this role inherits
+                            privileges.
+                          items:
+                            description: Role is the database role this user should
+                              have
+                            properties:
+                              db:
+                                description: DB is the database the role can act on
+                                type: string
+                              name:
+                                description: Name is the name of the role
+                                type: string
+                            required:
+                            - db
+                            - name
+                            type: object
+                          type: array
+                      required:
+                      - db
+                      - privileges
+                      - role
+                      type: object
+                    type: array
+                  tls:
+                    description: TLS configuration for both client-server and server-server
+                      communication
+                    properties:
+                      caCertificateSecretRef:
+                        description: CaCertificateSecret is a reference to a Secret
+                          containing the certificate for the CA which signed the server
+                          certificates The certificate is expected to be available
+                          under the key "ca.crt"
+                        properties:
+                          name:
+                            type: string
+                        required:
+                        - name
+                        type: object
+                      caConfigMapRef:
+                        description: CaConfigMap is a reference to a ConfigMap containing
+                          the certificate for the CA which signed the server certificates
+                          The certificate is expected to be available under the key
+                          "ca.crt" This field is ignored when CaCertificateSecretRef
+                          is configured
+                        properties:
+                          name:
+                            type: string
+                        required:
+                        - name
+                        type: object
+                      certificateKeySecretRef:
+                        description: CertificateKeySecret is a reference to a Secret
+                          containing a private key and certificate to use for TLS.
+                          The key and cert are expected to be PEM encoded and available
+                          at "tls.key" and "tls.crt". This is the same format used
+                          for the standard "kubernetes.io/tls" Secret type, but no
+                          specific type is required. Alternatively, an entry tls.pem,
+                          containing the concatenation of cert and key, can be provided.
+                          If all of tls.pem, tls.crt and tls.key are present, the
+                          tls.pem one needs to be equal to the concatenation of tls.crt
+                          and tls.key
+                        properties:
+                          name:
+                            type: string
+                        required:
+                        - name
+                        type: object
+                      enabled:
+                        type: boolean
+                      optional:
+                        description: Optional configures if TLS should be required
+                          or optional for connections
+                        type: boolean
+                    required:
+                    - enabled
+                    type: object
+                type: object
+              statefulSet:
+                description: StatefulSetConfiguration holds the optional custom StatefulSet
+                  that should be merged into the operator created one.
+                properties:
+                  spec:
+                    type: object
+                    x-kubernetes-preserve-unknown-fields: true
+                required:
+                - spec
+                type: object
+              type:
+                description: Type defines which type of MongoDB deployment the resource
+                  should create
+                enum:
+                - ReplicaSet
+                type: string
+              users:
+                description: Users specifies the MongoDB users that should be configured
+                  in your deployment
+                items:
+                  properties:
+                    db:
+                      description: DB is the database the user is stored in. Defaults
+                        to "admin"
+                      type: string
+                    name:
+                      description: Name is the username of the user
+                      type: string
+                    passwordSecretRef:
+                      description: PasswordSecretRef is a reference to the secret
+                        containing this user's password
+                      properties:
+                        key:
+                          description: Key is the key in the secret storing this password.
+                            Defaults to "password"
+                          type: string
+                        name:
+                          description: Name is the name of the secret storing this
+                            user's password
+                          type: string
+                      required:
+                      - name
+                      type: object
+                    roles:
+                      description: Roles is an array of roles assigned to this user
+                      items:
+                        description: Role is the database role this user should have
+                        properties:
+                          db:
+                            description: DB is the database the role can act on
+                            type: string
+                          name:
+                            description: Name is the name of the role
+                            type: string
+                        required:
+                        - db
+                        - name
+                        type: object
+                      type: array
+                    scramCredentialsSecretName:
+                      description: ScramCredentialsSecretName appended by string "scram-credentials"
+                        is the name of the secret object created by the mongoDB operator
+                        for storing SCRAM credentials
+                      pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$
+                      type: string
+                  required:
+                  - name
+                  - passwordSecretRef
+                  - roles
+                  - scramCredentialsSecretName
+                  type: object
+                type: array
+              version:
+                description: Version defines which version of MongoDB will be used
+                type: string
+            required:
+            - security
+            - type
+            - users
+            type: object
+          status:
+            description: MongoDBCommunityStatus defines the observed state of MongoDB
+            properties:
+              currentMongoDBMembers:
+                type: integer
+              currentStatefulSetReplicas:
+                type: integer
+              message:
+                type: string
+              mongoUri:
+                type: string
+              phase:
+                type: string
+              version:
+                type: string
+            required:
+            - currentMongoDBMembers
+            - currentStatefulSetReplicas
+            - mongoUri
+            - phase
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []

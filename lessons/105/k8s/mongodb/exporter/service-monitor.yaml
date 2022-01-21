@@ -1,0 +1,14 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: mongodb
+  namespace: mongodb
+  labels:
+    prometheus: default
+spec:
+  endpoints:
+  - port: metrics
+  selector:
+    matchLabels:
+      app: mongodb-exporter
