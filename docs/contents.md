@@ -38,3 +38,4 @@
 - [104 - How to Install Prometheus and Grafana on Ubuntu?](../lessons/104)
 - [105 - How to Install MongoDB on Kubernetes?](../lessons/105)
 - [106 - Google Cloud Functions Tutorial](../lessons/106)
+- [107 - How to Hack a Password in Python?](../lessons/107)
