@@ -1,0 +1,28 @@
+---
+controller:
+  config:
+    compute-full-forwarded-for: "true"
+    use-forwarded-headers: "true"
+    proxy-body-size: "0"
+  ingressClassResource:
+    name: external-nginx
+    enabled: true
+    default: false
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+            - key: app.kubernetes.io/name
+              operator: In
+              values:
+                - ingress-nginx
+        topologyKey: "kubernetes.io/hostname"
+  replicaCount: 1
+  admissionWebhooks:
+    enabled: false
+  service:
+    annotations:
+      cloud.google.com/load-balancer-type: External
+  metrics:
+    enabled: false
