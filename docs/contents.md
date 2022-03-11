@@ -40,3 +40,4 @@
 - [106 - Google Cloud Functions Tutorial](../lessons/106)
 - [107 - How to Hack a Password in Python?](../lessons/107)
 - [108 - How to Create GKE Cluster Using TERRAFORM?](../lessons/108)
+- [109 - How to Create EKS Cluster Using eksctl?](../lessons/109)

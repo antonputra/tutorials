@@ -1,0 +1,25 @@
+--- 
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+metadata:
+  name: existing-vpc
+  region: us-east-1
+  version: "1.21"
+vpc:
+  id: vpc-<your-id>
+  subnets:
+    private:
+      us-east-1a:
+        id: subnet-<your-id>
+      us-east-1b:
+        id: subnet-<your-id>
+    public:
+      us-east-1a:
+        id: subnet-<your-id>
+      us-east-1b:
+        id: subnet-<your-id>
+managedNodeGroups:
+- name: general
+  privateNetworking: true
+  instanceType: t3.small
+  desiredCapacity: 1
