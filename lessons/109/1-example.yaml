@@ -1,0 +1,26 @@
+--- 
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+metadata:
+  name: private-eks
+  region: us-east-1
+  version: "1.21"
+availabilityZones:
+- us-east-1a
+- us-east-1b
+managedNodeGroups:
+- name: general
+  privateNetworking: true
+  instanceType: t3.small
+  desiredCapacity: 1
+- name: spot
+  privateNetworking: true
+  instanceType: t3.small
+  spot: true
+  desiredCapacity: 1
+  labels:
+    role: spot
+  taints:
+  - key: spot
+    value: "true"
+    effect: NoSchedule

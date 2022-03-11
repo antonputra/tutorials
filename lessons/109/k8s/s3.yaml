@@ -1,0 +1,26 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: staging
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: foo
+  namespace: staging
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::<your-account-id>:role/eksctl-list-s3-buckets
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: aws-cli
+  namespace: staging
+spec:
+  serviceAccountName: foo
+  containers:
+  - name: aws-cli
+    image: amazon/aws-cli
+    command: [ "/bin/bash", "-c", "--" ]
+    args: [ "while true; do sleep 30; done;" ]

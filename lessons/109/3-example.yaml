@@ -1,0 +1,36 @@
+---
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+metadata:
+  name: cluster-irsa
+  region: us-east-1
+availabilityZones:
+- us-east-1a
+- us-east-1b
+iam:
+  withOIDC: true
+  serviceAccounts:
+  - metadata:
+      name: foo
+      namespace: staging
+    attachPolicyARNs:
+    - arn:aws:iam::<your-account-id>:policy/AllowListAllMyBuckets
+    # role has to start with eksctl-*
+    roleName: eksctl-list-s3-buckets
+    roleOnly: true
+  - metadata:
+      name: cluster-autoscaler
+      namespace: kube-system
+    wellKnownPolicies:
+      autoScaler: true
+    roleName: eksctl-cluster-autoscaler
+    roleOnly: true
+managedNodeGroups:
+- name: general
+  tags:
+    # EC2 tags required for cluster-autoscaler auto-discovery
+    k8s.io/cluster-autoscaler/enabled: "true"
+    k8s.io/cluster-autoscaler/cluster-irsa: "owned"
+  desiredCapacity: 1
+  minSize: 1
+  maxSize: 10
