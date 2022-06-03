@@ -1,0 +1,11 @@
+---
+# Kustomize Feature List
+# https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/#kustomize-feature-list
+
+namespace: production
+namePrefix: production-
+resources:
+- ../../base
+- namespace.yaml
+patchesStrategicMerge:
+- deployment.yaml

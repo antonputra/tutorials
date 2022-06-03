@@ -1,0 +1,7 @@
+---
+resources:
+- ../base
+images:
+- name: nginx
+  # newName: my-nginx
+  newTag: 1.21.6
