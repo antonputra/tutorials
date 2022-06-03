@@ -1,0 +1,4 @@
+---
+namespace: staging
+resources:
+- ../../base

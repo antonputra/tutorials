@@ -1,0 +1,10 @@
+---
+resources:
+- ../base
+configMapGenerator:
+- name: config
+  literals:
+  - env=staging
+- name: credentials
+  files:
+  - credentials=creds.txt
