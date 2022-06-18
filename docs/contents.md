@@ -42,3 +42,5 @@
 - [108 - How to Create GKE Cluster Using TERRAFORM?](../lessons/108)
 - [109 - How to Create EKS Cluster Using eksctl?](../lessons/109)
 - [110 - How to Deploy React App (any static website) to S3 and CloudFront?](../lessons/110)
+- [111 - Kubernetes Kustomize Tutorial: 10 examples](../lessons/111)
+- [112 - Native EKS Ingress: AWS Load Balancer Controller](../lessons/112)
