@@ -1,0 +1,126 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: 2-example-service-a
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: echoserver
+  namespace: 2-example-service-a
+spec:
+  selector:
+    matchLabels:
+      app: echoserver
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: echoserver
+    spec:
+      containers:
+      - image: k8s.gcr.io/e2e-test-images/echoserver:2.5
+        name: echoserver
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: echoserver
+  namespace: 2-example-service-a
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+    protocol: TCP
+  type: NodePort
+  selector:
+    app: echoserver
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: echoserver
+  namespace: 2-example-service-a
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/group.name: 2-example
+    alb.ingress.kubernetes.io/group.order: '1'
+spec:
+  ingressClassName: alb
+  rules:
+    - host: service-a.devopsbyexample.io
+      http:
+        paths:
+          - path: /
+            pathType: Exact
+            backend:
+              service:
+                name: echoserver
+                port:
+                  number: 80
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: 2-example-service-b
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: echoserver
+  namespace: 2-example-service-b
+spec:
+  selector:
+    matchLabels:
+      app: echoserver
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: echoserver
+    spec:
+      containers:
+      - image: k8s.gcr.io/e2e-test-images/echoserver:2.5
+        name: echoserver
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: echoserver
+  namespace: 2-example-service-b
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+    protocol: TCP
+  type: NodePort
+  selector:
+    app: echoserver
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: echoserver
+  namespace: 2-example-service-b
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/group.name: 2-example
+    alb.ingress.kubernetes.io/group.order: '2'
+spec:
+  ingressClassName: alb
+  rules:
+    - host: service-b.devopsbyexample.io
+      http:
+        paths:
+          - path: /
+            pathType: Exact
+            backend:
+              service:
+                name: echoserver
+                port:
+                  number: 80
