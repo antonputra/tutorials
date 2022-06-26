@@ -1,0 +1,11 @@
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: php-apache
+  namespace: staging
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      run: php-apache

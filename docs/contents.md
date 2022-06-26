@@ -44,3 +44,4 @@
 - [110 - How to Deploy React App (any static website) to S3 and CloudFront?](../lessons/110)
 - [111 - Kubernetes Kustomize Tutorial: 10 examples](../lessons/111)
 - [112 - Native EKS Ingress: AWS Load Balancer Controller](../lessons/112)
+- [113 - Create AWS EKS Fargate Using Terraform](../lessons/113)
