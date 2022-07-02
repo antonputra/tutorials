@@ -4,8 +4,7 @@
 
 # Support
 
-☕ - [Buy Me a Coffee](https://www.buymeacoffee.com/antonputra)  
-🎁 - [GitHub Sponsors](https://github.com/sponsors/antonputra)  
+☕ - [Buy Me a Coffee](https://www.buymeacoffee.com/antonputra)
 
 # Contents
 
