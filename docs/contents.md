@@ -47,3 +47,4 @@
 - [113 - Create AWS EKS Fargate Using Terraform](../lessons/113)
 - [114 - Kubernetes Node Autoscaling with Karpenter](../lessons/114)
 - [115 - How to Create AWS Lambda with Terraform?](../lessons/115)
+- [116 - How to Integrate Amazon API Gateway with Amazon EKS?](../lessons/116)
