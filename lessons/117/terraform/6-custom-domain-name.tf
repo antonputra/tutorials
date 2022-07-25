@@ -6,6 +6,8 @@ resource "aws_apigatewayv2_domain_name" "api" {
     endpoint_type   = "REGIONAL"
     security_policy = "TLS_1_2"
   }
+
+  depends_on = [aws_acm_certificate_validation.api]
 }
 
 resource "aws_route53_record" "api" {
