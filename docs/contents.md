@@ -49,3 +49,4 @@
 - [115 - How to Create AWS Lambda with Terraform?](../lessons/115)
 - [116 - AWS API Gateway - with EKS](../lessons/116)
 - [117 - AWS API Gateway - Custom Domain](../lessons/117)
+- [118 - AWS API Gateway - EC2 Integration](../lessons/118)
