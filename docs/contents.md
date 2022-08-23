@@ -52,3 +52,4 @@
 - [118 - AWS API Gateway - EC2 Integration](../lessons/118)
 - [119 - AWS API Gateway - WebSocket API + EC2](../lessons/119)
 - [120 - How To SSH into your VM? - Google Cloud Platform](../lessons/120)
+- [121 - How to connect to EC2 instance?](../lessons/121)
