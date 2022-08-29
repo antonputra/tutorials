@@ -53,3 +53,4 @@
 - [119 - AWS API Gateway - WebSocket API + EC2](../lessons/119)
 - [120 - How To SSH into your VM? - Google Cloud Platform](../lessons/120)
 - [121 - How to connect to EC2 instance?](../lessons/121)
+- [122 - how to send AWS CloudWatch Alarms to Slack?](../lessons/122)
