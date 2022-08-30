@@ -153,7 +153,7 @@ sudo nginx -t
 sudo nginx -s reload
 ```
 - Create A records
-- Check DNS
+- Check DNS (if you are using cloudflare enable full strict by ssl/tsl>overview>full_strict)
 ```
 dig devopsbyexample.io
 dig www.devopsbyexample.io
