@@ -56,3 +56,4 @@
 - [122 - How to send AWS CloudWatch Alarms to Slack?](../lessons/122)
 - [123 - Creating a Linux service with systemd](../lessons/123)
 - [124 - AWS Lambda Go vs. Node.js performance benchmark](../lessons/124)
+- [125 - How to create EKS Cluster using Terraform MODULES?](../lessons/125)

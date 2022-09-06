@@ -18,7 +18,7 @@ POLICY
 }
 
 resource "aws_iam_policy" "go_s3_bucket_access" {
-  name        = "goS3BucketAccess"
+  name = "goS3BucketAccess"
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -35,23 +35,23 @@ resource "aws_iam_policy" "go_s3_bucket_access" {
 }
 
 resource "aws_iam_policy" "go_dynamodb_access" {
-  name        = "goDynamoDBAccess"
+  name = "goDynamoDBAccess"
 
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
         Action = [
-                "dynamodb:GetItem",
-                "dynamodb:DeleteItem",
-                "dynamodb:PutItem",
-                "dynamodb:Scan",
-                "dynamodb:Query",
-                "dynamodb:UpdateItem",
-                "dynamodb:BatchWriteItem",
-                "dynamodb:BatchGetItem",
-                "dynamodb:DescribeTable",
-                "dynamodb:ConditionCheckItem"
+          "dynamodb:GetItem",
+          "dynamodb:DeleteItem",
+          "dynamodb:PutItem",
+          "dynamodb:Scan",
+          "dynamodb:Query",
+          "dynamodb:UpdateItem",
+          "dynamodb:BatchWriteItem",
+          "dynamodb:BatchGetItem",
+          "dynamodb:DescribeTable",
+          "dynamodb:ConditionCheckItem"
         ]
         Effect   = "Allow"
         Resource = "arn:aws:dynamodb:*:*:table/Meta"
@@ -83,7 +83,7 @@ resource "aws_lambda_function" "go" {
 
   environment {
     variables = {
-        BUCKET_NAME = aws_s3_bucket.images_bucket.id
+      BUCKET_NAME = aws_s3_bucket.images_bucket.id
     }
   }
 
