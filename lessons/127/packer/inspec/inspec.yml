@@ -1,0 +1,8 @@
+---
+name: my-app-validation
+title: My App AMI Validation
+maintainer: DevOps
+copyright: DevOps
+license: MIT license
+summary: Test suite for My App
+version: 1.0.1
