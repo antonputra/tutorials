@@ -58,3 +58,4 @@
 - [124 - AWS Lambda Go vs. Node.js performance benchmark](../lessons/124)
 - [125 - How to create EKS Cluster using Terraform MODULES?](../lessons/125)
 - [126 - AWS Lambda Python vs. Node.js performance benchmark](../lessons/126)
+- [127 - How to create Application Load Balancer using Terraform?](../lessons/127)

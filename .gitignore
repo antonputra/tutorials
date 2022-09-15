@@ -156,3 +156,4 @@ dist
 
 .DS_Store
 *.zip
+*.lock
