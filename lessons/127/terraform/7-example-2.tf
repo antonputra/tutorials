@@ -226,6 +226,8 @@ resource "aws_lb_listener" "my_app_eg2_tls" {
     type             = "forward"
     target_group_arn = aws_lb_target_group.my_app_eg2.arn
   }
+
+  depends_on = [aws_acm_certificate_validation.api]
 }
 
 output "custom_domain" {
