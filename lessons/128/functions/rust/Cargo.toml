@@ -26,3 +26,9 @@ rand = "0.8.5"
 tokio = { version = "1", features = ["rt", "rt-multi-thread", "macros"] }
 tracing = { version = "0.1", features = ["log"] }
 tracing-subscriber = { version = "0.3", default-features = false, features = ["fmt",] }
+
+[profile.release]
+lto = "fat"
+opt-level = 3
+codegen-units = 1
+panic = "abort"
