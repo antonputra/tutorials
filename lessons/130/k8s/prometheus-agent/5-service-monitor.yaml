@@ -1,0 +1,15 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: prometheus-agent
+  namespace: monitoring
+  labels:
+    component: prometheus-agent
+spec:
+  endpoints:
+  - honorLabels: true
+    port: web
+  selector:
+    matchLabels:
+      operated-prometheus: "true"

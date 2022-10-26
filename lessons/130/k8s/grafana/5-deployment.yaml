@@ -1,0 +1,95 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: monitoring
+  name: grafana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      serviceAccountName: grafana
+      securityContext:
+        fsGroup: 472
+        runAsUser: 472
+      containers:
+      - name: grafana
+        image: grafana/grafana:9.2.1
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - name: config
+          mountPath: "/etc/grafana/grafana.ini"
+          subPath: grafana.ini
+        - name: datasources
+          mountPath: "/etc/grafana/provisioning/datasources/datasources.yaml"
+          subPath: datasources.yaml
+        - name: dashboards
+          mountPath: "/etc/grafana/provisioning/dashboards/dashboardproviders.yaml"
+          subPath: dashboardproviders.yaml
+        - name: cadvisor
+          mountPath: "/var/lib/grafana/dashboards/kubernetes/cadvisor.json"
+          subPath: cadvisor.json
+        - name: kube-state-metrics
+          mountPath: "/var/lib/grafana/dashboards/kubernetes/kube-state-metrics.json"
+          subPath: kube-state-metrics.json
+        ports:
+        - name: grafana
+          containerPort: 3000
+          protocol: TCP
+        env:
+        - name: GF_SECURITY_ADMIN_USER
+          valueFrom:
+            secretKeyRef:
+              name: grafana
+              key: admin-user
+        - name: GF_SECURITY_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: grafana
+              key: admin-password
+        - name: AWS_SDK_LOAD_CONFIG
+          value: "true"
+        - name: GF_AUTH_SIGV4_AUTH_ENABLED
+          value: "true"
+        livenessProbe:
+          failureThreshold: 10
+          httpGet:
+            path: /api/health
+            port: 3000
+          initialDelaySeconds: 60
+          timeoutSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: 3000
+        resources:
+          requests:
+            cpu: 500m
+            memory: 1Gi
+          limits:
+            cpu: 2000m
+            memory: 4Gi
+      volumes:
+      - name: config
+        configMap:
+          name: grafana
+      - name: datasources
+        configMap:
+          name: datasources
+      - name: dashboards
+        configMap:
+          name: dashboards
+      - name: cadvisor
+        configMap:
+          name: cadvisor
+      - name: kube-state-metrics
+        configMap:
+          name: kube-state-metrics

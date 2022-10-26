@@ -60,4 +60,5 @@
 - [126 - AWS Lambda Python vs. Node.js performance benchmark](../lessons/126)
 - [127 - How to create Application Load Balancer using Terraform?](../lessons/127)
 - [128 - AWS Lambda Go vs. Rust performance benchmark](../lessons/128)
-- [128 - AWS Lambda vs Cloud Functions (2nd gen) performance benchmark](../lessons/129)
+- [129 - AWS Lambda vs Cloud Functions (2nd gen) performance benchmark](../lessons/129)
+- [130 - Monitoring EKS & EC2 instances with MANAGED Prometheus & Grafana](../lessons/130)
