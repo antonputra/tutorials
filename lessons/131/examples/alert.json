@@ -1,0 +1,31 @@
+{
+    "receiver": "default",
+    "status": "firing",
+    "alerts": [
+        {
+            "status": "firing",
+            "labels": {
+                "alertname": "HostHighCpuLoad",
+                "instance": "My App",
+                "severity": "warning"
+            },
+            "annotations": {
+                "description": "CPU load is > 60%, VALUE = 84.85714285714278",
+                "summary": "Host high CPU load (instance My App)"
+            },
+            "startsAt": "2022-10-29 00:06:24.722120143 +0000 UTC",
+            "endsAt": "0001-01-01 00:00:00 +0000 UTC",
+            "generatorURL": "/graph?g0.expr=100+-+%28avg+by%28instance%29+%28rate%28node_cpu_seconds_total%7Bmode%3D%22idle%22%7D%5B2m%5D%29%29+%2A+100%29+%3E+60&g0.tab=1",
+            "fingerprint": "639ac5b2b3ece89d"
+        }
+    ],
+    "commonLabels": {
+        "alertname": "HostHighCpuLoad",
+        "instance": "My App",
+        "severity": "warning"
+    },
+    "commonAnnotations": {
+        "description": "CPU load is > 60%, VALUE = 84.85714285714278",
+        "summary": "Host high CPU load (instance My App)"
+    }
+}
