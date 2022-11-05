@@ -63,3 +63,4 @@
 - [129 - AWS Lambda vs Cloud Functions (2nd gen) performance benchmark](../lessons/129)
 - [130 - Monitoring EKS & EC2 instances with MANAGED Prometheus & Grafana](../lessons/130)
 - [131 - Send Alerts to Slack, Email, PagerDuty - AWS Managed Prometheus](../lessons/131)
+- [132 - GCP Managed Prometheus Tutorial (Managed Collection)](../lessons/132)
