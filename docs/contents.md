@@ -65,3 +65,4 @@
 - [131 - Send Alerts to Slack, Email, PagerDuty - AWS Managed Prometheus](../lessons/131)
 - [132 - GCP Managed Prometheus Tutorial (Managed Collection)](../lessons/132)
 - [133 - EKS Storage | Install Amazon EBS CSI driver & KMS](../lessons/133)
+- [134 - How to monitor Persistent Volume usage in Kubernetes using Prometheus?](../lessons/134)
