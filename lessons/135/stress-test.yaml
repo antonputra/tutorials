@@ -1,0 +1,62 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ubuntu-pod-1
+  namespace: default
+  labels:
+    app: ubuntu-pod
+spec:
+  containers:
+  - name: ubuntu
+    image: ubuntu:22.04
+    command: [ "/bin/bash", "-c", "--" ]
+    args: [ "while true; do sleep 30; done;" ]
+    resources:
+      requests:
+        cpu: 500m
+        memory: 512Mi
+      limits:
+        cpu: 800m
+        memory: 1Gi
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+          - key: app
+            operator: In
+            values:
+            - ubuntu-pod
+        topologyKey: "kubernetes.io/hostname"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ubuntu-pod-2
+  namespace: default
+  labels:
+    app: ubuntu-pod
+spec:
+  containers:
+  - name: ubuntu
+    image: ubuntu:22.04
+    command: [ "/bin/bash", "-c", "--" ]
+    args: [ "while true; do sleep 30; done;" ]
+    resources:
+      requests:
+        cpu: 500m
+        memory: 256Mi
+      limits:
+        cpu: 1500m
+        memory: 512Mi
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+          - key: app
+            operator: In
+            values:
+            - ubuntu-pod
+        topologyKey: "kubernetes.io/hostname"
