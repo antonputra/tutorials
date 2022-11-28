@@ -1,0 +1,33 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
+  namespace: staging
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+      - name: my-app
+        imagePullPolicy: Always
+        image: 424432388155.dkr.ecr.us-east-1.amazonaws.com/my-app:latest
+        ports:
+        - name: http
+          containerPort: 8080
+        env:
+        - name: GIN_MODE
+          value: release
+        resources:
+          requests:
+            cpu: 10m
+            memory: 16Mi
+          limits:
+            cpu: 20m
+            memory: 32Mi

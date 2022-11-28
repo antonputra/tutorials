@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-app
+  namespace: staging
+  labels:
+    app: my-app
+spec:
+  selector:
+    app: my-app
+  ports:
+  - name: http
+    port: 8080
+    targetPort: http
+    protocol: TCP
