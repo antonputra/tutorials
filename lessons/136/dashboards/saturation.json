@@ -1,0 +1,293 @@
+{
+    "annotations": {
+        "list": [
+            {
+                "builtIn": 1,
+                "datasource": {
+                    "type": "grafana",
+                    "uid": "-- Grafana --"
+                },
+                "enable": true,
+                "hide": true,
+                "iconColor": "rgba(0, 211, 255, 1)",
+                "name": "Annotations & Alerts",
+                "target": {
+                    "limit": 100,
+                    "matchAny": false,
+                    "tags": [],
+                    "type": "dashboard"
+                },
+                "type": "dashboard"
+            }
+        ]
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": 2,
+    "links": [],
+    "liveNow": false,
+    "panels": [
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "PEB814BE3CA3B78C0"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "drawStyle": "line",
+                        "fillOpacity": 50,
+                        "gradientMode": "opacity",
+                        "hideFrom": {
+                            "legend": false,
+                            "tooltip": false,
+                            "viz": false
+                        },
+                        "lineInterpolation": "smooth",
+                        "lineWidth": 2,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                            "type": "linear"
+                        },
+                        "showPoints": "auto",
+                        "spanNulls": true,
+                        "stacking": {
+                            "group": "A",
+                            "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                            "mode": "off"
+                        }
+                    },
+                    "decimals": 1,
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    },
+                    "unit": "percentunit"
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 12,
+                "w": 24,
+                "x": 0,
+                "y": 0
+            },
+            "id": 2,
+            "options": {
+                "legend": {
+                    "calcs": [
+                        "lastNotNull"
+                    ],
+                    "displayMode": "table",
+                    "placement": "right",
+                    "showLegend": true
+                },
+                "tooltip": {
+                    "mode": "single",
+                    "sort": "none"
+                }
+            },
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "PEB814BE3CA3B78C0"
+                    },
+                    "editorMode": "code",
+                    "expr": "sum(\n    rate(\n        container_cpu_usage_seconds_total\n        {\n            container_label_io_kubernetes_pod_namespace=~\"$namespace\",\n            container_label_io_kubernetes_pod_name=~\"$pod\",\n            image!=\"\",\n            container_label_io_cri_containerd_kind=\"container\"\n        }[1m]\n        )\n    )\nby (\n    container_label_io_kubernetes_pod_name,\n    container_label_io_kubernetes_container_name\n    ) /\nsum(\n    container_spec_cpu_quota\n    {\n        container_label_io_kubernetes_pod_namespace=~\"$namespace\",\n        container_label_io_kubernetes_pod_name=~\"$pod\",\n        image!=\"\",\n        container_label_io_cri_containerd_kind=\"container\"\n    } /\n    container_spec_cpu_period\n    {\n        container_label_io_kubernetes_pod_namespace=~\"$namespace\",\n        container_label_io_kubernetes_pod_name=~\"$pod\",\n        image!=\"\",\n        container_label_io_cri_containerd_kind=\"container\"\n    }\n    )\nby (\n    container_label_io_kubernetes_pod_name,\n    container_label_io_kubernetes_container_name\n    )",
+                    "legendFormat": "{{ container_label_io_kubernetes_container_name }} in {{ container_label_io_kubernetes_pod_name }}",
+                    "range": true,
+                    "refId": "A"
+                }
+            ],
+            "title": "CPU Usage % of the Limit",
+            "type": "timeseries"
+        },
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "PEB814BE3CA3B78C0"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "drawStyle": "line",
+                        "fillOpacity": 50,
+                        "gradientMode": "opacity",
+                        "hideFrom": {
+                            "legend": false,
+                            "tooltip": false,
+                            "viz": false
+                        },
+                        "lineInterpolation": "smooth",
+                        "lineWidth": 2,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                            "type": "linear"
+                        },
+                        "showPoints": "auto",
+                        "spanNulls": true,
+                        "stacking": {
+                            "group": "A",
+                            "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                            "mode": "off"
+                        }
+                    },
+                    "decimals": 1,
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    },
+                    "unit": "percentunit"
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 12,
+                "w": 24,
+                "x": 0,
+                "y": 12
+            },
+            "id": 4,
+            "options": {
+                "legend": {
+                    "calcs": [
+                        "lastNotNull"
+                    ],
+                    "displayMode": "table",
+                    "placement": "right",
+                    "showLegend": true
+                },
+                "tooltip": {
+                    "mode": "single",
+                    "sort": "none"
+                }
+            },
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "PEB814BE3CA3B78C0"
+                    },
+                    "editorMode": "code",
+                    "expr": "container_memory_working_set_bytes\n{\n    container_label_io_kubernetes_pod_namespace=~\"$namespace\",\n    container_label_io_kubernetes_pod_name=~\"$pod\",\n    container_label_io_cri_containerd_kind=\"container\"\n} /\ncontainer_spec_memory_limit_bytes\n{\n    container_label_io_kubernetes_pod_namespace=~\"$namespace\",\n    container_label_io_kubernetes_pod_name=~\"$pod\",\n    container_label_io_cri_containerd_kind=\"container\"\n}",
+                    "legendFormat": "{{ container_label_io_kubernetes_container_name }} in {{ container_label_io_kubernetes_pod_name }}",
+                    "range": true,
+                    "refId": "A"
+                }
+            ],
+            "title": "Memory Usage % of the Limit",
+            "type": "timeseries"
+        }
+    ],
+    "schemaVersion": 37,
+    "style": "dark",
+    "tags": [],
+    "templating": {
+        "list": [
+            {
+                "current": {
+                    "selected": false,
+                    "text": "All",
+                    "value": "$__all"
+                },
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "PEB814BE3CA3B78C0"
+                },
+                "definition": "label_values(container_cpu_usage_seconds_total, container_label_io_kubernetes_pod_namespace)",
+                "hide": 0,
+                "includeAll": true,
+                "multi": false,
+                "name": "namespace",
+                "options": [],
+                "query": {
+                    "query": "label_values(container_cpu_usage_seconds_total, container_label_io_kubernetes_pod_namespace)",
+                    "refId": "StandardVariableQuery"
+                },
+                "refresh": 1,
+                "regex": "",
+                "skipUrlSync": false,
+                "sort": 0,
+                "type": "query"
+            },
+            {
+                "current": {
+                    "selected": false,
+                    "text": "All",
+                    "value": "$__all"
+                },
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "PEB814BE3CA3B78C0"
+                },
+                "definition": "label_values(container_cpu_usage_seconds_total{container_label_io_kubernetes_pod_namespace=~\"$namespace\"}, container_label_io_kubernetes_pod_name)",
+                "hide": 0,
+                "includeAll": true,
+                "multi": false,
+                "name": "pod",
+                "options": [],
+                "query": {
+                    "query": "label_values(container_cpu_usage_seconds_total{container_label_io_kubernetes_pod_namespace=~\"$namespace\"}, container_label_io_kubernetes_pod_name)",
+                    "refId": "StandardVariableQuery"
+                },
+                "refresh": 1,
+                "regex": "",
+                "skipUrlSync": false,
+                "sort": 0,
+                "type": "query"
+            }
+        ]
+    },
+    "time": {
+        "from": "now-30m",
+        "to": "now"
+    },
+    "timepicker": {},
+    "timezone": "",
+    "title": "Saturation",
+    "uid": "JjkD76OVk",
+    "version": 2,
+    "weekStart": ""
+}
