@@ -69,3 +69,4 @@
 - [135 - How to monitor Containers in Kubernetes using Prometheus & cAdvisor?](../lessons/135)
 - [136 - Monitor HTTP/REST API in Kubernetes using Prometheus & Nginx Ingress Controller](../lessons/136)
 - [137 - How to Monitor Golang with Prometheus (Counter - Gauge - Histogram - Summary)](../lessons/137)
+- [138 - Go (Golang) vs. Rust: (HTTP/REST API in Kubernetes) Performance Benchmark](../lessons/138)

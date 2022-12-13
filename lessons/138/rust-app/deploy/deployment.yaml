@@ -1,0 +1,45 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rust-app
+  namespace: staging
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rust-app
+  template:
+    metadata:
+      labels:
+        app: rust-app
+    spec:
+      containers:
+      - name: rust-app
+        image: 424432388155.dkr.ecr.us-east-1.amazonaws.com/rust-app:0.1.3
+        env:
+        - name: ROCKET_ADDRESS
+          value: 0.0.0.0
+        ports:
+        - name: http
+          containerPort: 8000
+        resources:
+          requests:
+            memory: 512Mi
+            cpu: 500m
+          limits:
+            memory: 1024Mi
+            cpu: 1000m
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - rust-app
+                  - go-app
+              topologyKey: topology.kubernetes.io/zone

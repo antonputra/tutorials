@@ -1,0 +1,18 @@
+---
+version: "3"
+
+services:
+
+  rust-app:
+    build: rust-app
+    ports:
+    - 8000:8000
+    environment:
+    - ROCKET_ADDRESS="0.0.0.0"
+
+  gp-app:
+    build: go-app
+    ports:
+    - 8001:8001
+    environment:
+    - GIN_MODE=release
