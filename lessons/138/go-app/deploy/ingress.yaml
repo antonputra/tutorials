@@ -1,0 +1,19 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: go-app
+  namespace: staging
+spec:
+  ingressClassName: external-ingress-nginx
+  rules:
+  - host: go-app.devopsbyexample.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: go-app
+            port:
+              number: 8001
