@@ -1,0 +1,17 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: istio-gateway
+  namespace: monitoring
+  labels:
+    component: main
+spec:
+  namespaceSelector:
+    matchNames:
+    - gateway
+  selector:
+    matchLabels:
+      istio.io/gateway-name: istio
+  podMetricsEndpoints:
+  - port: metrics
