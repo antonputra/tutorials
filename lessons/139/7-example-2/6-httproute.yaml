@@ -1,0 +1,19 @@
+---
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: HTTPRoute
+metadata:
+  name: apiv2
+  namespace: example-2
+spec:
+  parentRefs:
+  - name: istio
+    namespace: gateway
+  hostnames: ["apiv2.devopsbyexample.com"]
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /get
+    backendRefs:
+    - name: apiv2
+      port: 8000

@@ -1,0 +1,39 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  name: main
+  namespace: monitoring
+spec:
+  version: v2.40.7
+  serviceAccountName: prometheus
+  serviceMonitorSelector:
+    matchLabels:
+      component: main
+  podMonitorSelector:
+    matchLabels:
+      component: main
+  serviceMonitorNamespaceSelector:
+    matchLabels:
+      monitoring: prometheus
+  resources:
+    requests:
+      cpu: 250m
+      memory: 1Gi
+    limits:
+      cpu: 2000m
+      memory: 4Gi
+  replicas: 1
+  logLevel: info
+  logFormat: logfmt
+  scrapeInterval: 5s
+  securityContext:
+    fsGroup: 0
+    runAsNonRoot: false
+    runAsUser: 0
+  storage:
+    volumeClaimTemplate:
+      spec:
+        resources:
+          requests:
+            storage: 20Gi
