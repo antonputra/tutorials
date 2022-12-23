@@ -1,0 +1,20 @@
+[Unit]
+Description=My App
+Wants=network-online.target
+After=network-online.target
+
+StartLimitIntervalSec=500
+StartLimitBurst=5
+
+[Service]
+User=myapp
+Group=myapp
+Type=simple
+Restart=on-failure
+RestartSec=5s
+
+WorkingDirectory=/opt/myapp
+ExecStart=/usr/local/bin/gunicorn -w 4 'app:app' --bind 127.0.0.1:8282
+
+[Install]
+WantedBy=multi-user.target
