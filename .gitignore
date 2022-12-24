@@ -153,10 +153,12 @@ dist
 
 # python
 .venv
+__pycache__
 
 .DS_Store
 *.zip
 *.lock
 *target
 
+# Rust
 !Cargo.lock

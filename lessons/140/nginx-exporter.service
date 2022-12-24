@@ -1,0 +1,20 @@
+[Unit]
+Description=Nginx Exporter
+Wants=network-online.target
+After=network-online.target
+
+StartLimitIntervalSec=500
+StartLimitBurst=5
+
+[Service]
+User=nginx-exporter
+Group=nginx-exporter
+Type=simple
+Restart=on-failure
+RestartSec=5s
+
+ExecStart=/opt/nginx-exporter/nginx-prometheus-exporter \
+    -nginx.scrape-uri=http://localhost:8080/status
+
+[Install]
+WantedBy=multi-user.target
