@@ -160,5 +160,8 @@ __pycache__
 *.lock
 *target
 
-# Rust
+# Rust dependencies
 !Cargo.lock
+
+# For nginx log
+!access.log
