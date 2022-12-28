@@ -1,0 +1,49 @@
+---
+version: "3"
+
+services:
+
+  nginx:
+    image: nginx:1.22.1
+    ports:
+    - 8080:8080
+    - 8181:80
+    volumes:
+    - ./nginx/status.conf:/etc/nginx/conf.d/status.conf
+    - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    - ./nginx/myapp.conf:/etc/nginx/conf.d/default.conf
+    - ./test-access.log:/var/log/nginx/access.log
+
+  myapp:
+    build: ./myapp
+    ports:
+    - 8282:8282
+
+  prometheus-nginx-exporter:
+    build: ./prometheus-nginx-exporter
+    command: --target.host=nginx
+    ports:
+    - 9150:9150
+    volumes:
+    - ./test-access.log:/var/log/nginx/access.log
+
+  prometheus:
+    image: prom/prometheus:v2.41.0
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+
+  grafana:
+    image: grafana/grafana:9.3.2
+    ports:
+      - 3000:3000
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=devops123
+    volumes:
+      - ./grafana/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+      - grafana:/var/lib/grafana
+
+volumes:
+  grafana:
