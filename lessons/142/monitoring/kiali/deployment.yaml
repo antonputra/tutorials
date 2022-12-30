@@ -1,0 +1,106 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kiali
+  namespace: istio-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: kiali
+      app.kubernetes.io/instance: kiali
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      name: kiali
+      labels:
+        helm.sh/chart: kiali-server-1.61.0
+        app: kiali
+        app.kubernetes.io/name: kiali
+        app.kubernetes.io/instance: kiali
+    spec:
+      serviceAccountName: kiali
+      containers:
+      - image: "quay.io/kiali/kiali:v1.59"
+        imagePullPolicy: Always
+        name: kiali
+        command:
+        - "/opt/kiali/kiali"
+        - "-config"
+        - "/kiali-configuration/config.yaml"
+        securityContext:
+          allowPrivilegeEscalation: false
+          privileged: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          capabilities:
+            drop:
+            - ALL
+        ports:
+        - name: api-port
+          containerPort: 20001
+        - name: http-metrics
+          containerPort: 9090
+        readinessProbe:
+          httpGet:
+            path: /kiali/healthz
+            port: api-port
+            scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 30
+        livenessProbe:
+          httpGet:
+            path: /kiali/healthz
+            port: api-port
+            scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 30
+        env:
+        - name: ACTIVE_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: LOG_LEVEL
+          value: "info"
+        - name: LOG_FORMAT
+          value: "text"
+        - name: LOG_TIME_FIELD_FORMAT
+          value: "2006-01-02T15:04:05Z07:00"
+        - name: LOG_SAMPLER_RATE
+          value: "1"
+        volumeMounts:
+        - name: kiali-configuration
+          mountPath: "/kiali-configuration"
+        - name: kiali-cert
+          mountPath: "/kiali-cert"
+        - name: kiali-secret
+          mountPath: "/kiali-secret"
+        - name: kiali-cabundle
+          mountPath: "/kiali-cabundle"
+        resources:
+          limits:
+            memory: 1Gi
+          requests:
+            cpu: 10m
+            memory: 64Mi
+      volumes:
+      - name: kiali-configuration
+        configMap:
+          name: kiali
+      - name: kiali-cert
+        secret:
+          secretName: istio.kiali-service-account
+          optional: true
+      - name: kiali-secret
+        secret:
+          secretName: kiali
+          optional: true
+      - name: kiali-cabundle
+        configMap:
+          name: kiali-cabundle
+          optional: true

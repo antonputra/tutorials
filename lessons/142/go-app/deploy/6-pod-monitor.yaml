@@ -1,0 +1,18 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: istio-pods
+  namespace: staging
+  labels:
+    component: main
+spec:
+  namespaceSelector:
+    matchNames:
+    - staging
+  selector:
+    matchLabels:
+      istio: monitor
+  podMetricsEndpoints:
+  - port: http-envoy-prom
+    path: stats/prometheus

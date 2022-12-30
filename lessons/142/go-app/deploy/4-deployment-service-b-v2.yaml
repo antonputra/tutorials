@@ -1,0 +1,31 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-b-v2
+  namespace: staging
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: service-b
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: service-b
+        version: v2
+        istio: monitor
+    spec:
+      containers:
+      - image: 424432388155.dkr.ecr.us-east-1.amazonaws.com/go-app:latest
+        imagePullPolicy: Always
+        name: service-b
+        env:
+        - name: SERVICE
+          value: service-b
+        - name: VERSION
+          value: v2
+        ports:
+        - name: http
+          containerPort: 8080

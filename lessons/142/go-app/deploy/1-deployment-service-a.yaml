@@ -1,0 +1,27 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-a
+  namespace: staging
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: service-a
+  template:
+    metadata:
+      labels:
+        app: service-a
+        istio: monitor
+    spec:
+      containers:
+      - image: 424432388155.dkr.ecr.us-east-1.amazonaws.com/go-app:latest
+        imagePullPolicy: Always
+        name: service-a
+        env:
+        - name: SERVICE
+          value: service-a
+        ports:
+        - name: http
+          containerPort: 8080
