@@ -1,0 +1,20 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: nodejs
+  name: service-a
+data:
+  config.yaml: |
+    {
+        "bucket": "lesson143",
+        "endpoint": "http://minio.minio:9000",
+        "pathStyle": true,
+        "user": "admin",
+        "secret": "devops123",
+        "serviceAPort": 8080,
+        "serviceBPort": 8081,
+        "serviceAHost": "service-a",
+        "serviceBHost": "service-b",
+        "mongodbUri": "mongodb://root:devops123@localhost:27017/?retryWrites=true&w=majority"
+    }
