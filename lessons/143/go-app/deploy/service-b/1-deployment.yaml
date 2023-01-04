@@ -1,0 +1,62 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-b
+  namespace: golang
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: service-b
+      version: v1.0.6
+  template:
+    metadata:
+      labels:
+        app: service-b
+        version: v1.0.6
+        istio: monitor
+    spec:
+      containers:
+      - image: 424432388155.dkr.ecr.us-east-1.amazonaws.com/go-app:service-b-latest
+        imagePullPolicy: Always
+        name: service-b
+        env:
+        - name: SERVICE
+          value: service-b
+        ports:
+        - name: http
+          containerPort: 8081
+        volumeMounts:
+        - name: config
+          mountPath: /config.yaml
+          subPath: config.yaml
+        resources:
+          requests:
+            memory: 128Mi
+            cpu: 50m
+          limits:
+            memory: 128Mi
+            cpu: 50m
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - service-a
+                - service-b
+                - minio
+                - mongodb
+            topologyKey: "kubernetes.io/hostname"
+            namespaces:
+            - golang
+            - nodejs
+            - minio
+            - mongodb
+      volumes:
+      - name: config
+        configMap:
+          name: service-b
