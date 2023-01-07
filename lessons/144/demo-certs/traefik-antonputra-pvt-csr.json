@@ -1,0 +1,18 @@
+{
+    "CN": "traefik.antonputra.pvt",
+    "hosts": [
+        "api.traefik.antonputra.pvt",
+        "grpc.traefik.antonputra.pvt"
+    ],
+    "key": {
+        "algo": "ecdsa",
+        "size": 256
+    },
+    "names": [
+        {
+            "C": "US",
+            "ST": "CA",
+            "L": "Los Banos"
+        }
+    ]
+}

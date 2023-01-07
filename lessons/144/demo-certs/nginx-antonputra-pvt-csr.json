@@ -1,0 +1,18 @@
+{
+    "CN": "nginx.antonputra.pvt",
+    "hosts": [
+        "api.nginx.antonputra.pvt",
+        "grpc.nginx.antonputra.pvt"
+    ],
+    "key": {
+        "algo": "ecdsa",
+        "size": 256
+    },
+    "names": [
+        {
+            "C": "US",
+            "ST": "CA",
+            "L": "Los Banos"
+        }
+    ]
+}
