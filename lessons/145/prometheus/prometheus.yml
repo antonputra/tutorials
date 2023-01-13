@@ -1,0 +1,14 @@
+---
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+
+scrape_configs:
+  - job_name: minio
+    metrics_path: /minio/v2/metrics/cluster
+    static_configs:
+      - targets: ["minio:9000"]
+  - job_name: mongo
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["mongo-exporter:9216"]

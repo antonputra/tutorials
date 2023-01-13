@@ -1,0 +1,67 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: java-app
+  namespace: staging
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: java-app
+  template:
+    metadata:
+      labels:
+        app: java-app
+      annotations:
+        linkerd.io/inject: enabled
+    spec:
+      containers:
+        - image: 424432388155.dkr.ecr.us-east-1.amazonaws.com/java-app:latest
+          imagePullPolicy: Always
+          name: java-app
+          command:
+            - java
+          args:
+            - -jar
+            - /app/java-app.jar
+          env:
+            - name: MONGO_URI
+              value: "mongodb://root:devops123@mongodb.mongodb:27017/?retryWrites=true&w=majority"
+            - name: S3_ENDPOINT
+              value: "http://minio.minio:9000"
+          volumeMounts:
+            - name: application
+              mountPath: /app/config/application.yml
+              subPath: application.yml
+          ports:
+            - name: http
+              containerPort: 8080
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 200m
+            limits:
+              memory: 512Mi
+              cpu: 200m
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - java-app
+                      - go-app
+                      - minio
+                      - mongodb
+              topologyKey: "kubernetes.io/hostname"
+              namespaces:
+                - staging
+                - minio
+                - mongodb
+      volumes:
+        - name: application
+          configMap:
+            name: application

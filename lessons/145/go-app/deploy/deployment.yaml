@@ -1,0 +1,62 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-app
+  namespace: staging
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: go-app
+  template:
+    metadata:
+      labels:
+        app: go-app
+      annotations:
+        linkerd.io/inject: enabled
+    spec:
+      containers:
+        - image: 424432388155.dkr.ecr.us-east-1.amazonaws.com/go-app:latest
+          imagePullPolicy: Always
+          name: go-app
+          env:
+            - name: AWS_DEFAULT_REGION
+              value: us-west-rack1
+          ports:
+            - name: http
+              containerPort: 8080
+            - name: metrics
+              containerPort: 8081
+          volumeMounts:
+            - name: config
+              mountPath: /config.yaml
+              subPath: config.yaml
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 200m
+            limits:
+              memory: 512Mi
+              cpu: 200m
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - java-app
+                      - go-app
+                      - minio
+                      - mongodb
+              topologyKey: "kubernetes.io/hostname"
+              namespaces:
+                - staging
+                - minio
+                - mongodb
+      volumes:
+        - name: config
+          configMap:
+            name: service
