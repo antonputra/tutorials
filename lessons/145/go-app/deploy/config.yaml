@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: staging
+  name: service
+data:
+  config.yaml: |
+    ---
+    bucket: lesson145
+    endpoint: http://minio.minio:9000
+    pathStyle: true
+    user: admin
+    secret: devops123
+    port: 8080
+    mongodbUri: "mongodb://root:devops123@mongodb.mongodb:27017/?retryWrites=true&w=majority"

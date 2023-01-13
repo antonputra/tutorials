@@ -1,0 +1,17 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: kube-state-metrics
+  namespace: monitoring
+  labels:
+    component: main
+spec:
+  namespaceSelector:
+    matchNames:
+      - monitoring
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: kube-state-metrics
+  podMetricsEndpoints:
+    - port: http-metrics

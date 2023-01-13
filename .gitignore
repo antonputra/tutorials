@@ -165,3 +165,6 @@ __pycache__
 
 # For nginx log
 !access.log
+
+# For VScode
+.vscode

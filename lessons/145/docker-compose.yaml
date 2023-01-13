@@ -1,0 +1,44 @@
+---
+version: "3"
+
+services:
+
+  minio:
+    image: quay.io/minio/minio:latest
+    command: server /data --console-address :9001
+    ports:
+    - 9001:9001
+    - 9000:9000
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: devops123
+      MINIO_PROMETHEUS_AUTH_TYPE: public
+    volumes:
+    - minio:/data
+
+  mongo:
+    image: mongo:6.0.3
+    ports:
+    - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: devops123
+    volumes:
+    - mongo:/data/db
+
+  mongo-exporter:
+    image: percona/mongodb_exporter:0.36.0
+    ports:
+    - 9216:9216
+    command: --mongodb.uri=mongodb://root:devops123@mongo:27017/ --collect-all
+
+  prometheus:
+    image: prom/prometheus:v2.41.0
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+
+volumes:
+  mongo:
+  minio:

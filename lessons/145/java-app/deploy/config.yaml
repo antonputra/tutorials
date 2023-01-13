@@ -1,0 +1,20 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: staging
+  name: application
+data:
+  application.yml: |
+    ---
+    spring:
+      application:
+        name: java-app
+    management:
+      endpoints:
+        web:
+          exposure:
+            include: prometheus
+      metrics:
+        tags:
+          application: ${spring.application.name}
