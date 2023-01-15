@@ -1,0 +1,39 @@
+---
+- name: Install prerequisites
+  apt:
+    pkg:
+      - apt-transport-https
+      - software-properties-common
+    state: latest
+    update_cache: true
+
+- name: Add Grafana signing key
+  ansible.builtin.apt_key:
+    url: https://apt.grafana.com/gpg.key
+    keyring: /usr/share/keyrings/grafana.key
+
+- name: Add stable grafana apt repository
+  ansible.builtin.apt_repository:
+    repo: deb [signed-by=/usr/share/keyrings/grafana.key] https://apt.grafana.com stable main
+    state: present
+    filename: grafana
+
+- name: Install Grafana
+  apt:
+    pkg:
+      - grafana
+    state: latest
+    update_cache: true
+
+- name: Copy Grafana datasources
+  copy:
+    src: datasources.yaml
+    dest: /etc/grafana/provisioning/datasources/datasources.yaml
+    owner: grafana
+    group: grafana
+
+- name: Start and enable Grafana
+  ansible.builtin.systemd:
+    state: restarted
+    name: grafana-server
+    enabled: yes
