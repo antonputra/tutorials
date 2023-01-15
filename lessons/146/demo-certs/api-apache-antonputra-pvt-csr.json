@@ -1,0 +1,18 @@
+{
+    "CN": "apache.antonputra.pvt",
+    "hosts": [
+        "api.apache.antonputra.pvt",
+        "static.apache.antonputra.pvt"
+    ],
+    "key": {
+        "algo": "ecdsa",
+        "size": 256
+    },
+    "names": [
+        {
+            "C": "US",
+            "ST": "CA",
+            "L": "Los Banos"
+        }
+    ]
+}

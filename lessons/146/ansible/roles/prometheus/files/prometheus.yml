@@ -1,0 +1,34 @@
+---
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+  scrape_timeout: 5s
+
+scrape_configs:
+  - job_name: myapp
+    ec2_sd_configs:
+      - region: us-east-1
+        port: 8080
+        filters:
+          - name: tag:service
+            values:
+              - myapp
+    relabel_configs:
+      - source_labels: [__meta_ec2_tag_Name]
+        target_label: instance
+      - regex: "__meta_ec2_tag_(.+)"
+        action: labelmap
+
+  - job_name: node-exporter
+    ec2_sd_configs:
+      - region: us-east-1
+        port: 9100
+        filters:
+          - name: tag:node-exporter
+            values:
+              - true
+    relabel_configs:
+      - source_labels: [__meta_ec2_tag_Name]
+        target_label: instance
+      - regex: "__meta_ec2_tag_(.+)"
+        action: labelmap
