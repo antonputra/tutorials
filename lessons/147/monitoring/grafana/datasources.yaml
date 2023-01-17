@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: datasources
+  namespace: monitoring
+data:
+  datasources.yaml: |
+    apiVersion: 1
+    datasources:
+    - name: Main
+      type: prometheus
+      url: http://prometheus-operated:9090
+      isDefault: false
+      jsonData:
+        manageAlerts: false

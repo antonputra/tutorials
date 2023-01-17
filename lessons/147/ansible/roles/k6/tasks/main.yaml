@@ -1,0 +1,42 @@
+---
+- name: Add an apt key by id from a keyserver
+  ansible.builtin.apt_key:
+    keyserver: hkp://keyserver.ubuntu.com
+    id: C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+    keyring: /usr/share/keyrings/k6-archive-keyring.gpg
+
+- name: Add k6 apt repository
+  ansible.builtin.apt_repository:
+    repo: deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main
+    state: present
+    filename: k6
+
+- name: Install k6
+  apt:
+    pkg:
+      - k6
+    state: latest
+    update_cache: true
+
+- name: Copy tests
+  copy: src={{ item.src }} dest={{ item.dest }}
+  with_items:
+    - { src: "device.proto", dest: "/home/ubuntu/" }
+    - { src: "grpc-rust-ingress-tls.js", dest: "/home/ubuntu/" }
+    - { src: "grpc-go-ingress-tls.js", dest: "/home/ubuntu/" }
+    - { src: "grpc-rust-tls.js", dest: "/home/ubuntu/" }
+    - { src: "grpc-go-tls.js", dest: "/home/ubuntu/" }
+
+- name: Copy CA
+  copy: src={{ item.src }} dest={{ item.dest }}
+  with_items:
+    - { src: "../demo-certs/ca.pem", dest: "/usr/local/share/ca-certificates/ca.crt" }
+
+- name: Update trusted ca
+  shell: /usr/sbin/update-ca-certificates
+
+- name: Install grpcurl
+  ansible.builtin.unarchive:
+    src: https://github.com/fullstorydev/grpcurl/releases/download/v1.8.7/grpcurl_1.8.7_linux_x86_64.tar.gz
+    dest: /usr/local/bin
+    remote_src: yes
