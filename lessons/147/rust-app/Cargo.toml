@@ -1,0 +1,16 @@
+[package]
+name = "rust-app"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "hardware-server"
+path = "src/server.rs"
+
+[dependencies]
+tonic = { version = "0.8", features = ["tls"] }
+prost = "0.11"
+tokio = { version = "1.0", features = ["macros", "rt-multi-thread"] }
+
+[build-dependencies]
+tonic-build = "0.8"

@@ -1,0 +1,67 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rust-app-tls
+  namespace: staging
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rust-app-tls
+  template:
+    metadata:
+      labels:
+        app: rust-app-tls
+    spec:
+      containers:
+        - image: aputra/rust-app-lesson147:latest
+          imagePullPolicy: Always
+          name: rust-app-tls
+          env:
+            - name: TLS_ENABLED
+              value: "true"
+          ports:
+            - name: grpc
+              containerPort: 50050
+          volumeMounts:
+            - name: tls
+              mountPath: cert.pem
+              subPath: tls.crt
+            - name: tls
+              mountPath: key.pem
+              subPath: tls.key
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 200m
+            limits:
+              memory: 512Mi
+              cpu: 200m
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: role
+                    operator: In
+                    values:
+                      - general
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - rust-app
+                      - go-app
+                      - rust-app-tls
+                      - go-app-tls
+              topologyKey: "kubernetes.io/hostname"
+              namespaces:
+                - staging
+      volumes:
+        - name: tls
+          secret:
+            secretName: api-rust-antonputra-pvt
