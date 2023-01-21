@@ -1,0 +1,17 @@
+---
+plugin: gcp_compute
+zones:
+  - us-central1-a
+projects:
+  - antonputra-service-41864
+auth_kind: application
+scopes:
+  - "https://www.googleapis.com/auth/cloud-platform"
+  - "https://www.googleapis.com/auth/compute.readonly"
+keyed_groups:
+  - prefix: gcp
+    key: labels
+hostnames:
+  - name
+compose:
+  ansible_host: networkInterfaces[0].accessConfigs[0].natIP
