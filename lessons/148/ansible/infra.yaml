@@ -1,0 +1,26 @@
+---
+- name: Install Nginx with HTTP/2 support
+  hosts: gcp_service_nginx_http2
+  remote_user: me
+  become: yes
+  vars:
+    protocol: http2
+    pcre2_ver: 10.42
+    zlib_ver: 1.2.13
+    libressl_ver: 3.6.1
+
+  roles:
+    - nginx
+
+- name: Install Nginx with HTTP/3 support
+  hosts: gcp_service_nginx_http3
+  remote_user: me
+  become: yes
+  vars:
+    protocol: http3
+    pcre2_ver: 10.42
+    zlib_ver: 1.2.13
+    libressl_ver: 3.6.1
+
+  roles:
+    - nginx
