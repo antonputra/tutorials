@@ -1,0 +1,23 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rest
+  namespace: staging
+spec:
+  ingressClassName: internal-ingress-nginx
+  rules:
+    - host: rest.antonputra.pvt
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: rest
+                port:
+                  number: 8080
+  tls:
+    - secretName: rest-antonputra-pvt
+      hosts:
+        - rest.antonputra.pvt

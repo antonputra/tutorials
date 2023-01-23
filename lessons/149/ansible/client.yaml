@@ -1,0 +1,7 @@
+- name: Install k6 load testing tool
+  hosts: tag_service_client
+  remote_user: ubuntu
+  become: yes
+
+  roles:
+    - k6
