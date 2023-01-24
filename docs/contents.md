@@ -80,3 +80,4 @@
 - [146 - Nginx vs Apache HTTP Server performance benchmark](../lessons/146)
 - [147 - Go (Golang) vs Rust performance benchmark (gRPC)](../lessons/147)
 - [148 - HTTP/2 vs HTTP/3 performance benchmark](../lessons/148)
+- [149 - gRPC vs REST performance benchmark](../lessons/149)

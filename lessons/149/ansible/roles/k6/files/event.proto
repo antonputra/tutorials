@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+option go_package = "github.com/antonputra/tutorials/lessons/149/app/event";
+
+package event;
+
+message Event {
+    string version = 1;
+    string route_key = 2;
+    string raw_path = 3;
+    string raw_query_string = 4;
+    Headers headers = 5;
+    RequestContext request_context = 6;
+    string body = 7;
+    bool is_base64_encoded = 8;
+}
+
+message Headers {
+    string accept = 1;
+    string accept_encoding = 2;
+    string content_length = 3;
+    string content_type = 4;
+    string host = 5;
+    string user_agent = 6;
+    string x_amzn_trace_id = 7;
+    string x_forwarded_for = 8;
+    string x_forwarded_port = 9;
+    string x_forwarded_proto = 10;
+    string x_slack_request_timestamp = 11;
+    string x_slack_signature = 12;
+}
+
+message RequestContext {
+    string account_id = 1;
+    string api_id = 2;
+    string domain_name = 3;
+    string domain_prefix = 4;
+    Http http = 5;
+    string request_id = 6;
+    string route_key = 7;
+    string stage = 8;
+    string time = 9;
+    int64 time_epoch = 10;
+}
+
+message Http {
+    string method = 1;
+    string path = 2;
+    string protocol = 3;
+    string source_pp = 4;
+    string user_agent = 5;
+}
+
+message Request {
+    int64 id = 1;
+}
+
+service Manager {
+    rpc GetEvent(Request) returns (Event) {}
+}
