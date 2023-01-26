@@ -81,3 +81,4 @@
 - [147 - Go (Golang) vs Rust performance benchmark (gRPC)](../lessons/147)
 - [148 - HTTP/2 vs HTTP/3 performance benchmark](../lessons/148)
 - [149 - gRPC vs REST performance benchmark](../lessons/149)
+- [150 - ARM vs x86 performance benchmark](../lessons/150)
