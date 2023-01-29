@@ -1,0 +1,13 @@
+---
+plugin: aws_ec2
+regions:
+  - us-east-1
+filters:
+  tag:service:
+    - myapp
+    - client
+    - envoy
+    - nginx
+keyed_groups:
+  - prefix: tag
+    key: tags

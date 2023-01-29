@@ -170,4 +170,5 @@ __pycache__
 .vscode
 
 # For certs
+*.csr
 *.pem

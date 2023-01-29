@@ -1,0 +1,48 @@
+---
+- name: Install My App
+  hosts: tag_service_myapp
+  remote_user: ubuntu
+  become: yes
+  vars:
+    node_exporter_version: 1.5.0
+
+  roles:
+    - myapp
+    - node-exporter
+
+- name: Install k6 load testing tool
+  hosts: tag_service_client
+  remote_user: ubuntu
+  become: yes
+  vars:
+    prometheus_version: 2.41.0
+    node_exporter_version: 1.5.0
+
+  roles:
+    - k6
+    - prometheus
+    - grafana
+    - node-exporter
+
+- name: Install Envoy
+  hosts: tag_service_envoy
+  remote_user: ubuntu
+  become: yes
+  vars:
+    envoy_ver: 1.25.0
+    node_exporter_version: 1.5.0
+
+  roles:
+    - envoy
+    - node-exporter
+
+- name: Install Nginx
+  hosts: tag_service_nginx
+  remote_user: ubuntu
+  become: yes
+  vars:
+    node_exporter_version: 1.5.0
+
+  roles:
+    - nginx
+    - node-exporter

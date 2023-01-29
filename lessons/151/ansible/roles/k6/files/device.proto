@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+option go_package = "github.com/antonputra/tutorials/lessons/151/go-app/device";
+
+package device;
+
+message Device {
+    string uuid = 1;
+    string mac = 2;
+    string firmware = 3;
+}
+
+message DeviceRequest {
+    string uuid = 1;
+}
+
+service Manager {
+    rpc GetEnvoyDevice(DeviceRequest) returns (Device) {}
+    rpc GetNginxDevice(DeviceRequest) returns (Device) {}
+}
