@@ -1,0 +1,6 @@
+---
+- name: Restart Envoy
+  ansible.builtin.service:
+    name: envoy
+    state: restarted
+    daemon_reload: true

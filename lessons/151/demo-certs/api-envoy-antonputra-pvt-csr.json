@@ -1,0 +1,17 @@
+{
+    "CN": "api.envoy.antonputra.pvt",
+    "hosts": [
+        "api.envoy.antonputra.pvt"
+    ],
+    "key": {
+        "algo": "rsa",
+        "size": 2048
+    },
+    "names": [
+        {
+            "C": "US",
+            "ST": "CA",
+            "L": "Los Banos"
+        }
+    ]
+}

@@ -1,0 +1,27 @@
+---
+- name: Download binary
+  ansible.builtin.get_url:
+    url: https://github.com/envoyproxy/envoy/releases/download/v{{ envoy_ver }}/envoy-{{ envoy_ver }}-linux-x86_64
+    dest: /usr/local/bin/envoy
+    mode: "755"
+
+- name: Create directories
+  ansible.builtin.file: path={{ item.path }} state=directory mode="0755"
+  with_items:
+    - { path: "/etc/envoy/" }
+
+- name: Copy files
+  ansible.builtin.copy: src={{ item.src }} dest={{ item.dest }}
+  with_items:
+    - { src: "envoy.service", dest: "/lib/systemd/system/envoy.service" }
+    - { src: "envoy.yaml", dest: "/etc/envoy/envoy.yaml" }
+    - { src: "../demo-certs/api-envoy-antonputra-pvt.pem", dest: "/etc/ssl/certs/api-envoy-antonputra-pvt.pem" }
+    - { src: "../demo-certs/api-envoy-antonputra-pvt-key.pem", dest: "/etc/ssl/private/api-envoy-antonputra-pvt-key.pem" }
+  notify:
+    - Restart Envoy
+
+- name: Start and enable Envoy
+  ansible.builtin.systemd:
+    state: started
+    name: envoy
+    enabled: yes
