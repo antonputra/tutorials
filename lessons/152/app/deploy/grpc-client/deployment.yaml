@@ -1,0 +1,45 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grpc-client
+  namespace: staging
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grpc-client
+  template:
+    metadata:
+      labels:
+        app: grpc-client
+    spec:
+      containers:
+        - name: grpc-client
+          image: aputra/grpc-client-lesson152:latest
+          args:
+            - -addr
+            - grpc-server:8082
+            - -sleep
+            - "yes"
+          ports:
+            - name: metrics
+              containerPort: 8081
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 200m
+            limits:
+              memory: 256Mi
+              cpu: 200m
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - grpc-client
+                      - grpc-server
+              topologyKey: "kubernetes.io/hostname"

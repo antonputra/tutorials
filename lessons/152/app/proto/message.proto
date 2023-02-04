@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+option go_package = "github.com/antonputra/tutorials/lessons/152/app/message";
+
+package message;
+
+message Message {
+    string uuid = 1;
+    uint64 created = 2;
+}
+
+service Manager {
+    rpc GetMessage(Message) returns (Message) {}
+}

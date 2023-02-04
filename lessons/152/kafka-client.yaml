@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kafka-client
+  namespace: staging
+spec:
+  containers:
+    - name: kafka
+      image: ubuntu/kafka
+      command: ["/bin/bash", "-c", "--"]
+      args: ["while true; do sleep 30; done;"]
