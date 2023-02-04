@@ -1,0 +1,34 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-agent
+  namespace: staging
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-agent
+  template:
+    metadata:
+      labels:
+        app: kafka-agent
+    spec:
+      containers:
+        - name: kafka-agent
+          image: aputra/kafka-agent-lesson152:latest
+          args:
+            - -kafka-brokers
+            - kafka-headless.kafka
+            - -sleep
+            - "yes"
+          ports:
+            - name: metrics
+              containerPort: 8081
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 400m
+            limits:
+              memory: 512Mi
+              cpu: 400m

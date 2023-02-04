@@ -83,3 +83,4 @@
 - [149 - gRPC vs REST performance benchmark](../lessons/149)
 - [150 - ARM vs x86 performance benchmark](../lessons/150)
 - [151 - Nginx vs Envoy performance benchmark](../lessons/151)
+- [152 - gRPC vs Kafka: Which one should you choose?](../lessons/152)
