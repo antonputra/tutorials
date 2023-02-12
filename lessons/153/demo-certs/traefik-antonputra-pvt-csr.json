@@ -1,0 +1,17 @@
+{
+    "CN": "api.traefik.antonputra.pvt",
+    "hosts": [
+        "api.traefik.antonputra.pvt"
+    ],
+    "key": {
+        "algo": "rsa",
+        "size": 2048
+    },
+    "names": [
+        {
+            "C": "US",
+            "ST": "CA",
+            "L": "Los Banos"
+        }
+    ]
+}

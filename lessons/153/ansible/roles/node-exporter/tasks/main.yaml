@@ -1,0 +1,33 @@
+---
+- name: Create system linux user Node Exporter
+  ansible.builtin.user:
+    name: node-exporter
+    shell: /bin/false
+    state: present
+    system: true
+
+- name: Unarchive a file that needs to be downloaded
+  ansible.builtin.unarchive:
+    src: https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz
+    dest: /tmp/
+    remote_src: yes
+
+- name: Copy Node Exporter binary
+  copy:
+    src: /tmp/node_exporter-{{ node_exporter_version }}.linux-amd64/node_exporter
+    dest: /usr/local/bin/node_exporter
+    owner: node-exporter
+    group: node-exporter
+    mode: "755"
+    remote_src: true
+
+- name: Copy Node Exporter system service
+  copy:
+    src: node-exporter.service
+    dest: /etc/systemd/system/node-exporter.service
+
+- name: Start and enable Node Exporter
+  ansible.builtin.systemd:
+    state: started
+    name: node-exporter
+    enabled: yes

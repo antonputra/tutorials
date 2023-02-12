@@ -1,0 +1,6 @@
+---
+- name: Restart Traefik
+  ansible.builtin.service:
+    name: traefik
+    state: restarted
+    daemon_reload: true

@@ -1,0 +1,58 @@
+---
+- name: Copy rest-client binary to remote host
+  copy:
+    mode: "0744"
+    owner: ubuntu
+    src: ../go-app/target/rest-client
+    dest: /usr/local/bin/rest-client
+
+- name: Download node
+  ansible.builtin.command: curl -sL https://deb.nodesource.com/setup_16.x -o /tmp/setup_16.x
+
+- name: Setup node
+  ansible.builtin.command: bash /tmp/setup_16.x
+
+- name: Install prerequisites
+  apt:
+    pkg:
+      - nodejs
+    state: latest
+    update_cache: true
+
+- name: Install playwright
+  ansible.builtin.command: npx -y playwright install
+  become_user: ubuntu
+
+- name: Install install-deps
+  ansible.builtin.command: npx -y playwright install-deps
+  become_user: ubuntu
+
+- name: Create directories
+  ansible.builtin.file: path={{ item.path }} state=directory mode="0755"
+  with_items:
+    - { path: "/home/ubuntu/tests/" }
+
+- name: Copy files
+  ansible.builtin.copy: src={{ item.src }} dest={{ item.dest }} owner=ubuntu group=ubuntu
+  with_items:
+    - { src: "package.json", dest: "/home/ubuntu/tests/package.json" }
+    - { src: "caddy-test-1.js", dest: "/home/ubuntu/tests/caddy-test-1.js" }
+
+- name: Install node modules
+  ansible.builtin.command: /usr/bin/npm install
+  args:
+    chdir: /home/ubuntu/tests/
+
+- name: Copy CA
+  copy: src={{ item.src }} dest={{ item.dest }}
+  with_items:
+    - { src: "../demo-certs/ca.pem", dest: "/usr/local/share/ca-certificates/ca.crt" }
+
+- name: Update trusted ca
+  shell: /usr/sbin/update-ca-certificates
+
+- name: Install grpcurl
+  ansible.builtin.unarchive:
+    src: https://github.com/fullstorydev/grpcurl/releases/download/v1.8.7/grpcurl_1.8.7_linux_x86_64.tar.gz
+    dest: /usr/local/bin
+    remote_src: yes
