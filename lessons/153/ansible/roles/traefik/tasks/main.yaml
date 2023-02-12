@@ -1,0 +1,59 @@
+---
+- name: Unarchive a file that needs to be downloaded
+  ansible.builtin.unarchive:
+    src: https://github.com/traefik/traefik/releases/download/v{{ traefik_version }}/traefik_v{{ traefik_version }}_linux_amd64.tar.gz
+    dest: /tmp/
+    remote_src: yes
+
+- name: Copy binary
+  copy:
+    src: /tmp/traefik
+    dest: /usr/local/bin/traefik
+    owner: root
+    group: root
+    mode: "755"
+    remote_src: true
+
+- name: Copy system service
+  copy:
+    src: traefik.service
+    dest: /etc/systemd/system/traefik.service
+
+- name: Create directory
+  ansible.builtin.file:
+    path: /etc/traefik/
+    state: directory
+    owner: root
+    group: root
+
+- name: Copy configuration file
+  copy:
+    src: config.yml
+    dest: /etc/traefik/config.yml
+    owner: root
+    group: root
+  notify:
+    - Restart Traefik
+
+- name: Copy configuration file
+  copy:
+    src: traefik.yml
+    dest: /etc/traefik/traefik.yml
+    owner: root
+    group: root
+  notify:
+    - Restart Traefik
+
+- name: Copy files
+  ansible.builtin.copy: src={{ item.src }} dest={{ item.dest }}
+  with_items:
+    - { src: "../demo-certs/traefik-antonputra-pvt.pem", dest: "/etc/ssl/certs/traefik-antonputra-pvt.pem" }
+    - { src: "../demo-certs/traefik-antonputra-pvt-key.pem", dest: "/etc/ssl/private/traefik-antonputra-pvt-key.pem" }
+  notify:
+    - Restart Traefik
+
+- name: Start and enable
+  ansible.builtin.systemd:
+    state: started
+    name: traefik
+    enabled: yes

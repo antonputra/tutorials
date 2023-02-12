@@ -1,0 +1,49 @@
+---
+- name: Install My App
+  hosts: tag_service_myapp
+  remote_user: ubuntu
+  become: yes
+  vars:
+    node_exporter_version: 1.5.0
+
+  roles:
+    - myapp
+    - node-exporter
+
+- name: Install testing tools
+  hosts: tag_service_client
+  remote_user: ubuntu
+  become: yes
+  vars:
+    prometheus_version: 2.42.0
+    pushgateway_version: 1.5.1
+    node_exporter_version: 1.5.0
+
+  roles:
+    - tests
+    - prometheus
+    - grafana
+    - node-exporter
+- name: Install Caddy
+  hosts: tag_service_caddy
+  remote_user: ubuntu
+  become: yes
+  vars:
+    caddy_version: 2.6.3
+    node_exporter_version: 1.5.0
+
+  roles:
+    - caddy
+    - node-exporter
+
+- name: Install Traefik
+  hosts: tag_service_traefik
+  remote_user: ubuntu
+  become: yes
+  vars:
+    traefik_version: 2.9.6
+    node_exporter_version: 1.5.0
+
+  roles:
+    - traefik
+    - node-exporter

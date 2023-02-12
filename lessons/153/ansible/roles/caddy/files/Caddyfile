@@ -1,0 +1,13 @@
+{
+    servers :443 {
+        protocols h1 h2 h2c
+    }
+}
+
+api.caddy.antonputra.pvt {
+	reverse_proxy http://api.antonputra.pvt:8080
+    
+    tls /etc/caddy/caddy-antonputra-pvt.pem /etc/caddy/caddy-antonputra-pvt-key.pem {
+        protocols tls1.3
+    }
+}

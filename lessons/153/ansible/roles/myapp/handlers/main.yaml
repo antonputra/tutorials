@@ -1,0 +1,12 @@
+---
+- name: Restart Rest Server
+  ansible.builtin.service:
+    name: rest-server
+    state: restarted
+    daemon_reload: true
+
+- name: Restart gRPC Server
+  ansible.builtin.service:
+    name: grpc-server
+    state: restarted
+    daemon_reload: true
