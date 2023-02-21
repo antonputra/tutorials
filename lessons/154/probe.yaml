@@ -1,0 +1,18 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: Probe
+metadata:
+  name: antonputra-com-web
+  namespace: monitoring
+  labels:
+    prometheus: main
+spec:
+  jobName: antonputra-web
+  interval: 15s
+  module: http_2xx
+  prober:
+    url: blackbox-exporter.monitoring:9115
+  targets:
+    staticConfig:
+      static:
+        - https://antonputra.com
