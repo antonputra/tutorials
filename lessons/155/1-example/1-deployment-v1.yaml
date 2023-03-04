@@ -1,0 +1,31 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: first-app-v1
+  namespace: staging
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: first-app
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: first-app
+        version: v1
+        istio: monitor
+    spec:
+      containers:
+        - image: aputra/myapp-lesson155:latest
+          imagePullPolicy: Always
+          name: first-app
+          env:
+            - name: SERVICE
+              value: first-app
+            - name: VERSION
+              value: v1
+          ports:
+            - name: http
+              containerPort: 8080

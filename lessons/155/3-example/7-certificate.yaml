@@ -1,0 +1,14 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: api-devopsbyexample-com
+  namespace: istio-ingress
+spec:
+  secretName: api-devopsbyexample-com-crt
+  dnsNames:
+    - app.devopsbyexample.com
+  issuerRef:
+    name: production-cluster-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io

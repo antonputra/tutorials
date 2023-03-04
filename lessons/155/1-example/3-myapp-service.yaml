@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: first-app
+  namespace: staging
+spec:
+  ports:
+    - name: http
+      port: 8080
+  selector:
+    app: first-app

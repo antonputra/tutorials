@@ -1,0 +1,18 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: myapp
+  namespace: monitoring
+  labels:
+    prometheus: main
+spec:
+  namespaceSelector:
+    matchNames:
+      - istio-ingress
+  selector:
+    matchLabels:
+      app: gateway
+  endpoints:
+    - port: metrics
+      path: /stats/prometheus
