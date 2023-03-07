@@ -4,7 +4,7 @@
 
 # Support
 
-☕ - [Buy Me a Coffee](https://www.buymeacoffee.com/antonputra)
+🚨 - To support my channel, I'd like to offer my Mentoring/Consulting services to you. You can reach me via email (me@antonputra.com).
 
 # Contents
 
