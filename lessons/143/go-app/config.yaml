@@ -1,0 +1,11 @@
+---
+bucket: lesson143
+endpoint: http://localhost:9000
+pathStyle: true
+user: admin
+secret: devops123
+serviceAPort: 8080
+serviceBPort: 8081
+serviceABaseUrl: "http://localhost:8080"
+serviceBBaseUrl: "http://localhost:8081"
+mongodbUri: "mongodb://root:devops123@localhost:27017/?retryWrites=true&w=majority"

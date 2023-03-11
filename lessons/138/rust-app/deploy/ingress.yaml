@@ -1,0 +1,19 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rust-app
+  namespace: staging
+spec:
+  ingressClassName: external-ingress-nginx
+  rules:
+  - host: rust-app.devopsbyexample.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: rust-app
+            port:
+              number: 8000

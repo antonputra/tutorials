@@ -1,0 +1,21 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: istio-pods
+  namespace: monitoring
+  labels:
+    component: main
+spec:
+  namespaceSelector:
+    matchNames:
+    - golang
+    - nodejs
+    - minio
+    - mongodb
+  selector:
+    matchLabels:
+      istio: monitor
+  podMetricsEndpoints:
+  - port: http-envoy-prom
+    path: stats/prometheus

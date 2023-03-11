@@ -1,0 +1,34 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      serviceAccountName: prometheus-ui
+      containers:
+      - name: frontend
+        image: gke.gcr.io/prometheus-engine/frontend:v0.5.0-gke.0
+        args:
+        - --web.listen-address=:9090
+        - --query.project-id=devops-367201 # TODO: replace project-id
+        ports:
+        - name: web
+          containerPort: 9090
+        readinessProbe:
+          httpGet:
+            path: /-/ready
+            port: web
+        livenessProbe:
+          httpGet:
+            path: /-/healthy
+            port: web

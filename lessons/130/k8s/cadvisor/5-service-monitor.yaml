@@ -1,0 +1,15 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: cadvisor
+  namespace: monitoring
+  labels:
+    component: prometheus-agent
+spec:
+  selector:
+    matchLabels:
+      name: cadvisor
+  endpoints:
+  - port: http
+    scrapeTimeout: 30s

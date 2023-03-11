@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: golang
+  name: service-a
+data:
+  config.yaml: |
+    ---
+    bucket: lesson143
+    endpoint: http://minio.minio:9000
+    pathStyle: true
+    user: admin
+    secret: devops123
+    serviceAPort: 8080
+    serviceBBaseUrl: "http://service-b:8081"

@@ -1,0 +1,20 @@
+---
+api:
+  dashboard: true
+  insecure: true
+
+entryPoints:
+  web:
+    address: ":80"
+  websecure:
+    address: ":443"
+
+global:
+  checknewversion: false
+  sendanonymoususage: false
+
+providers:
+  file:
+    filename: "/etc/traefik/config.yml"
+    watch: true
+  providersThrottleDuration: 10

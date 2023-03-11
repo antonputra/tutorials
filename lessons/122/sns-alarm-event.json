@@ -1,0 +1,37 @@
+{
+    "AlarmName": "EC2 High CPU (i-0a4026af087470b96)",
+    "AlarmDescription": "This metric monitors CPU utilization for the following instance: i-0a4026af087470b96. If the CPU usage exceeds 80%, you'll get an alert.",
+    "AWSAccountId": "424432388155",
+    "AlarmConfigurationUpdatedTimestamp": "2022-08-24T07:43:57.952+0000",
+    "NewStateValue": "ALARM",
+    "NewStateReason": "Threshold Crossed: 1 out of the last 1 datapoints [98.54495149838328 (24/08/22 07:51:00)] was greater than the threshold (80.0) (minimum 1 datapoint for OK -> ALARM transition).",
+    "StateChangeTime": "2022-08-24T07:56:51.135+0000",
+    "Region": "US East (N. Virginia)",
+    "AlarmArn": "arn:aws:cloudwatch:us-east-1:424432388155:alarm:High CPU",
+    "OldStateValue": "OK",
+    "OKActions": [],
+    "AlarmActions": [
+        "arn:aws:sns:us-east-1:424432388155:alerts"
+    ],
+    "InsufficientDataActions": [],
+    "Trigger": {
+        "MetricName": "CPUUtilization",
+        "Namespace": "AWS/EC2",
+        "StatisticType": "Statistic",
+        "Statistic": "AVERAGE",
+        "Unit": null,
+        "Dimensions": [
+            {
+                "value": "i-00413a5fb048ad162",
+                "name": "InstanceId"
+            }
+        ],
+        "Period": 300,
+        "EvaluationPeriods": 1,
+        "DatapointsToAlarm": 1,
+        "ComparisonOperator": "GreaterThanThreshold",
+        "Threshold": 80.0,
+        "TreatMissingData": "missing",
+        "EvaluateLowSampleCountPercentile": ""
+    }
+}

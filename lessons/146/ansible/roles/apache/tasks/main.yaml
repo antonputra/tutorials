@@ -1,0 +1,39 @@
+- name: Install Apache2
+  apt:
+    pkg:
+      - apache2
+    state: latest
+    update_cache: true
+
+- name: Copy certificate & private key
+  copy: src={{ item.src }} dest={{ item.dest }}
+  with_items:
+    - { src: "../demo-certs/api-apache-antonputra-pvt.pem", dest: "/etc/ssl/certs/api-apache-antonputra-pvt.pem" }
+    - { src: "../demo-certs/api-apache-antonputra-pvt-key.pem", dest: "/etc/ssl/private/api-apache-antonputra-pvt-key.pem" }
+
+- name: Enable Apache2 modules
+  community.general.apache2_module: name={{ item.module }} state=present
+  with_items:
+    - { module: "proxy" }
+    - { module: "proxy_http" }
+    - { module: "proxy_ajp" }
+    - { module: "proxy_wstunnel" }
+    - { module: "proxy_balancer" }
+    - { module: "proxy_connect" }
+    - { module: "proxy_html" }
+    - { module: "rewrite" }
+    - { module: "deflate" }
+    - { module: "headers" }
+    - { module: "lbmethod_byrequests" }
+    - { module: "ssl" }
+    - { module: "http2" }
+
+- name: Copy Apache config for My App
+  copy:
+    src: 000-default.conf
+    dest: /etc/apache2/sites-available/000-default.conf
+
+- name: Restart service apache2
+  ansible.builtin.service:
+    name: apache2
+    state: restarted

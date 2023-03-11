@@ -4,7 +4,7 @@
 
 # Support
 
-☕ - [Buy Me a Coffee](https://www.buymeacoffee.com/antonputra)
+🚨 - To support my channel, I'd like to offer my Mentoring/Consulting services to you. You can reach me via email (me@antonputra.com).
 
 # Contents
 
@@ -13,7 +13,6 @@
 # Social
 
 🎥 - [YouTube](https://www.youtube.com/c/AntonPutra)  
-🎮 - [Discord](https://discord.gg/Wy5SPDSTjX)  
 💼 - [LinkedIn](https://www.linkedin.com/in/anton-putra)  
 🎙 - [Twitter](https://twitter.com/antonvputra)  
 📨 - me@antonputra.com  

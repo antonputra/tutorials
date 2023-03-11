@@ -1,0 +1,63 @@
+---
+- name: Create system linux user Prometheus
+  ansible.builtin.user:
+    name: prometheus
+    shell: /bin/false
+    state: present
+    system: true
+
+- name: Unarchive a file that needs to be downloaded
+  ansible.builtin.unarchive:
+    src: https://github.com/prometheus/prometheus/releases/download/v{{ prometheus_version }}/prometheus-{{ prometheus_version }}.linux-amd64.tar.gz
+    dest: /tmp/
+    remote_src: yes
+
+- name: Copy Prometheus binary
+  copy:
+    src: /tmp/prometheus-{{ prometheus_version }}.linux-amd64/prometheus
+    dest: /usr/local/bin/prometheus
+    owner: prometheus
+    group: prometheus
+    mode: "755"
+    remote_src: true
+
+- name: Copy Promtool binary
+  copy:
+    src: /tmp/prometheus-{{ prometheus_version }}.linux-amd64/promtool
+    dest: /usr/local/bin/promtool
+    owner: prometheus
+    group: prometheus
+    mode: "755"
+    remote_src: true
+
+- name: Copy Prometheus system service
+  copy:
+    src: prometheus.service
+    dest: /etc/systemd/system/prometheus.service
+
+- name: Create Prometheus directory
+  ansible.builtin.file:
+    path: /etc/prometheus/
+    state: directory
+    owner: prometheus
+    group: prometheus
+
+- name: Create Prometheus data directory
+  ansible.builtin.file:
+    path: /data
+    state: directory
+    owner: prometheus
+    group: prometheus
+
+- name: Copy Prometheus configuration file
+  copy:
+    src: prometheus.yml
+    dest: /etc/prometheus/prometheus.yml
+    owner: prometheus
+    group: prometheus
+
+- name: Start and enable Prometheus
+  ansible.builtin.systemd:
+    state: restarted
+    name: prometheus
+    enabled: yes

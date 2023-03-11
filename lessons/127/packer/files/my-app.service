@@ -1,0 +1,18 @@
+[Unit]
+Description=My App
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+ExecStart=/home/ubuntu/go/bin/my-app
+
+User=ubuntu
+
+Environment=GIN_MODE=release
+
+Restart=always
+RestartSec=1
+
+[Install]
+WantedBy=multi-user.target

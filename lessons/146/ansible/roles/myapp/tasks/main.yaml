@@ -1,0 +1,25 @@
+---
+- name: Create system linux user for My App
+  ansible.builtin.user:
+    name: myapp
+    shell: /bin/false
+    state: present
+    system: true
+
+- name: Copy Rust binary to remote host
+  copy:
+    mode: "0744"
+    owner: myapp
+    src: ../web/target/x86_64-unknown-linux-gnu/release/web
+    dest: /usr/local/bin/web
+
+- name: Copy My App system service
+  copy:
+    src: myapp.service
+    dest: /etc/systemd/system/myapp.service
+
+- name: Start and enable My App
+  ansible.builtin.systemd:
+    state: restarted
+    name: myapp
+    enabled: yes

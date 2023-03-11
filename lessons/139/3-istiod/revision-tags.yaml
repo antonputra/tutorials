@@ -1,0 +1,5 @@
+---
+# Source: istiod/templates/revision-tags.yaml
+# Adapted from istio-discovery/templates/mutatingwebhook.yaml
+# Removed paths for legacy and default selectors since a revision tag
+# is inherently created from a specific revision

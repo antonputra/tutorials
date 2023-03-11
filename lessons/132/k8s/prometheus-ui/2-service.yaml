@@ -1,0 +1,13 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: monitoring
+spec:
+  clusterIP: None
+  selector:
+    app: frontend
+  ports:
+  - name: web
+    port: 9090

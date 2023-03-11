@@ -1,0 +1,57 @@
+---
+- name: Install My App
+  hosts: tag_service_myapp
+  remote_user: ubuntu
+  become: yes
+  vars:
+    node_exporter_version: 1.5.0
+
+  roles:
+    - myapp
+    - node-exporter
+
+- name: Install Nginx
+  hosts: tag_service_nginx
+  remote_user: ubuntu
+  become: yes
+  vars:
+    node_exporter_version: 1.5.0
+
+  roles:
+    - nginx
+    - node-exporter
+
+- name: Install k6 load testing tool
+  hosts: tag_service_client
+  remote_user: ubuntu
+  become: yes
+  vars:
+    node_exporter_version: 1.5.0
+
+  roles:
+    - k6
+    - node-exporter
+
+- name: Install Apache2
+  hosts: tag_service_apache
+  remote_user: ubuntu
+  become: yes
+  vars:
+    node_exporter_version: 1.5.0
+
+  roles:
+    - apache
+    - node-exporter
+
+- name: Install & Grafana
+  hosts: tag_service_monitoring
+  remote_user: ubuntu
+  become: yes
+  vars:
+    prometheus_version: 2.41.0
+    node_exporter_version: 1.5.0
+
+  roles:
+    - prometheus
+    - grafana
+    - node-exporter

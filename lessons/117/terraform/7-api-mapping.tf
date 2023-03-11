@@ -5,9 +5,9 @@ resource "aws_apigatewayv2_api_mapping" "api" {
 }
 
 resource "aws_apigatewayv2_api_mapping" "api_v1" {
-  api_id      = aws_apigatewayv2_api.main.id
-  domain_name = aws_apigatewayv2_domain_name.api.id
-  stage       = aws_apigatewayv2_stage.staging.id
+  api_id          = aws_apigatewayv2_api.main.id
+  domain_name     = aws_apigatewayv2_domain_name.api.id
+  stage           = aws_apigatewayv2_stage.staging.id
   api_mapping_key = "v1"
 }
 

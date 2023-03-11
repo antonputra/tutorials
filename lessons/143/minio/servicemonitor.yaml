@@ -1,0 +1,18 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: Probe
+metadata:
+  name: minio-cluster
+  namespace: minio
+  labels:
+    app: minio
+spec:
+  jobName: minio
+  prober:
+    url: minio.minio:9000
+    path: /minio/v2/metrics/cluster
+    scheme: http
+  targets:
+    staticConfig:
+      static:
+      - minio.minio

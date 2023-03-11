@@ -1,0 +1,47 @@
+---
+- name: Install prerequisites
+  apt:
+    pkg:
+      - debian-keyring
+      - debian-archive-keyring
+      - apt-transport-https
+    state: latest
+    update_cache: true
+
+- name: Add signing key
+  ansible.builtin.apt_key:
+    url: https://dl.cloudsmith.io/public/caddy/stable/gpg.key
+    keyring: /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+
+- name: Add apt repository
+  ansible.builtin.apt_repository:
+    repo: deb [signed-by=/usr/share/keyrings/caddy-stable-archive-keyring.gpg] https://dl.cloudsmith.io/public/caddy/stable/deb/debian any-version main
+    state: present
+    filename: caddy-stable
+
+- name: Install Caddy
+  apt:
+    pkg:
+      - caddy={{ caddy_version }}
+    state: latest
+    update_cache: true
+
+- name: Create directories
+  ansible.builtin.file: path={{ item.path }} state=directory mode="0755"
+  with_items:
+    - { path: "/var/www/myweb" }
+
+- name: Copy files
+  ansible.builtin.copy: src={{ item.src }} dest={{ item.dest }} owner=caddy group=caddy
+  with_items:
+    - { src: "Caddyfile", dest: "/etc/caddy/Caddyfile" }
+    - { src: "../demo-certs/caddy-antonputra-pvt.pem", dest: "/etc/caddy/caddy-antonputra-pvt.pem" }
+    - { src: "../demo-certs/caddy-antonputra-pvt-key.pem", dest: "/etc/caddy/caddy-antonputra-pvt-key.pem" }
+  notify:
+    - Restart Caddy
+
+- name: Start and enable Caddy
+  ansible.builtin.systemd:
+    state: started
+    name: caddy
+    enabled: yes

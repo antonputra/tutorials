@@ -1,0 +1,18 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: go-app
+  namespace: monitoring
+  labels:
+    component: main
+spec:
+  namespaceSelector:
+    matchNames:
+      - staging
+  selector:
+    matchLabels:
+      app: go-app
+  podMetricsEndpoints:
+    - port: metrics
+      path: /metrics

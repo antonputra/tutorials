@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: golang
+  name: service-b
+data:
+  config.yaml: |
+    ---
+    serviceBPort: 8081
+    serviceABaseUrl: "http://service-a:8080"
+    mongodbUri: "mongodb://root:devops123@mongodb.mongodb:27017/?retryWrites=true&w=majority"

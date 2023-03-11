@@ -1,0 +1,36 @@
+---
+- name: Copy rest-server binary to remote host
+  copy:
+    mode: "0744"
+    owner: ubuntu
+    src: ../go-app/target/rest-server
+    dest: /usr/local/bin/rest-server
+
+- name: Copy grpc-server binary to remote host
+  copy:
+    mode: "0744"
+    owner: ubuntu
+    src: ../go-app/target/grpc-server
+    dest: /usr/local/bin/grpc-server
+
+- name: Copy rest-server system service
+  copy:
+    src: rest-server.service
+    dest: /etc/systemd/system/rest-server.service
+
+- name: Copy grpc-server system service
+  copy:
+    src: grpc-server.service
+    dest: /etc/systemd/system/grpc-server.service
+
+- name: Start and enable rest server
+  ansible.builtin.systemd:
+    state: started
+    name: rest-server
+    enabled: yes
+
+- name: Start and enable grpc server
+  ansible.builtin.systemd:
+    state: started
+    name: grpc-server
+    enabled: yes

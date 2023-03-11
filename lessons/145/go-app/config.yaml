@@ -1,0 +1,8 @@
+---
+bucket: lesson145
+endpoint: http://localhost:9000
+pathStyle: true
+user: admin
+secret: devops123
+port: 8080
+mongodbUri: "mongodb://root:devops123@localhost:27017/?retryWrites=true&w=majority"

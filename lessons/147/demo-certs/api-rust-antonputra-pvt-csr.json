@@ -1,0 +1,17 @@
+{
+    "CN": "api.rust.antonputra.pvt",
+    "hosts": [
+        "api.rust.antonputra.pvt"
+    ],
+    "key": {
+        "algo": "rsa",
+        "size": 2048
+    },
+    "names": [
+        {
+            "C": "US",
+            "ST": "CA",
+            "L": "Los Banos"
+        }
+    ]
+}

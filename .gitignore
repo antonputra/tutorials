@@ -153,6 +153,22 @@ dist
 
 # python
 .venv
+__pycache__
 
 .DS_Store
 *.zip
+*.lock
+*target
+
+# Rust dependencies
+!Cargo.lock
+
+# For nginx log
+!access.log
+
+# For VScode
+.vscode
+
+# For certs
+*.csr
+*.pem

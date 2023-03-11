@@ -1,0 +1,17 @@
+{
+    "CN": "api.nginx.antonputra.pvt",
+    "hosts": [
+        "api.nginx.antonputra.pvt"
+    ],
+    "key": {
+        "algo": "rsa",
+        "size": 2048
+    },
+    "names": [
+        {
+            "C": "US",
+            "ST": "CA",
+            "L": "Los Banos"
+        }
+    ]
+}

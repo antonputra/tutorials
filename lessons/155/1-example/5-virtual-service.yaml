@@ -1,0 +1,19 @@
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: first-app
+  namespace: staging
+spec:
+  hosts:
+    - first-app
+  http:
+    - route:
+        - destination:
+            host: first-app
+            subset: v1
+          weight: 0
+        - destination:
+            host: first-app
+            subset: v2
+          weight: 100

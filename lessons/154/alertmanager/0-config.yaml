@@ -1,0 +1,29 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  namespace: monitoring
+  name: alertmanager-main
+type: Opaque
+stringData:
+  alertmanager.yaml: |-
+    global:
+      resolve_timeout: 5m
+    route:
+      group_by:
+        - alertname
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 12h
+      receiver: slack-notifications
+      routes:
+      - receiver: slack-notifications
+        match:
+          severity: warning
+    receivers:
+    - name: slack-notifications
+      slack_configs:
+      - channel: "#alerts"
+        send_resolved: true
+        api_url: "https://hooks.slack.com/services/T01EJNXE7KR/B6tdc30D9/XKygUPr8uwygefooFgVKBgr"
+        text: "{{ range .Alerts }}<!channel> {{ .Annotations.summary }}\n{{ .Annotations.description }}\n{{ end }}"

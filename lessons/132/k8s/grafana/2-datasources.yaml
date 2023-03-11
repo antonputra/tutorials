@@ -1,0 +1,17 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: datasources
+  namespace: monitoring
+data:
+  datasources.yaml: |
+    apiVersion: 1
+    datasources:
+    - name: PrometheusUI
+      type: prometheus
+      url: http://frontend.monitoring:9090
+      isDefault: true
+      jsonData:
+        manageAlerts: false
+        timeout: 60

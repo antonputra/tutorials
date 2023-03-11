@@ -1,0 +1,21 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  namespace: monitoring
+  name: additional-scrape-configs
+stringData:
+  prometheus-additional.yaml: |
+    - job_name: ec2-node-exporter
+      ec2_sd_configs:
+      - region: us-east-1
+        port: 9100
+        filters:
+        - name: tag:eks:cluster-name
+          values:
+          - demo-arm64
+      relabel_configs:
+      - source_labels: [__meta_ec2_tag_Name]
+        target_label: instance
+      - regex: "__meta_ec2_tag_(.+)"
+        action: labelmap

@@ -1,0 +1,18 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: myapp
+  namespace: staging
+  labels:
+    prometheus: main
+spec:
+  namespaceSelector:
+    matchNames:
+      - staging
+  selector:
+    matchLabels:
+      app: myapp
+  podMetricsEndpoints:
+    - port: http-metrics
+      path: /metrics

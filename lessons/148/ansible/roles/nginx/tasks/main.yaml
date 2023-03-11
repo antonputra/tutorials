@@ -1,0 +1,134 @@
+---
+- name: Create system linux user Nginx
+  ansible.builtin.user:
+    name: nginx
+    shell: /bin/false
+    state: present
+    system: true
+
+- name: Install prerequisites
+  apt:
+    pkg:
+      - curl
+      - linux-kernel-headers
+      - build-essential
+      - libssl-dev
+      - gnupg2
+      - ca-certificates
+      - lsb-release
+      - ubuntu-keyring
+    state: latest
+    update_cache: true
+
+- name: Create directories
+  ansible.builtin.file: path={{ item.path }} state=directory mode="0755"
+  with_items:
+    - { path: "/opt/nginx/" }
+    - { path: "/etc/nginx/conf.d" }
+    - { path: "/usr/local/nginx/logs/" }
+    - { path: "/var/log/nginx/" }
+    - { path: "/var/www/" }
+    - { path: "/var/www/web1/" }
+
+- name: Unarchive pcre2
+  ansible.builtin.unarchive:
+    src: https://github.com/PCRE2Project/pcre2/releases/download/pcre2-{{ pcre2_ver }}/pcre2-{{ pcre2_ver }}.tar.gz
+    dest: /opt/nginx/
+    remote_src: yes
+
+- name: Unarchive zlib
+  ansible.builtin.unarchive:
+    src: https://github.com/madler/zlib/releases/download/v{{ zlib_ver }}/zlib-{{ zlib_ver }}.tar.gz
+    dest: /opt/nginx/
+    remote_src: yes
+
+- name: Unarchive libressl
+  ansible.builtin.unarchive:
+    src: http://ftp.openbsd.org/pub/OpenBSD/LibreSSL/libressl-{{ libressl_ver }}.tar.gz
+    dest: /opt/nginx/
+    remote_src: yes
+
+- name: Unarchive nginx
+  ansible.builtin.unarchive:
+    src: https://hg.nginx.org/nginx-quic/archive/03897c45798e.tar.gz
+    dest: /opt/nginx/
+    remote_src: yes
+
+- name: Autoconfigure
+  ansible.builtin.shell: ./auto/configure --with-debug --conf-path=/etc/nginx/nginx.conf --with-http_v2_module --with-http_v3_module --with-http_ssl_module --with-stream_quic_module --with-pcre=../pcre2-{{ pcre2_ver }} --with-zlib=../zlib-{{ zlib_ver }} --with-openssl=../libressl-{{ libressl_ver }}
+  args:
+    chdir: /opt/nginx/nginx-quic-03897c45798e
+
+- name: Compile
+  ansible.builtin.shell: make
+  args:
+    chdir: /opt/nginx/nginx-quic-03897c45798e
+
+- name: Copy Nginx binary
+  ansible.builtin.copy:
+    src: /opt/nginx/nginx-quic-03897c45798e/objs/nginx
+    dest: /usr/sbin/nginx
+    mode: "755"
+    remote_src: true
+
+- name: Copy Nginx HTTP/2 config
+  ansible.builtin.copy:
+    src: http2.conf
+    dest: /etc/nginx/conf.d/http2.conf
+  when: protocol == "http2"
+
+- name: Copy Nginx HTTP/3 config
+  ansible.builtin.copy:
+    src: http3.conf
+    dest: /etc/nginx/conf.d/http2.conf
+  when: protocol == "http3"
+
+- name: Copy Nginx files
+  ansible.builtin.copy: src={{ item.src }} dest={{ item.dest }}
+  with_items:
+    - { src: "nginx.service", dest: "/lib/systemd/system/nginx.service" }
+    - { src: "nginx.conf", dest: "/etc/nginx/nginx.conf" }
+    - { src: "mime.types", dest: "/etc/nginx/mime.types" }
+
+- name: Copy certificate & private key
+  ansible.builtin.copy: src={{ item.src }} dest={{ item.dest }}
+  with_items:
+    - { src: "../demo-certs/fullchain.pem", dest: "/etc/ssl/certs/fullchain.pem" }
+    - { src: "../demo-certs/privkey.pem", dest: "/etc/ssl/private/privkey.pem" }
+    - { src: "mime.types", dest: "/etc/nginx/mime.types" }
+
+- name: Copy web1 & 2
+  ansible.builtin.copy: src={{ item.src }} dest={{ item.dest }}
+  with_items:
+    - { src: "../web1/index.html", dest: "/var/www/web1/index.html" }
+    - { src: "../web1/thumbnail-v1.png", dest: "/var/www/web1/thumbnail-v1.png" }
+    - { src: "../web1/thumbnail-v2.png", dest: "/var/www/web1/thumbnail-v2.png" }
+    - { src: "../web1/thumbnail-v3.png", dest: "/var/www/web1/thumbnail-v3.png" }
+    - { src: "../web1/thumbnail-v4.png", dest: "/var/www/web1/thumbnail-v4.png" }
+    - { src: "../web1/thumbnail-v5.png", dest: "/var/www/web1/thumbnail-v5.png" }
+    - { src: "../web1/thumbnail-v6.png", dest: "/var/www/web1/thumbnail-v6.png" }
+    - { src: "../web1/thumbnail-v7.png", dest: "/var/www/web1/thumbnail-v7.png" }
+    - { src: "../web1/thumbnail-v8.png", dest: "/var/www/web1/thumbnail-v8.png" }
+    - { src: "../web1/thumbnail-v9.png", dest: "/var/www/web1/thumbnail-v9.png" }
+    - { src: "../web1/thumbnail-v10.png", dest: "/var/www/web1/thumbnail-v10.png" }
+    - { src: "../web1/thumbnail-v11.png", dest: "/var/www/web1/thumbnail-v11.png" }
+    - { src: "../web1/thumbnail-v12.png", dest: "/var/www/web1/thumbnail-v12.png" }
+
+- name: Copy web2
+  ansible.builtin.copy: src={{ item.src }} dest={{ item.dest }}
+  with_items:
+    - { src: "../web2/web2.tgz", dest: "/var/web2.tgz" }
+  ignore_errors: true
+
+- name: Unarchive web2
+  ansible.builtin.unarchive:
+    src: /var/web2.tgz
+    dest: /var/www/
+    remote_src: yes
+  ignore_errors: true
+
+- name: Start and enable Nginx
+  ansible.builtin.systemd:
+    state: restarted
+    name: nginx
+    enabled: yes

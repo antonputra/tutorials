@@ -1,0 +1,46 @@
+---
+- name: Install prerequisites
+  apt:
+    pkg:
+      - curl
+      - gnupg2
+      - ca-certificates
+      - lsb-release
+      - ubuntu-keyring
+    state: latest
+    update_cache: true
+
+- name: Add nginx signing key
+  ansible.builtin.apt_key:
+    url: https://nginx.org/keys/nginx_signing.key
+    keyring: /usr/share/keyrings/nginx-archive-keyring.gpg
+
+- name: Add stable nginx apt repository
+  ansible.builtin.apt_repository:
+    repo: deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] http://nginx.org/packages/ubuntu jammy nginx
+    state: present
+    filename: nginx
+
+- name: Install Nginx
+  apt:
+    pkg:
+      - nginx
+    state: latest
+    update_cache: true
+
+- name: Copy Nginx config for My App
+  copy:
+    src: default.conf
+    dest: /etc/nginx/conf.d/default.conf
+
+- name: Copy certificate & private key
+  copy: src={{ item.src }} dest={{ item.dest }}
+  with_items:
+    - { src: "../demo-certs/api-nginx-antonputra-pvt.pem", dest: "/etc/ssl/certs/api-nginx-antonputra-pvt.pem" }
+    - { src: "../demo-certs/api-nginx-antonputra-pvt-key.pem", dest: "/etc/ssl/private/api-nginx-antonputra-pvt-key.pem" }
+
+- name: Start and enable Nginx
+  ansible.builtin.systemd:
+    state: restarted
+    name: nginx
+    enabled: yes

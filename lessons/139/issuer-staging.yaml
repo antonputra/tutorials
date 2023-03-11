@@ -1,0 +1,22 @@
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: staging-cluster-issuer
+spec:
+  acme:
+    # Staging Environment: must be used for testing before using prod env
+    # Letsencrypt has a strict rate limit.
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: staging-cluster-issuer
+    solvers:
+    - http01:
+        gatewayHTTPRoute:
+          parentRefs:
+          - kind: Gateway
+            name: istio
+            namespace: gateway
+          # gatewayHTTPRoute:
+          #   labels:
+          #     gateway: http01-solver-istio

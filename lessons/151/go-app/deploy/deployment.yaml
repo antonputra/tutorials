@@ -1,0 +1,55 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-app
+  namespace: staging
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: go-app
+  template:
+    metadata:
+      labels:
+        app: go-app
+    spec:
+      containers:
+        - image: aputra/go-app-lesson151:latest
+          imagePullPolicy: Always
+          name: go-app
+          args:
+            - -certFile
+            - /etc/ssl/certs/app-vm-antonputra-pvt.pem
+            - -keyFile
+            - /etc/ssl/private/app-vm-antonputra-pvt-key.pem
+          ports:
+            - name: http
+              containerPort: 443
+          resources:
+            requests:
+              memory: 16Gi
+              cpu: 4000m
+            limits:
+              memory: 16Gi
+              cpu: 4000m
+          volumeMounts:
+            - name: tls
+              mountPath: /etc/ssl/certs/app-vm-antonputra-pvt.pem
+              subPath: tls.crt
+            - name: tls
+              mountPath: /etc/ssl/private/app-vm-antonputra-pvt-key.pem
+              subPath: tls.key
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: role
+                    operator: In
+                    values:
+                      - general
+      volumes:
+        - name: tls
+          secret:
+            secretName: app-pod-antonputra-pvt

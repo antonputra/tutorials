@@ -1,0 +1,35 @@
+---
+http:
+
+  routers:
+
+    to-api:
+      rule: "Host(`api.traefik.antonputra.pvt`) && PathPrefix(`/`)"
+      service: api
+    
+    to-secure-api:
+      rule: "Host(`api.traefik.antonputra.pvt`) && PathPrefix(`/`)"
+      service: api
+      tls: {}
+
+    to-secure-grpc:
+      rule: "Host(`grpc.traefik.antonputra.pvt`)"
+      service: grpc
+      tls: {}
+
+  services:
+
+    api:
+      loadBalancer:
+        servers:
+        - url: http://10.0.32.200:8080
+
+    grpc:
+      loadBalancer:
+        servers:
+        - url: h2c://10.0.32.200:8082
+
+tls:
+  certificates:
+  - certFile: /etc/ssl/certs/traefik-antonputra-pvt.cert
+    keyFile: /etc/ssl/private/traefik-antonputra-pvt.cert
