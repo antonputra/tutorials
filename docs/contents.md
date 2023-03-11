@@ -87,3 +87,4 @@
 - [153 - Traefik vs Caddy 2](../lessons/153)
 - [154 - Prometheus Operator Kubernetes Tutorial](../lessons/154)
 - [155 - Istio Service Mesh Tutorial](../lessons/155)
+- [156 - How to Use EKS Blueprints Terraform Modules? (EFS - Karpenter - Add User - Fargate - ALB Controller)](../lessons/156)

@@ -1,0 +1,19 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: app-1
+  namespace: default
+spec:
+  containers:
+    - name: app-1
+      image: busybox
+      command: ["/bin/sh"]
+      args: ["-c", "while true; do echo $(date -u) >> /data/out1.txt; sleep 5; done"]
+      volumeMounts:
+        - name: persistent-storage
+          mountPath: /data
+  volumes:
+    - name: persistent-storage
+      persistentVolumeClaim:
+        claimName: app

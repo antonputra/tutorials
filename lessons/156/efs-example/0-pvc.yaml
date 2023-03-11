@@ -1,0 +1,13 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: app
+  namespace: default
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: efs
+  resources:
+    requests:
+      storage: 5Gi
