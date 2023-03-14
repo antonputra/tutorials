@@ -1,0 +1,65 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask
+  namespace: dev
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: flask
+  template:
+    metadata:
+      labels:
+        app: flask
+    spec:
+      containers:
+        - name: flask
+          image: aputra/app-lesson157:v0.1.6
+          ports:
+            - name: http
+              containerPort: 8080
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 250m
+            limits:
+              memory: 128Mi
+              cpu: 500m
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            failureThreshold: 2
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            failureThreshold: 2
+            periodSeconds: 10
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            failureThreshold: 30
+            periodSeconds: 10
+          volumeMounts:
+            - name: config
+              subPath: message
+              mountPath: /etc/message.txt
+      volumes:
+        - name: config
+          configMap:
+            name: config
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - flask
+              topologyKey: "kubernetes.io/hostname"

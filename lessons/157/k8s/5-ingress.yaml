@@ -1,0 +1,21 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: flask
+  namespace: dev
+  annotations:
+    # kubernetes.io/ingress.class: external-nginx
+spec:
+  ingressClassName: external-nginx
+  rules:
+    - host: api.antonputra.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: flask
+                port:
+                  number: 8080
