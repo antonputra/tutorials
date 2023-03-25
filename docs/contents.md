@@ -89,3 +89,4 @@
 - [155 - Istio Service Mesh Tutorial](../lessons/155)
 - [156 - How to Use EKS Blueprints Terraform Modules? (EFS - Karpenter - Add User - Fargate - ALB Controller)](../lessons/156)
 - [157 - DevOps Interview Questions: (Step-by-Step) #1](../lessons/157)
+- [158 - ArgoCD Tutorial for Beginners: GitOps CD for Kubernetes](../lessons/158)
