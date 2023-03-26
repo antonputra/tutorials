@@ -4,7 +4,7 @@
 
 # Support
 
-🚨 - To support my channel, I'd like to offer my Mentoring/Consulting services to you. You can reach me via email (me@antonputra.com).
+🤠 - Get Full-Length High-Quality DevOps Tutorials for Free - [Subscribe Now!](https://www.youtube.com/c/AntonPutra?sub_confirmation=1)
 
 # Contents
 
