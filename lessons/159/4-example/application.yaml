@@ -1,0 +1,37 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: my-app
+  namespace: argocd
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: aputra/nginx-lesson159:~v0.4
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: ssh://git@github.com/antonputra/lesson-159.git
+    targetRevision: main
+    path: my-app-chart
+    helm:
+      parameters:
+        - name: "replicaCount"
+          value: "2"
+        - name: "image.repository"
+          value: aputra/nginx-lesson159
+        - name: "image.tag"
+          value: v0.1.0
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    syncOptions:
+      - Validate=true
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
