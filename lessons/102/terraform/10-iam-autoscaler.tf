@@ -16,6 +16,7 @@ data "aws_iam_policy_document" "eks_cluster_autoscaler_assume_role_policy" {
   }
 }
 
+
 resource "aws_iam_role" "eks_cluster_autoscaler" {
   assume_role_policy = data.aws_iam_policy_document.eks_cluster_autoscaler_assume_role_policy.json
   name               = "eks-cluster-autoscaler"
@@ -25,19 +26,33 @@ resource "aws_iam_policy" "eks_cluster_autoscaler" {
   name = "eks-cluster-autoscaler"
 
   policy = jsonencode({
-    Statement = [{
-      Action = [
-                "autoscaling:DescribeAutoScalingGroups",
-                "autoscaling:DescribeAutoScalingInstances",
-                "autoscaling:DescribeLaunchConfigurations",
-                "autoscaling:DescribeTags",
-                "autoscaling:SetDesiredCapacity",
-                "autoscaling:TerminateInstanceInAutoScalingGroup",
-                "ec2:DescribeLaunchTemplateVersions"
-            ]
-      Effect   = "Allow"
-      Resource = "*"
-    }]
+    Statement = [
+      {
+        Action = [
+          "autoscaling:DescribeAutoScalingInstances",
+          "autoscaling:DescribeAutoScalingGroups",
+          "ec2:DescribeLaunchTemplateVersions",
+          "autoscaling:DescribeTags",
+          "autoscaling:DescribeLaunchConfigurations",
+          "ec2:DescribeInstanceTypes",
+        ]
+        Effect   = "Allow"
+        Resource = "*"
+      },
+      {
+        Action = [
+          "autoscaling:SetDesiredCapacity",
+          "autoscaling:TerminateInstanceInAutoScalingGroup",
+        ]
+        Effect = "Allow"
+        Resource = "*"
+        Condition = {
+          "StringEquals" = {
+            "aws:ResourceTag/k8s.io/cluster-autoscaler/${var.cluster_name}": "owned"
+          }
+        }
+      }
+    ]
     Version = "2012-10-17"
   })
 }
