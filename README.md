@@ -4,7 +4,7 @@
 
 # Support
 
-🤠 - Get Full-Length High-Quality DevOps Tutorials for Free - [Subscribe Now!](https://www.youtube.com/c/AntonPutra?sub_confirmation=1)
+🔴 - To support my channel, I’d like to offer Mentorship/On-the-Job Support/Consulting (me@antonputra.com)
 
 # Contents
 
