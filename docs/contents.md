@@ -92,3 +92,4 @@
 - [158 - ArgoCD Tutorial for Beginners: GitOps CD for Kubernetes #1](../lessons/158)
 - [159 - ArgoCD Image Updater: Decouple CI from CD! #2](../lessons/159)
 - [160 - Terragrunt Tutorial: Create VPC, EKS from Scratch! (Step-by-Step)](../lessons/160)
+- [161 - Terraform Tips & Tricks: loops, if-statements, and more](../lessons/161)
