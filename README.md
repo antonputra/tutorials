@@ -1,10 +1,6 @@
-# Tutorials
+# New Video - https://youtu.be/3N0tGKwvBdA
 
-![YouTube Art](assets/youtube-art.png?raw=true "Title")
-
-# Support
-
-🔴 - To support my channel, I’d like to offer Mentorship/On-the-Job Support/Consulting (me@antonputra.com)
+![YouTube Art](assets/new-video.png?raw=true "Title")
 
 # Contents
 
