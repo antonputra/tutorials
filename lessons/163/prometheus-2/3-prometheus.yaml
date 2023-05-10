@@ -1,0 +1,62 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  name: production
+  namespace: monitoring
+spec:
+  version: v2.43.1
+  serviceAccountName: prometheus
+  podMonitorSelector:
+    matchLabels:
+      prometheus: main
+  podMonitorNamespaceSelector:
+    matchLabels:
+      monitoring: prometheus
+  serviceMonitorSelector:
+    matchLabels:
+      prometheus: main
+  serviceMonitorNamespaceSelector:
+    matchLabels:
+      monitoring: prometheus
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 2Gi
+  replicas: 1
+  logLevel: info
+  logFormat: logfmt
+  retention: 6h
+  scrapeInterval: 15s
+  securityContext:
+    fsGroup: 0
+    runAsNonRoot: false
+    runAsUser: 0
+  storage:
+    volumeClaimTemplate:
+      spec:
+        resources:
+          requests:
+            storage: 20Gi
+  remoteWrite:
+    - url: https://receiver-write.monitoring.svc.cluster.local:10908/api/v1/receive
+      tlsConfig:
+        certFile: /secrets/tls.crt
+        keyFile: /secrets/tls.key
+        caFile: /secrets/ca.crt
+      queueConfig:
+        maxSamplesPerSend: 1000
+        maxShards: 200
+        capacity: 2500
+  containers:
+    - name: prometheus
+      volumeMounts:
+        - name: prometheus-tls
+          mountPath: /secrets
+  volumes:
+    - name: prometheus-tls
+      secret:
+        secretName: prometheus-tls

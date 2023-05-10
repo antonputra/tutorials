@@ -1,0 +1,39 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: minio-post-job
+  namespace: minio
+spec:
+  template:
+    metadata:
+      labels:
+        app: minio-job
+      annotations:
+        sidecar.istio.io/inject: "false"
+    spec:
+      restartPolicy: OnFailure
+      volumes:
+        - name: minio-configuration
+          projected:
+            sources:
+              - configMap:
+                  name: minio
+              - secret:
+                  name: minio
+      containers:
+        - name: minio-make-user
+          image: "quay.io/minio/mc:RELEASE.2022-12-13T00-23-28Z"
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh", "/config/add-user"]
+          env:
+            - name: MINIO_ENDPOINT
+              value: minio
+            - name: MINIO_PORT
+              value: "9000"
+          volumeMounts:
+            - name: minio-configuration
+              mountPath: /config
+          resources:
+            requests:
+              memory: 128Mi

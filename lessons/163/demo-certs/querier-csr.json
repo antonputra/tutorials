@@ -1,0 +1,17 @@
+{
+    "CN": "querier",
+    "hosts": [
+        "querier"
+    ],
+    "key": {
+        "algo": "rsa",
+        "size": 2048
+    },
+    "names": [
+        {
+            "C": "US",
+            "ST": "CA",
+            "L": "Los Banos"
+        }
+    ]
+}

@@ -1,0 +1,113 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: monitoring
+  name: storegateway
+spec:
+  replicas: 1
+  serviceName: storegateway
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: storegateway
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: storegateway
+    spec:
+      serviceAccount: thanos
+      securityContext:
+        fsGroup: 1001
+      initContainers:
+        - name: init-chmod-data
+          image: docker.io/bitnami/minideb:buster
+          command:
+            - sh
+            - -c
+            - |
+              mkdir -p /data
+              chown -R "1001:1001" /data
+          securityContext:
+            runAsUser: 0
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      containers:
+        - name: storegateway
+          image: docker.io/bitnami/thanos:0.31.0
+          securityContext:
+            runAsUser: 1001
+          args:
+            - store
+            - --chunk-pool-size=2GB
+            - --log.level=debug
+            - --grpc-address=0.0.0.0:10901
+            - --http-address=0.0.0.0:10902
+            - --data-dir=/data
+            - --objstore.config-file=/conf/objstore.yml
+            # START: Mutual TLS
+            - --grpc-server-tls-cert=/secrets/tls.crt
+            - --grpc-server-tls-key=/secrets/tls.key
+            - --grpc-server-tls-client-ca=/secrets/ca.crt
+            # END: Mutual TLS
+          ports:
+            - name: http
+              containerPort: 10902
+              protocol: TCP
+            - name: grpc
+              containerPort: 10901
+              protocol: TCP
+          livenessProbe:
+            failureThreshold: 6
+            httpGet:
+              path: /-/healthy
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 30
+          readinessProbe:
+            failureThreshold: 6
+            httpGet:
+              path: /-/ready
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 30
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
+          volumeMounts:
+            - name: objstore
+              mountPath: /conf/objstore.yml
+              subPath: objstore.yml
+            - name: data
+              mountPath: /data
+            # START: Mutual TLS
+            - name: storegateway-tls
+              mountPath: /secrets
+            # END: Mutual TLS
+      volumes:
+        - name: objstore
+          secret:
+            secretName: objstore
+        # START: Mutual TLS
+        - name: storegateway-tls
+          secret:
+            secretName: storegateway-tls
+        # END: Mutual TLS
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: [ReadWriteOnce]
+        resources:
+          requests:
+            storage: 20Gi

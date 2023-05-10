@@ -1,0 +1,65 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  name: staging
+  namespace: monitoring
+spec:
+  version: v2.43.1
+  serviceAccountName: prometheus
+  podMonitorSelector:
+    matchLabels:
+      prometheus: main
+  podMonitorNamespaceSelector:
+    matchLabels:
+      monitoring: prometheus
+  serviceMonitorSelector:
+    matchLabels:
+      prometheus: main
+  serviceMonitorNamespaceSelector:
+    matchLabels:
+      monitoring: prometheus
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 2Gi
+  replicas: 1
+  logLevel: info
+  logFormat: logfmt
+  retention: 6h
+  scrapeInterval: 15s
+  securityContext:
+    fsGroup: 0
+    runAsNonRoot: false
+    runAsUser: 0
+  storage:
+    volumeClaimTemplate:
+      spec:
+        resources:
+          requests:
+            storage: 20Gi
+  # START: Deployed Thanos Sidecar
+  thanos:
+    version: v0.31.0
+    objectStorageConfig:
+      name: objstore
+      key: objstore.yml
+    # END: Deployed Thanos Sidecar
+    # START: Mutual TLS
+    grpcServerTlsConfig:
+      caFile: /secrets/ca.crt
+      certFile: /secrets/tls.crt
+      keyFile: /secrets/tls.key
+  containers:
+    - name: thanos-sidecar
+      volumeMounts:
+        - name: sidecar-tls
+          mountPath: /secrets
+  volumes:
+    - name: sidecar-tls
+      secret:
+        secretName: sidecar-tls
+  # END: Mutual TLS

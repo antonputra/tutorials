@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: receiver-store-1
+  namespace: monitoring
+spec:
+  type: ClusterIP
+  ports:
+    - port: 10907
+      targetPort: grpc
+      protocol: TCP
+      name: grpc
+  selector:
+    app.kubernetes.io/name: receiver
+    app.kubernetes.io/instance: receiver-1

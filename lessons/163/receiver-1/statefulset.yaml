@@ -1,0 +1,131 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: receiver-1
+  namespace: monitoring
+spec:
+  replicas: 1
+  serviceName: receiver
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: receiver
+      app.kubernetes.io/instance: receiver-1
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: receiver
+        app.kubernetes.io/instance: receiver-1
+    spec:
+      serviceAccount: thanos
+      securityContext:
+        fsGroup: 1001
+      initContainers:
+        - name: init-chmod-data
+          image: docker.io/bitnami/minideb:buster
+          imagePullPolicy: Always
+          command:
+            - sh
+            - -c
+            - |
+              mkdir -p /data
+              chown -R "1001:1001" /data
+          securityContext:
+            runAsUser: 0
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      containers:
+        - name: receiver
+          image: docker.io/bitnami/thanos:0.31.0
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsUser: 1001
+          args:
+            - receive
+            - --tsdb.path=/data
+            - --tsdb.retention=15d
+            - --log.level=info
+            - --grpc-address=0.0.0.0:10907
+            - --http-address=0.0.0.0:10909
+            - --receive.replication-factor=1
+            - --label
+            - receive_replica="0"
+            - --label
+            - receive_cluster="main"
+            - --receive.tenant-label-name
+            - my_company_default
+            - --objstore.config-file=/conf/objstore.yml
+            - --remote-write.address=0.0.0.0:10908
+            - --receive.hashrings-algorithm=ketama
+            - --receive.hashrings-file=/conf/hashring.json
+            - --receive.local-endpoint=receiver-store-1.monitoring.svc.cluster.local:10907
+            - --remote-write.server-tls-cert=/secrets/tls.crt
+            - --remote-write.server-tls-key=/secrets/tls.key
+            - --remote-write.server-tls-client-ca=/secrets/ca.crt
+          ports:
+            - name: http
+              containerPort: 10909
+              protocol: TCP
+            - name: grpc
+              containerPort: 10907
+              protocol: TCP
+            - name: remote-write
+              containerPort: 10908
+              protocol: TCP
+          livenessProbe:
+            failureThreshold: 6
+            httpGet:
+              path: /-/healthy
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 30
+          readinessProbe:
+            failureThreshold: 6
+            httpGet:
+              path: /-/ready
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 30
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          volumeMounts:
+            - name: objstore
+              mountPath: /conf/objstore.yml
+              subPath: objstore.yml
+            - name: data
+              mountPath: /data
+            - name: receiver-tls
+              mountPath: /secrets
+            - name: hashring
+              mountPath: /conf/hashring.json
+              subPath: hashring.json
+      volumes:
+        - name: objstore
+          secret:
+            secretName: objstore
+        - name: receiver-tls
+          secret:
+            secretName: receiver-tls
+        - name: hashring
+          secret:
+            secretName: hashring
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: [ReadWriteOnce]
+        resources:
+          requests:
+            storage: 20Gi
