@@ -1,0 +1,20 @@
+{
+    "CN": "receiver-write.monitoring.svc.cluster.local",
+    "hosts": [
+        "receiver-write.monitoring.svc.cluster.local",
+        "receiver-store-1.monitoring.svc.cluster.local:10907",
+        "receiver-store-2.monitoring.svc.cluster.local:10907",
+        "receiver-store-3.monitoring.svc.cluster.local:10907"
+    ],
+    "key": {
+        "algo": "ecdsa",
+        "size": 256
+    },
+    "names": [
+        {
+            "C": "US",
+            "ST": "CA",
+            "L": "Los Banos"
+        }
+    ]
+}

@@ -1,0 +1,17 @@
+{
+    "CN": "storegateway.monitoring.svc.cluster.local",
+    "hosts": [
+        "storegateway.monitoring.svc.cluster.local"
+    ],
+    "key": {
+        "algo": "rsa",
+        "size": 2048
+    },
+    "names": [
+        {
+            "C": "US",
+            "ST": "CA",
+            "L": "Los Banos"
+        }
+    ]
+}

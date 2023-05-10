@@ -94,3 +94,4 @@
 - [160 - Terragrunt Tutorial: Create VPC, EKS from Scratch! (Step-by-Step)](../lessons/160)
 - [161 - Terraform Tips & Tricks: loops, if-statements, and more](../lessons/161)
 - [162 - How to Manage Secrets in Terraform](../lessons/162)
+- [163 - Thanos (Prometheus) Tutorial: Remote Read/Write - mTLS - Step-by-Step!](../lessons/163)

@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: receiver-write
+  namespace: monitoring
+spec:
+  type: ClusterIP
+  ports:
+    - port: 10908
+      targetPort: remote-write
+      protocol: TCP
+      name: remote-write
+  selector:
+    app.kubernetes.io/name: receiver

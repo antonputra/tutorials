@@ -1,0 +1,94 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: monitoring
+  name: compactor
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: compactor
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: compactor
+    spec:
+      serviceAccount: thanos
+      securityContext:
+        fsGroup: 1001
+      initContainers:
+        - name: init-chmod-data
+          image: docker.io/bitnami/minideb:buster
+          command:
+            - sh
+            - -c
+            - |
+              mkdir -p /data
+              chown -R "1001:1001" /data
+          securityContext:
+            runAsUser: 0
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      containers:
+        - name: compactor
+          image: docker.io/bitnami/thanos:0.31.0
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsUser: 1001
+          args:
+            - compact
+            - --log.level=info
+            - --http-address=0.0.0.0:10902
+            - --data-dir=/data
+            - --retention.resolution-raw=7d
+            - --retention.resolution-5m=30d
+            - --retention.resolution-1h=180d
+            - --consistency-delay=30m
+            - --objstore.config-file=/conf/objstore.yml
+            - --wait
+          ports:
+            - name: http
+              containerPort: 10902
+              protocol: TCP
+          livenessProbe:
+            failureThreshold: 6
+            httpGet:
+              path: /-/healthy
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 30
+          readinessProbe:
+            failureThreshold: 6
+            httpGet:
+              path: /-/ready
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 30
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          volumeMounts:
+            - name: objstore
+              mountPath: /conf/objstore.yml
+              subPath: objstore.yml
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: objstore
+          secret:
+            secretName: objstore
+        - name: data
+          persistentVolumeClaim:
+            claimName: compactor

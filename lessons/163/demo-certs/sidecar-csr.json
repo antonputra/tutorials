@@ -1,0 +1,18 @@
+{
+    "CN": "sidecar.monitoring.svc.cluster.local",
+    "hosts": [
+        "sidecar.monitoring.svc.cluster.local",
+        "sidecar.antonputra.com"
+    ],
+    "key": {
+        "algo": "rsa",
+        "size": 2048
+    },
+    "names": [
+        {
+            "C": "US",
+            "ST": "CA",
+            "L": "Los Banos"
+        }
+    ]
+}
