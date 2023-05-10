@@ -1,6 +1,6 @@
 # New Video - https://youtu.be/feHSU0BMcco
 
-![YouTube Art](assets/new-video-163.png?raw=true "Title")
+![YouTube Art](assets/new-video-v2-163.png?raw=true "Title")
 
 # Contents
 
