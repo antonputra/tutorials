@@ -95,3 +95,4 @@
 - [161 - Terraform Tips & Tricks: loops, if-statements, and more](../lessons/161)
 - [162 - How to Manage Secrets in Terraform](../lessons/162)
 - [163 - Thanos (Prometheus) Tutorial: Remote Read/Write - mTLS - Step-by-Step!](../lessons/163)
+- [164 - An Introduction to Terraform](../lessons/164)
