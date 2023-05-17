@@ -2,6 +2,10 @@
 
 ![YouTube Art](assets/164.png?raw=true "Title")
 
+# Help
+
+If you find a typo or a mistake in the tutorial, please create a PR, and I'll happily merge it!
+
 # Contents
 
 📚 - [Lessons](docs/contents.md)
