@@ -1,0 +1,85 @@
+---
+ignore-namespaces:
+  - kube-node-lease
+  - kube-public
+  - kube-system
+  - kube-apiserver
+  - karpenter
+  - kubecost
+  - external-dns
+  - argocd
+  - aws-for-fluent-bit
+  - amazon-cloudwatch
+  - vpa
+rules:
+  cluster_wide:
+    security:
+      iam:
+        - disable_anonymous_access_for_cluster_roles
+        - check_endpoint_public_access
+        - check_aws_node_daemonset_service_account
+        - check_access_to_instance_profile
+        - restrict_wildcard_for_cluster_roles
+      multi_tenancy:
+        - ensure_namespace_quotas_exist
+      detective_controls:
+        - check_logs_are_enabled
+      network_security:
+        # - check_vpc_flow_logs
+        - check_awspca_exists
+        - check_default_deny_policy_exists
+      encryption_secrets:
+        - use_encryption_with_ebs
+        - use_encryption_with_efs
+        - use_efs_access_points
+      infrastructure_security:
+        - deploy_workers_onto_private_subnets
+        - make_sure_inspector_is_enabled
+      pod_security:
+        - ensure_namespace_psa_exist
+      image_security:
+        - use_immutable_tags_with_ecr
+    reliability:
+      applications:
+        - check_metrics_server_is_running
+        # - check_vertical_pod_autoscaler_exists
+    cluster_autoscaling:
+      cluster_autoscaler:
+        - check_any_cluster_autoscaler_exists
+        - ensure_cluster_autoscaler_and_cluster_versions_match
+        - ensure_cluster_autoscaler_has_autodiscovery_mode
+        - use_separate_iam_role_for_cluster_autoscaler
+        - employ_least_privileged_access_cluster_autoscaler_role
+        - use_managed_nodegroups
+    scalability:
+      control_plane:
+        - check_EKS_version
+        - check_kubectl_compression
+  namespace_based:
+    security:
+      iam:
+        - disable_anonymous_access_for_roles
+        - restrict_wildcard_for_roles
+        - disable_service_account_token_mounts
+        - disable_run_as_root_user
+        - use_dedicated_service_accounts_for_each_deployment
+        - use_dedicated_service_accounts_for_each_stateful_set
+        - use_dedicated_service_accounts_for_each_daemon_set
+      pod_security:
+        - disallow_container_socket_mount
+        - disallow_host_path_or_make_it_read_only
+        - set_requests_limits_for_containers
+        - disallow_privilege_escalation
+        - check_read_only_root_file_system
+      network_security:
+        - use_encryption_with_aws_load_balancers
+      encryption_secrets:
+        - disallow_secrets_from_env_vars
+      runtime_security:
+        - disallow_linux_capabilities
+    reliability:
+      applications:
+        - check_horizontal_pod_autoscaling_exists
+        - schedule_replicas_across_nodes
+        - run_multiple_replicas
+        - avoid_running_singleton_pods

@@ -97,3 +97,4 @@
 - [163 - Thanos (Prometheus) Tutorial: Remote Read/Write - mTLS - Step-by-Step!](../lessons/163)
 - [164 - An Introduction to Terraform #1](../lessons/164)
 - [165 - How to manage Terraform State? #2](../lessons/165)
+- [166 - HardenEKS: Best Practices For Amazon EKS (Programmatically)](../lessons/166)
