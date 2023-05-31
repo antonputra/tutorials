@@ -1,0 +1,420 @@
+{
+    "cluster_wide": {
+        "security": {
+            "iam": {
+                "Don't bind clusterroles to anonymous/unauthenticated groups.": {
+                    "status": true,
+                    "resources": [
+                        ""
+                    ],
+                    "resource_type": "ClusterRoleBinding",
+                    "namespace": null
+                },
+                "EKS Cluster Endpoint is not Private.": {
+                    "status": false,
+                    "resources": [
+                        ""
+                    ],
+                    "resource_type": "Cluster Endpoint",
+                    "namespace": null
+                },
+                "Update the aws-node daemonset to use IRSA.": {
+                    "status": false,
+                    "resources": [
+                        "aws-node"
+                    ],
+                    "resource_type": "Daemonset",
+                    "namespace": null
+                },
+                "Restrict access to the instance profile assigned to nodes.": {
+                    "status": false,
+                    "resources": [
+                        "i-03f8e01f903ef2ceb"
+                    ],
+                    "resource_type": "Node",
+                    "namespace": null
+                },
+                "ClusterRoles should not have '*' in Verbs or Resources.": {
+                    "status": true,
+                    "resources": [
+                        ""
+                    ],
+                    "resource_type": "Cluster Role",
+                    "namespace": null
+                }
+            },
+            "multi_tenancy": {
+                "Namespaces should have quotas assigned.": {
+                    "status": false,
+                    "resources": [
+                        "default"
+                    ],
+                    "resource_type": "Namepsace",
+                    "namespace": null
+                }
+            },
+            "detective_controls": {
+                "Enable control plane logs for auditing.": {
+                    "status": true,
+                    "resources": [
+                        ""
+                    ],
+                    "resource_type": "Log Configuration",
+                    "namespace": null
+                }
+            },
+            "network_security": {
+                "Enable flow logs for your VPC.": {
+                    "status": false,
+                    "resources": [
+                        ""
+                    ],
+                    "resource_type": "VPC Configuration",
+                    "namespace": null
+                },
+                "Install aws privateca issuer for your certificates.": {
+                    "status": false,
+                    "resources": [
+                        "aws-privateca-issuer"
+                    ],
+                    "resource_type": "Service",
+                    "namespace": null
+                },
+                "Namespaces that does not have default network deny policies.": {
+                    "status": false,
+                    "resources": [
+                        "default"
+                    ],
+                    "resource_type": "Service",
+                    "namespace": null
+                }
+            },
+            "encryption_secrets": {
+                "EBS Storage Classes should have encryption parameter.": {
+                    "status": false,
+                    "resources": [
+                        "my-gp3"
+                    ],
+                    "resource_type": "StorageClass",
+                    "namespace": null
+                },
+                "EFS Persistent volumes should have tls mount option.": {
+                    "status": true,
+                    "resources": [
+                        ""
+                    ],
+                    "resource_type": "PersistentVolume",
+                    "namespace": null
+                },
+                "EFS Persistent volumes should leverage access points.": {
+                    "status": true,
+                    "resources": [
+                        ""
+                    ],
+                    "resource_type": "PersistentVolume",
+                    "namespace": null
+                }
+            },
+            "infrastructure_security": {
+                "Place worker nodes on private subnets.": {
+                    "status": true,
+                    "resources": [
+                        ""
+                    ],
+                    "resource_type": "Node",
+                    "namespace": null
+                },
+                "Enable Amazon Inspector for ec2 and ecr.": {
+                    "status": false,
+                    "resources": [
+                        ""
+                    ],
+                    "resource_type": "Inspector Configuration",
+                    "namespace": null
+                }
+            },
+            "pod_security": {
+                "Namespaces should have psa modes.": {
+                    "status": false,
+                    "resources": [
+                        "default"
+                    ],
+                    "resource_type": "Namespace",
+                    "namespace": null
+                }
+            },
+            "image_security": {
+                "Make image tags immutable.": {
+                    "status": true,
+                    "resources": [
+                        ""
+                    ],
+                    "resource_type": "ECR Repository",
+                    "namespace": null
+                }
+            }
+        },
+        "reliability": {
+            "applications": {
+                "Metrics server is not deployed.": {
+                    "status": true,
+                    "resources": [
+                        ""
+                    ],
+                    "resource_type": "Service",
+                    "namespace": null
+                },
+                "Vertical pod autoscaler is not deployed.": {
+                    "status": false,
+                    "resources": [
+                        ""
+                    ],
+                    "resource_type": "Deployment",
+                    "namespace": null
+                }
+            }
+        },
+        "cluster_autoscaling": {
+            "cluster_autoscaler": {
+                "Cluster Autoscaler or Karpenter is not deployed.": {
+                    "status": false,
+                    "resources": [
+                        ""
+                    ],
+                    "resource_type": "Deployment",
+                    "namespace": null
+                },
+                "Cross version compatibility between CA and k8s is not recommended.": {
+                    "status": true,
+                    "resources": [
+                        ""
+                    ],
+                    "resource_type": "Deployment",
+                    "namespace": null
+                },
+                "Auto discovery is not enabled for Cluster Autoscaler.": {
+                    "status": true,
+                    "resources": [
+                        ""
+                    ],
+                    "resource_type": "Deployment",
+                    "namespace": null
+                },
+                "Cluster-autoscaler deployment does not use a dedicated IAM Role (IRSA).": {
+                    "status": true,
+                    "resources": [
+                        ""
+                    ],
+                    "resource_type": "Deployment",
+                    "namespace": null
+                },
+                "Cluster autoscaler role has unnecessary actions assigned.": {
+                    "status": true,
+                    "resources": [
+                        ""
+                    ],
+                    "resource_type": "IAM Role Action",
+                    "namespace": null
+                },
+                "Nodes are recommended to be part of a managed noge group.": {
+                    "status": true,
+                    "resources": [
+                        ""
+                    ],
+                    "resource_type": "Node",
+                    "namespace": null
+                }
+            }
+        },
+        "scalability": {
+            "control_plane": {
+                "EKS Version Should be greater or equal to 1.24.": {
+                    "status": true,
+                    "resources": [
+                        ""
+                    ],
+                    "resource_type": "Cluster Version",
+                    "namespace": null
+                },
+                "`disable-compression` in kubeconfig should equal True": {
+                    "status": false,
+                    "resources": [
+                        ""
+                    ],
+                    "resource_type": "Compression Setting",
+                    "namespace": null
+                }
+            }
+        }
+    },
+    "namespace_based": {
+        "security": {
+            "iam": {
+                "Don't bind roles to anonymous or unauthenticated groups.": {
+                    "status": true,
+                    "resources": [
+                        ""
+                    ],
+                    "resource_type": "RoleBinding",
+                    "namespace": null
+                },
+                "Roles should not have '*' in Verbs or Resources.": {
+                    "status": true,
+                    "resources": [
+                        ""
+                    ],
+                    "resource_type": "Role",
+                    "namespace": null
+                },
+                "Auto-mounting of Service Account tokens is not allowed.": {
+                    "status": true,
+                    "resources": [
+                        ""
+                    ],
+                    "resource_type": "Pod",
+                    "namespace": null
+                },
+                "Running as root is not allowed.": {
+                    "status": true,
+                    "resources": [
+                        ""
+                    ],
+                    "resource_type": "Pod",
+                    "namespace": null
+                },
+                "Don't share service accounts between Deployments.": {
+                    "status": true,
+                    "resources": [
+                        ""
+                    ],
+                    "resource_type": "Deployment",
+                    "namespace": null
+                },
+                "Don't share service accounts between StatefulSets.": {
+                    "status": true,
+                    "resources": [
+                        ""
+                    ],
+                    "resource_type": "StatefulSet",
+                    "namespace": null
+                },
+                "Don't share service accounts between DaemonSets.": {
+                    "status": true,
+                    "resources": [
+                        ""
+                    ],
+                    "resource_type": "DaemonSet",
+                    "namespace": null
+                }
+            },
+            "pod_security": {
+                "Container socket mounts are not allowed.": {
+                    "status": true,
+                    "resources": [
+                        ""
+                    ],
+                    "resource_type": "Pod",
+                    "namespace": null
+                },
+                "Restrict the use of hostpath.": {
+                    "status": true,
+                    "resources": [
+                        ""
+                    ],
+                    "resource_type": "Pod",
+                    "namespace": null
+                },
+                "Set requests and limits for each container.": {
+                    "status": true,
+                    "resources": [
+                        ""
+                    ],
+                    "resource_type": "Pod",
+                    "namespace": null
+                },
+                "Set allowPrivilegeEscalation in the pod spec to false.": {
+                    "status": true,
+                    "resources": [
+                        ""
+                    ],
+                    "resource_type": "Pod",
+                    "namespace": null
+                },
+                "Configure your images with a read-only root file system.": {
+                    "status": true,
+                    "resources": [
+                        ""
+                    ],
+                    "resource_type": "Pod",
+                    "namespace": null
+                }
+            },
+            "network_security": {
+                "Make sure you specify an ssl cert.": {
+                    "status": true,
+                    "resources": [
+                        ""
+                    ],
+                    "resource_type": "Service",
+                    "namespace": null
+                }
+            },
+            "encryption_secrets": {
+                "Disallow secrets from env vars.": {
+                    "status": true,
+                    "resources": [
+                        ""
+                    ],
+                    "resource_type": "Pod",
+                    "namespace": null
+                }
+            },
+            "runtime_security": {
+                "Capabilities beyond the allowed list are disallowed.": {
+                    "status": true,
+                    "resources": [
+                        ""
+                    ],
+                    "resource_type": "Pod",
+                    "namespace": null
+                }
+            }
+        },
+        "reliability": {
+            "applications": {
+                "Deploy horizontal pod autoscaler for deployments.": {
+                    "status": true,
+                    "resources": [
+                        ""
+                    ],
+                    "resource_type": "Deployment",
+                    "namespace": null
+                },
+                "Spread replicas across AZs and Nodes.": {
+                    "status": true,
+                    "resources": [
+                        ""
+                    ],
+                    "resource_type": "Deployment",
+                    "namespace": null
+                },
+                "Avoid running single replica deployments.": {
+                    "status": true,
+                    "resources": [
+                        ""
+                    ],
+                    "resource_type": "Deployment",
+                    "namespace": null
+                },
+                "Avoid running pods without deployments.": {
+                    "status": true,
+                    "resources": [
+                        ""
+                    ],
+                    "resource_type": "Pod",
+                    "namespace": null
+                }
+            }
+        }
+    }
+}

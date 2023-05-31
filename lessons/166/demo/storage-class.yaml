@@ -1,0 +1,12 @@
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: my-gp3
+parameters:
+  type: gp3
+  encrypted: "true"
+  csi.storage.k8s.io/fstype: xfs
+provisioner: ebs.csi.aws.com
+allowVolumeExpansion: true
+reclaimPolicy: Delete
