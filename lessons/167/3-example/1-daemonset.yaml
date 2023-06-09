@@ -1,0 +1,30 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: service-b
+  namespace: 3-example
+spec:
+  selector:
+    matchLabels:
+      name: service-b
+  template:
+    metadata:
+      labels:
+        name: service-b
+    spec:
+      hostNetwork: true
+      containers:
+        - name: service-b
+          image: nginx:1.25.0
+          ports:
+            - containerPort: 80
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: role
+                    operator: In
+                    values:
+                      - public-nodes
