@@ -1,0 +1,13 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: nginx
+  namespace: 8-example
+spec:
+  type: ClusterIP
+  ports:
+    - name: web
+      port: 80
+  selector:
+    app: nginx

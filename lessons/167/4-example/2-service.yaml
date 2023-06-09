@@ -1,0 +1,14 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: nginx
+  namespace: 4-example
+spec:
+  type: NodePort
+  ports:
+    - name: web
+      port: 80
+      nodePort: 30010
+  selector:
+    app: nginx
