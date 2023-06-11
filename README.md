@@ -1,10 +1,6 @@
-# New Video - https://youtu.be/ePqUq06WoLk
+# New Video - https://youtu.be/AQeGdMuJWIM
 
-![YouTube Art](assets/167.png?raw=true "Title")
-
-# Help
-
-If you find a typo or a mistake in the tutorial, please create a PR, and I'll happily merge it!
+![YouTube Art](assets/168.png?raw=true "Title")
 
 # Contents
 
