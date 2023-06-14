@@ -6,7 +6,7 @@
 
 📚 - [Lessons](docs/contents.md)
 
-# Social - My Test Branch Edit
+# Social
 
 🎥 - [YouTube](https://www.youtube.com/c/AntonPutra)  
 💼 - [LinkedIn](https://www.linkedin.com/in/anton-putra)  
