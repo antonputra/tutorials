@@ -1,0 +1,20 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: fluent-bit
+spec:
+  selector:
+    matchLabels:
+      app: fluent-bit
+  template:
+    metadata:
+      labels:
+        app: fluent-bit
+    spec:
+      containers:
+        - name: fluent-bit
+          image: nginx:1.14.2
+      tolerations:
+        - effect: NoSchedule
+          operator: Exists
