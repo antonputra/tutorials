@@ -1,0 +1,29 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blue-myapp
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: myapp
+      replica: blue
+  template:
+    metadata:
+      labels:
+        app: myapp
+        replica: blue
+    spec:
+      containers:
+        - name: myapp
+          image: aputra/myapp-171:v1
+          ports:
+            - name: http
+              containerPort: 8181
+          startupProbe:
+            tcpSocket:
+              port: 8181
+            initialDelaySeconds: 20
+            periodSeconds: 5

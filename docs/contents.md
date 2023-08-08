@@ -100,3 +100,4 @@
 - [166 - HardenEKS: Best Practices For Amazon EKS (Programmatically)](../lessons/166)
 - [167 - 9 Ways to Expose an App on Amazon EKS to the Internet](../lessons/167)
 - [168 - How to build multi-arch Docker Images? (Docker Hub - ECR - EKS Demo)](../lessons/168)
+- [171 - Most Common Kubernetes Deployment Strategies](../lessons/171)
