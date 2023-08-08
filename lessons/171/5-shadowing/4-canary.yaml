@@ -1,0 +1,40 @@
+---
+apiVersion: flagger.app/v1beta1
+kind: Canary
+metadata:
+  name: myapp
+  namespace: staging
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: myapp
+  progressDeadlineSeconds: 60
+  service:
+    port: 8181
+  analysis:
+    # schedule interval (default 60s)
+    interval: 1m
+    # total number of iterations
+    iterations: 10
+    # max number of failed iterations before rollback
+    threshold: 2
+    # Traffic shadowing (compatible with Istio only)
+    mirror: true
+    # Weight of the traffic mirrored to your canary (defaults to 100%)
+    mirrorWeight: 100
+    metrics:
+      - name: request-success-rate
+        thresholdRange:
+          min: 99
+        interval: 1m
+      - name: request-duration
+        thresholdRange:
+          max: 500
+        interval: 30s
+    webhooks:
+      - name: load-test
+        url: http://loadtester.istio-system/
+        timeout: 5s
+        metadata:
+          cmd: "hey -z 10m -q 10 -c 2 http://myapp-canary.staging:8181/version"
