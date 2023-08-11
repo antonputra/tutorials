@@ -1,0 +1,26 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: istio-client
+  namespace: default
+spec:
+  template:
+    metadata:
+      labels:
+        app: istio-client
+        sidecar.istio.io/inject: "true"
+      annotations:
+        sidecar.istio.io/proxyCPU: "500m"
+        sidecar.istio.io/proxyCPULimit: "500m"
+        sidecar.istio.io/proxyMemory: "256Mi"
+        sidecar.istio.io/proxyMemoryLimit: "256Mi"
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: istio-client
+          image: aputra/client-172:v2
+          command: ["/main", "-maxClients", "500", "-scaleInterval", "1000", "-target1", "http://service-a-istio.default:8282/api/devices"]
+          ports:
+            - name: metrics
+              containerPort: 8081

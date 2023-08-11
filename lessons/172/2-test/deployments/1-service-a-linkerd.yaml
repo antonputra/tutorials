@@ -1,0 +1,13 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-a-linkerd
+  namespace: default
+spec:
+  selector:
+    app: service-a-linkerd
+  ports:
+    - protocol: TCP
+      port: 8282
+      targetPort: http

@@ -1,0 +1,26 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: linkerd-client
+  namespace: default
+spec:
+  template:
+    metadata:
+      labels:
+        app: linkerd-client
+      annotations:
+        linkerd.io/inject: enabled
+        config.linkerd.io/proxy-cpu-limit: 500m
+        config.linkerd.io/proxy-cpu-request: 500m
+        config.linkerd.io/proxy-memory-limit: 256Mi
+        config.linkerd.io/proxy-memory-request: 256Mi
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: linkerd-client
+          image: aputra/client-172:v2
+          command: ["/main", "-maxClients", "1000", "-scaleInterval", "1000", "-target1", "http://myapp-linkerd.default:8181/api/devices"]
+          ports:
+            - name: metrics
+              containerPort: 8081

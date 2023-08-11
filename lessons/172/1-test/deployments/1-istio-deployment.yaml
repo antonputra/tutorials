@@ -1,0 +1,42 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-istio
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp-istio
+  template:
+    metadata:
+      labels:
+        app: myapp-istio
+        sidecar.istio.io/inject: "true"
+      annotations:
+        sidecar.istio.io/proxyCPU: "500m"
+        sidecar.istio.io/proxyCPULimit: "500m"
+        sidecar.istio.io/proxyMemory: "256Mi"
+        sidecar.istio.io/proxyMemoryLimit: "256Mi"
+    spec:
+      containers:
+        - name: myapp-istio
+          image: aputra/service-b-172:v4
+          ports:
+            - name: http
+              containerPort: 8181
+          resources:
+            requests:
+              memory: 2Gi
+              cpu: "1"
+            limits:
+              memory: 2Gi
+              cpu: "1"
+      nodeSelector:
+        service: istio
+      tolerations:
+        - key: service
+          value: istio
+          effect: NoSchedule
+          operator: Equal
