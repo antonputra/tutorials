@@ -1,0 +1,42 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-linkerd
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp-linkerd
+  template:
+    metadata:
+      labels:
+        app: myapp-linkerd
+      annotations:
+        linkerd.io/inject: enabled
+        config.linkerd.io/proxy-cpu-limit: 500m
+        config.linkerd.io/proxy-cpu-request: 500m
+        config.linkerd.io/proxy-memory-limit: 256Mi
+        config.linkerd.io/proxy-memory-request: 256Mi
+    spec:
+      containers:
+        - name: myapp-linkerd
+          image: aputra/service-b-172:v4
+          ports:
+            - name: http
+              containerPort: 8181
+          resources:
+            requests:
+              memory: 2Gi
+              cpu: "1"
+            limits:
+              memory: 2Gi
+              cpu: "1"
+      nodeSelector:
+        service: linkerd
+      tolerations:
+        - key: service
+          value: linkerd
+          effect: NoSchedule
+          operator: Equal
