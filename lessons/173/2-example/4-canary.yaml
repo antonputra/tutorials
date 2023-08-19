@@ -1,0 +1,36 @@
+---
+apiVersion: flagger.app/v1beta1
+kind: Canary
+metadata:
+  name: myapp
+  namespace: staging
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: myapp
+  progressDeadlineSeconds: 60
+  service:
+    port: 8080
+  analysis:
+    interval: 1m
+    threshold: 10
+    maxWeight: 50
+    stepWeight: 5
+    metrics:
+      - name: request-success-rate
+        # Availability should be less higher 90%
+        thresholdRange:
+          min: 90
+        interval: 1m
+      - name: request-duration
+        # Latency should be less then 3s
+        thresholdRange:
+          max: 3000
+        interval: 30s
+    webhooks:
+      - name: load-test
+        url: http://loadtester.flagger/
+        timeout: 5s
+        metadata:
+          cmd: "hey -z 10m -q 10 -c 2 http://myapp-canary.staging:8080/version"

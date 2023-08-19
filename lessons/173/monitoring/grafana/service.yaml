@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: monitoring
+  name: grafana
+spec:
+  type: ClusterIP
+  ports:
+    - name: service
+      port: 3000
+      targetPort: grafana
+      protocol: TCP
+  selector:
+    app: grafana
