@@ -1,0 +1,30 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-canary
+  namespace: default
+spec:
+  replicas: 10
+  selector:
+    matchLabels:
+      app: myapp
+      type: canary
+  template:
+    metadata:
+      labels:
+        app: myapp
+        type: canary
+    spec:
+      containers:
+        - name: myapp
+          image: aputra/myapp-173:v2
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8080
+          startupProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 5

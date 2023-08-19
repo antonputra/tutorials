@@ -1,0 +1,30 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-control
+  namespace: default
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: myapp
+      type: control
+  template:
+    metadata:
+      labels:
+        app: myapp
+        type: control
+    spec:
+      containers:
+        - name: myapp
+          image: aputra/myapp-173:v1
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8080
+          startupProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 5

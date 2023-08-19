@@ -101,3 +101,5 @@
 - [167 - 9 Ways to Expose an App on Amazon EKS to the Internet](../lessons/167)
 - [168 - How to build multi-arch Docker Images? (Docker Hub - ECR - EKS Demo)](../lessons/168)
 - [171 - Most Common Kubernetes Deployment Strategies](../lessons/171)
+- [172 - Linkerd vs. Istio (Rust vs. C++) performance benchmark](../lessons/172)
+- [173 - Kubernetes Canary Deployment (Manual vs Automated)](../lessons/173)
