@@ -103,3 +103,4 @@
 - [171 - Most Common Kubernetes Deployment Strategies](../lessons/171)
 - [172 - Linkerd vs. Istio (Rust vs. C++) performance benchmark](../lessons/172)
 - [173 - Kubernetes Canary Deployment (Manual vs Automated)](../lessons/173)
+- [174 - Kubernetes Ingress Explained (2 Types)](../lessons/174)
