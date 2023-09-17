@@ -1,0 +1,8 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: service-a
+  namespace: service-a
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::424432388155:role/dev-demo-eks-service-a

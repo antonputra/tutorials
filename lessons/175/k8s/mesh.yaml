@@ -1,0 +1,14 @@
+---
+apiVersion: appmesh.k8s.aws/v1beta2
+kind: Mesh
+metadata:
+  name: dev-demo-eks
+spec:
+  # The egress filter type. By default, the type is DROP_ALL, which allows egress only from virtual
+  # nodes to other defined resources in the service mesh (and any traffic to *.amazonaws.com for AWS API calls)
+  # ALLOW_ALL | DROP_ALL
+  egressFilter:
+    type: DROP_ALL
+  namespaceSelector:
+    matchLabels:
+      mesh: dev-demo-eks

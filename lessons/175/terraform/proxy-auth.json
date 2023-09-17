@@ -1,0 +1,20 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "appmesh:StreamAggregatedResources"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "acm:ExportCertificate",
+                "acm-pca:GetCertificateAuthorityCertificate"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
