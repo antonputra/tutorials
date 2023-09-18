@@ -1,0 +1,17 @@
+---
+apiVersion: appmesh.k8s.aws/v1beta2
+kind: VirtualNode
+metadata:
+  name: service-a
+  namespace: service-a
+spec:
+  podSelector:
+    matchLabels:
+      app: service-a
+  listeners:
+    - portMapping:
+        port: 8080
+        protocol: http
+  serviceDiscovery:
+    dns:
+      hostname: service-a.service-a.svc.cluster.local

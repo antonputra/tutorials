@@ -1,0 +1,17 @@
+---
+apiVersion: appmesh.k8s.aws/v1beta2
+kind: GatewayRoute
+metadata:
+  name: service-a
+  namespace: service-a
+spec:
+  httpRoute:
+    match:
+      prefix: "/"
+      hostname:
+        exact: service-a.devopsbyexample.com
+    action:
+      target:
+        virtualService:
+          virtualServiceRef:
+            name: service-a

@@ -1,0 +1,164 @@
+# Default values for appmesh-controller.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+region: ""
+accountId: ""
+preview: false
+enableBackendGroups: false
+clusterName: ""
+useAwsDualStackEndpoint: false
+useAwsFIPSEndpoint: false
+
+image:
+  repository: 840364872350.dkr.ecr.us-west-2.amazonaws.com/amazon/appmesh-controller
+  tag: v1.12.3
+  pullPolicy: IfNotPresent
+
+sidecar:
+  image:
+    repository: 840364872350.dkr.ecr.us-west-2.amazonaws.com/aws-appmesh-envoy
+    tag: v1.25.4.0-prod
+    # sidecar.logLevel: Envoy log level can be info, warn, error or debug
+  logLevel: info
+  envoyAdminAccessPort: 9901
+  envoyAdminAccessLogFile: /tmp/envoy_admin_access.log
+  envoyAdminAccessEnableIPv6: false
+  useDualStackEndpoint: false
+  useFipsEndpoint: false
+  resources:
+    # sidecar.resources.requests: Envoy CPU and memory requests
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    # sidecar.resources/limits: Envoy CPU and memory limits
+    limits:
+      cpu: ""
+      memory: ""
+  lifecycleHooks:
+    # sidecar.lifecycleHooks: Envoy PreStop Hook Delay
+    preStopDelay: 20
+    postStartInterval: 5
+    postStartTimeout: 180
+  probes:
+    # sidecar.probes: Envoy Readiness Probe
+    readinessProbeInitialDelay: 1
+    readinessProbePeriod: 10
+  waitUntilProxyReady: false
+init:
+  image:
+    repository: 840364872350.dkr.ecr.us-west-2.amazonaws.com/aws-appmesh-proxy-route-manager
+    tag: v7-prod
+
+xray:
+  image:
+    repository: public.ecr.aws/xray/aws-xray-daemon
+    tag: latest
+
+nameOverride: ""
+fullnameOverride: ""
+
+resources:
+  limits:
+    cpu: 2000m
+    memory: 1Gi
+  requests:
+    cpu: 100m
+    memory: 200Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+podAnnotations: {}
+
+podLabels: {}
+
+cloudMapCustomHealthCheck:
+  # cloudMapCustomHealthCheck.enabled: `true` if CustomHealthCheck needs to be enabled in CloudMap
+  enabled: false
+
+cloudMapDNS:
+  # cloudMapDNS.ttl if set will use this global ttl value
+  ttl: 300
+
+sds:
+  # sds.enabled: `true` if SDS based mTLS support needs to be enabled in envoy
+  enabled: false
+  #sds.udsPath: UDS Path of the SDS Provider. Default value is tied to SPIRE.
+  udsPath: /run/spire/sockets/agent.sock
+
+serviceAccount:
+  # serviceAccount.create: Whether to create a service account or not
+  create: true
+  # serviceAccount.name: The name of the service account to create or use
+  name: ""
+  # serviceAccount.annotations: optional annotations to be applied to service account
+  annotations: {}
+
+rbac:
+  # rbac.create: `true` if rbac resources should be created
+  create: true
+  # rbac.pspEnabled: `true` if PodSecurityPolicy resources should be created
+  pspEnabled: false
+
+log:
+  #log.level: info (default), debug
+  level: "info"
+
+tracing:
+  # tracing.enabled: `true` if Envoy should be configured tracing
+  enabled: false
+  # tracing.provider: can be x-ray, jaeger or datadog
+  provider: x-ray
+  # tracing.address: Jaeger or Datadog agent server address (ignored for X-Ray)
+  address: appmesh-jaeger.appmesh-system
+  # tracing.port: X-Ray, Jaeger or Datadog agent server port
+  port: 2000
+  # tracing.samplingRate: X-Ray tracer sampling rate
+  samplingRate: 0.05
+  # tracing.logLevel: X-Ray agent log level
+  logLevel: prod
+  # tracing.role: X-Ray agent IAM role to upload segments to a different account
+  role: ""
+
+stats:
+  # stats.tagsEnabled: `true` if Envoy should include app-mesh tags
+  tagsEnabled: false
+  # stats.statsdEnabled: `true` if Envoy should publish stats to statsd endpoint @ 127.0.0.1:8125
+  statsdEnabled: false
+  #stats.statsdAddress: DogStatsD daemon address
+  statsdAddress: 127.0.0.1
+  #stats.statsdPort: DogStatsD daemon port
+  statsdPort: 8125
+  #stats.statsdSocketPath: DogStatsD unix domain socket path
+  statsdSocketPath: ""
+
+# Enable cert-manager
+enableCertManager: false
+
+# podDisruptionBudget for Appmesh controller
+podDisruptionBudget: {}
+#  minAvailable: 1
+
+# Environment variables to set in appmesh-controller pod
+env: {}
+
+#Example
+#env:
+#    http_proxy: http://proxyserver:3128
+#    https_proxy: http://proxyserver:3128
+#    no_proxy: "localhost,127.0.0.1,.cluster.local"
+
+# Liveness probe configuration for the controller
+livenessProbe:
+  failureThreshold: 2
+  httpGet:
+    path: /healthz
+    port: 61779
+    scheme: HTTP
+  initialDelaySeconds: 30
+  timeoutSeconds: 10

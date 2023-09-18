@@ -104,3 +104,4 @@
 - [172 - Linkerd vs. Istio (Rust vs. C++) performance benchmark](../lessons/172)
 - [173 - Kubernetes Canary Deployment (Manual vs Automated)](../lessons/173)
 - [174 - Kubernetes Ingress Explained (2 Types)](../lessons/174)
+- [175 - AWS App Mesh Tutorial (EKS | Ingress | Terraform)](../lessons/175)

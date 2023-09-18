@@ -1,0 +1,71 @@
+# Default values for appmesh-gateway.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+nameOverride: ""
+fullnameOverride: ""
+
+image:
+  repository: 840364872350.dkr.ecr.us-west-2.amazonaws.com/aws-appmesh-envoy
+  tag: v1.15.1.0-prod
+  pullPolicy: IfNotPresent
+  # skipImageOverride: when enabled the App Mesh injector will not override the Envoy image
+  skipImageOverride: false
+
+service:
+  type: LoadBalancer
+  port: 80
+  # externalTrafficPolicy: when set to Local it preserves the client source IP
+  externalTrafficPolicy: Cluster
+  # annotations: NLB as default load balancer type
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: nlb
+
+appmesh:
+  # appmesh.gateway: Whether to create a VirtualGateway or not
+  gateway: true
+  # appmesh.preview: Whether to enable App Mesh Preview (us-west-2 only) or not
+  preview: false
+
+# resources: requests are set by default to enable HPA
+resources:
+#  limits:
+#    cpu: 2000m
+#    memory: 1Gi
+  requests:
+    cpu: 100m
+    memory: 64Mi
+
+# hpa: CPU based auto-scaling
+hpa:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 5
+  # CPU average utilization percentage
+  averageUtilization: 90
+
+# podAntiAffinity: the scheduler should prefer to not schedule
+# two replica pods onto the same node but no guarantee is provided.
+podAntiAffinity:
+  enabled: true
+
+# affinity: node/pod affinity (disable podAntiAffinity to use this)
+affinity: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+podAnnotations: {}
+
+serviceAccount:
+  # serviceAccount.create: Whether to create a service account or not
+  create: true
+  # serviceAccount.name: The name of the service account to create or use
+  name: ""
+  annotations: {}
+
+rbac:
+  # rbac.pspEnabled: `true` if PodSecurityPolicy resources should be created
+  pspEnabled: false
+

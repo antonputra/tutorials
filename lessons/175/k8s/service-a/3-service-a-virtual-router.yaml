@@ -1,0 +1,21 @@
+---
+apiVersion: appmesh.k8s.aws/v1beta2
+kind: VirtualRouter
+metadata:
+  name: service-a
+  namespace: service-a
+spec:
+  listeners:
+    - portMapping:
+        port: 8080
+        protocol: http
+  routes:
+    - name: service-a
+      httpRoute:
+        match:
+          prefix: /
+        action:
+          weightedTargets:
+            - virtualNodeRef:
+                name: service-a
+              weight: 1

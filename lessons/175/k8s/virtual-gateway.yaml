@@ -1,0 +1,17 @@
+---
+apiVersion: appmesh.k8s.aws/v1beta2
+kind: VirtualGateway
+metadata:
+  name: ingress-gw
+  namespace: service-a
+spec:
+  namespaceSelector:
+    matchLabels:
+      gateway: ingress-gw
+  podSelector:
+    matchLabels:
+      app: ingress-gw
+  listeners:
+    - portMapping:
+        port: 8088
+        protocol: http

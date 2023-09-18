@@ -1,0 +1,8 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: service-a
+  labels:
+    mesh: dev-demo-eks
+    appmesh.k8s.aws/sidecarInjectorWebhook: enabled

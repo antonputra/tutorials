@@ -1,0 +1,16 @@
+---
+apiVersion: appmesh.k8s.aws/v1beta2
+kind: VirtualNode
+metadata:
+  name: service-b
+  namespace: service-b
+spec:
+  podSelector:
+    matchLabels:
+      app: service-b
+  # The backends that the virtual node is expected to send outbound traffic to.
+  backends:
+    - virtualService:
+        virtualServiceRef:
+          namespace: service-a
+          name: service-a
