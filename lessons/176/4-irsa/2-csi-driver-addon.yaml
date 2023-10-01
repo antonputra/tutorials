@@ -1,0 +1,13 @@
+---
+apiVersion: eks.aws.upbound.io/v1beta1
+kind: Addon
+metadata:
+  name: aws-ebs-csi-driver
+spec:
+  forProvider:
+    addonName: aws-ebs-csi-driver
+    addonVersion: v1.23.0-eksbuild.1
+    serviceAccountRoleArn: arn:aws:iam::424432388155:role/eks-ebs-csi-driver
+    region: us-east-2
+    clusterNameRef:
+      name: dev-demo

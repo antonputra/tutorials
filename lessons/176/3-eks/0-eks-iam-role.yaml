@@ -1,0 +1,29 @@
+---
+apiVersion: iam.aws.upbound.io/v1beta1
+kind: Role
+metadata:
+  name: dev-demo-eks-cluster
+spec:
+  forProvider:
+    assumeRolePolicy: |
+      {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Principal": {
+              "Service": "eks.amazonaws.com"
+            },
+            "Action": "sts:AssumeRole"
+          }
+        ]
+      }
+---
+apiVersion: iam.aws.upbound.io/v1beta1
+kind: RolePolicyAttachment
+metadata:
+  name: dev-demo-eks-cluster-amazon-eks-cluster-policy
+spec:
+  forProvider:
+    role: dev-demo-eks-cluster
+    policyArn: arn:aws:iam::aws:policy/AmazonEKSClusterPolicy

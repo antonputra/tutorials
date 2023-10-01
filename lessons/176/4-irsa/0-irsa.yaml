@@ -1,0 +1,14 @@
+---
+apiVersion: iam.aws.upbound.io/v1beta1
+kind: OpenIDConnectProvider
+metadata:
+  name: dev-demo
+  annotations:
+    upjet.upbound.io/manual-intervention: This resource needs valid OpenID Connect id and url.
+spec:
+  forProvider:
+    clientIdList:
+      - sts.amazonaws.com
+    thumbprintList:
+      - 9e99a48a9960b14926bb7f3b02e22da2b0ab7280
+    url: https://oidc.eks.us-east-2.amazonaws.com/id/2CBE3D3F6C281B6791594324922A4727

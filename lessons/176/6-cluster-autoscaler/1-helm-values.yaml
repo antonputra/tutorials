@@ -1,0 +1,9 @@
+---
+awsRegion: us-east-2
+autoDiscovery:
+  clusterName: dev-demo
+rbac:
+  serviceAccount:
+    name: cluster-autoscaler
+    annotations:
+      eks.amazonaws.com/role-arn: arn:aws:iam::424432388155:role/cluster-autoscaler

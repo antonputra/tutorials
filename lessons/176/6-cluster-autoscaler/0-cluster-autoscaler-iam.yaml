@@ -1,0 +1,68 @@
+---
+apiVersion: iam.aws.upbound.io/v1beta1
+kind: Role
+metadata:
+  name: cluster-autoscaler
+spec:
+  forProvider:
+    assumeRolePolicy: |
+      {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": "sts:AssumeRoleWithWebIdentity",
+            "Principal": {
+              "Federated": "arn:aws:iam::424432388155:oidc-provider/oidc.eks.us-east-2.amazonaws.com/id/2CBE3D3F6C281B6791594324922A4727"
+            },
+            "Condition": {
+              "StringEquals": {
+                "oidc.eks.us-east-2.amazonaws.com/id/2CBE3D3F6C281B6791594324922A4727:sub": "system:serviceaccount:kube-system:cluster-autoscaler"
+              }
+            }
+          }
+        ]
+      }
+---
+apiVersion: iam.aws.upbound.io/v1beta1
+kind: Policy
+metadata:
+  name: cluster-autoscaler
+spec:
+  forProvider:
+    policy: |
+      {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": [
+              "autoscaling:DescribeAutoScalingGroups",
+              "autoscaling:DescribeAutoScalingInstances",
+              "autoscaling:DescribeLaunchConfigurations",
+              "autoscaling:DescribeScalingActivities",
+              "ec2:DescribeInstanceTypes",
+              "ec2:DescribeLaunchTemplateVersions"
+            ],
+            "Resource": "*"
+          },
+          {
+            "Effect": "Allow",
+            "Action": [
+              "autoscaling:SetDesiredCapacity",
+              "autoscaling:TerminateInstanceInAutoScalingGroup"
+            ],
+            "Resource": "*"
+          }
+        ]
+      }
+---
+apiVersion: iam.aws.upbound.io/v1beta1
+kind: RolePolicyAttachment
+metadata:
+  name: cluster-autoscaler
+spec:
+  forProvider:
+    role: cluster-autoscaler
+    policyArnRef:
+      name: cluster-autoscaler

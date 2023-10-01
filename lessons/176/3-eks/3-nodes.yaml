@@ -1,0 +1,50 @@
+---
+apiVersion: eks.aws.upbound.io/v1beta1
+kind: NodeGroup
+metadata:
+  name: general
+spec:
+  forProvider:
+    clusterNameRef:
+      name: dev-demo
+    nodeRoleArnRef:
+      name: dev-demo-eks-nodes
+    region: us-east-2
+    capacityType: ON_DEMAND
+    instanceTypes: ["t3.small"]
+    labels:
+      role: general
+    scalingConfig:
+      - desiredSize: 1
+        minSize: 1
+        maxSize: 10
+    subnetIdRefs:
+      - name: dev-private-us-east-2a
+      - name: dev-private-us-east-2b
+---
+apiVersion: eks.aws.upbound.io/v1beta1
+kind: NodeGroup
+metadata:
+  name: spot
+spec:
+  forProvider:
+    clusterNameRef:
+      name: dev-demo
+    nodeRoleArnRef:
+      name: dev-demo-eks-nodes
+    region: us-east-2
+    capacityType: SPOT
+    instanceTypes: ["t3.small"]
+    labels:
+      role: spot
+    taint:
+      - key: type
+        value: spot
+        effect: NO_SCHEDULE
+    scalingConfig:
+      - desiredSize: 1
+        minSize: 1
+        maxSize: 10
+    subnetIdRefs:
+      - name: dev-private-us-east-2a
+      - name: dev-private-us-east-2b

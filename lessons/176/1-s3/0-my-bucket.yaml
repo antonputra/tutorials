@@ -1,0 +1,10 @@
+---
+apiVersion: s3.aws.upbound.io/v1beta1
+kind: Bucket
+metadata:
+  name: crossplane-antonputra
+spec:
+  forProvider:
+    region: us-east-2
+  providerConfigRef:
+    name: default
