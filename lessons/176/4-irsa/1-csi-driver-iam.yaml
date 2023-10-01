@@ -1,0 +1,34 @@
+---
+apiVersion: iam.aws.upbound.io/v1beta1
+kind: Role
+metadata:
+  name: eks-ebs-csi-driver
+spec:
+  forProvider:
+    assumeRolePolicy: |
+      {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": "sts:AssumeRoleWithWebIdentity",
+            "Principal": {
+              "Federated": "arn:aws:iam::424432388155:oidc-provider/oidc.eks.us-east-2.amazonaws.com/id/2CBE3D3F6C281B6791594324922A4727"
+            },
+            "Condition": {
+              "StringEquals": {
+                "oidc.eks.us-east-2.amazonaws.com/id/2CBE3D3F6C281B6791594324922A4727:sub": "system:serviceaccount:kube-system:ebs-csi-controller-sa"
+              }
+            }
+          }
+        ]
+      }
+---
+apiVersion: iam.aws.upbound.io/v1beta1
+kind: RolePolicyAttachment
+metadata:
+  name: eks-ebs-csi-driver-amazon-ebs-csi-driver-policy
+spec:
+  forProvider:
+    role: eks-ebs-csi-driver
+    policyArn: arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy

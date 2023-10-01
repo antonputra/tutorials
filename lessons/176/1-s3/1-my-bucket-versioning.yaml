@@ -1,0 +1,11 @@
+---
+apiVersion: s3.aws.upbound.io/v1beta1
+kind: BucketVersioning
+metadata:
+  name: crossplane-antonputra
+spec:
+  forProvider:
+    bucket: crossplane-antonputra
+    region: us-east-2
+    versioningConfiguration:
+      - status: Enabled
