@@ -1,0 +1,23 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: azure-cli
+  namespace: dev
+spec:
+  selector:
+    matchLabels:
+      app: azure-cli
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: azure-cli
+        azure.workload.identity/use: "true"
+    spec:
+      serviceAccountName: my-account
+      containers:
+        - image: mcr.microsoft.com/azure-cli:2.53.0
+          name: azure-cli
+          command: ["/bin/bash", "-c", "--"]
+          args: ["while true; do sleep 30; done;"]

@@ -1,0 +1,18 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: echoserver-v1
+spec:
+  ingressClassName: external-nginx
+  rules:
+    - host: echo.antonputra.pvt
+      http:
+        paths:
+          - path: /
+            pathType: Exact
+            backend:
+              service:
+                name: echoserver-v1
+                port:
+                  number: 8080

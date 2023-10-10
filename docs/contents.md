@@ -105,4 +105,5 @@
 - [173 - Kubernetes Canary Deployment (Manual vs Automated)](../lessons/173)
 - [174 - Kubernetes Ingress Explained (2 Types)](../lessons/174)
 - [175 - AWS App Mesh Tutorial (EKS | Ingress | Terraform)](../lessons/175)
-- [176 - Crossplane Tutorial (vs Terraform): Create AWS VPC - EKS - IRSA - Cluster Autoscaler ](../lessons/176)
+- [176 - Crossplane Tutorial (vs Terraform): Create AWS VPC - EKS - IRSA - Cluster Autoscaler](../lessons/176)
+- [177 - Azure Kubernetes Service (AKS) Tutorial: (Terraform - Nginx Ingress & TLS - OIDC Workload Identity)](../lessons/177)
