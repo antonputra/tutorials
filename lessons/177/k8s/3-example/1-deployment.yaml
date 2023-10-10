@@ -1,0 +1,20 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: echoserver-v1
+spec:
+  selector:
+    matchLabels:
+      app: echoserver-v1
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: echoserver-v1
+    spec:
+      containers:
+        - name: echoserver-v1
+          image: k8s.gcr.io/e2e-test-images/echoserver:2.5
+          ports:
+            - containerPort: 8080

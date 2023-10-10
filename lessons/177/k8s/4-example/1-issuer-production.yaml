@@ -1,0 +1,16 @@
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: production
+spec:
+  acme:
+    email: your-email@devopsbyexample.io
+    server: https://acme-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: production-cluster-issuer
+    solvers:
+      - selector: {}
+        http01:
+          ingress:
+            class: external-nginx
