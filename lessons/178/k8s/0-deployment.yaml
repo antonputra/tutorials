@@ -1,0 +1,24 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+        - name: myapp
+          image: aputra/myapp-178:v1
+          ports:
+            - containerPort: 8080
+          env:
+            - name: OTLP_ENDPOINT
+              value: tempo.monitoring:4318

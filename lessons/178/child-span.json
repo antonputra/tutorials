@@ -1,0 +1,66 @@
+{
+    "Name": "SQL SELECT",
+    "SpanContext": {
+        "TraceID": "dcc9948d8ea4d8d0220a8736cb07d3e9",
+        "SpanID": "4dffefe490405ab2",
+        "TraceFlags": "01",
+        "TraceState": "",
+        "Remote": false
+    },
+    "Parent": {
+        "TraceID": "dcc9948d8ea4d8d0220a8736cb07d3e9",
+        "SpanID": "7e00cad79f0089b6",
+        "TraceFlags": "01",
+        "TraceState": "",
+        "Remote": false
+    },
+    "SpanKind": 1,
+    "StartTime": "2023-10-18T13:15:25.449034+05:00",
+    "EndTime": "2023-10-18T13:15:27.450136667+05:00",
+    "Attributes": null,
+    "Events": null,
+    "Links": null,
+    "Status": {
+        "Code": "Unset",
+        "Description": ""
+    },
+    "DroppedAttributes": 0,
+    "DroppedEvents": 0,
+    "DroppedLinks": 0,
+    "ChildSpanCount": 0,
+    "Resource": [
+        {
+            "Key": "service.name",
+            "Value": {
+                "Type": "STRING",
+                "Value": "myapp"
+            }
+        },
+        {
+            "Key": "telemetry.sdk.language",
+            "Value": {
+                "Type": "STRING",
+                "Value": "go"
+            }
+        },
+        {
+            "Key": "telemetry.sdk.name",
+            "Value": {
+                "Type": "STRING",
+                "Value": "opentelemetry"
+            }
+        },
+        {
+            "Key": "telemetry.sdk.version",
+            "Value": {
+                "Type": "STRING",
+                "Value": "1.19.0"
+            }
+        }
+    ],
+    "InstrumentationLibrary": {
+        "Name": "myapp",
+        "Version": "",
+        "SchemaURL": ""
+    }
+}
