@@ -1,0 +1,13 @@
+---
+# Disable HTTPS; most of the time, it's exposed only internally,
+# and if needed, it can be secured with TLS using Ingress.
+configs:
+  params:
+    server.insecure: true
+
+notifications:
+  enabled: true
+  secret:
+    create: false
+  cm:
+    create: false

@@ -108,3 +108,4 @@
 - [176 - Crossplane Tutorial (vs Terraform): Create AWS VPC - EKS - IRSA - Cluster Autoscaler](../lessons/176)
 - [177 - Azure Kubernetes Service (AKS) Tutorial: (Terraform - Nginx Ingress & TLS - OIDC Workload Identity)](../lessons/177)
 - [178 - OpenTelemetry Golang Tutorial (Tracing in Grafana & Kubernetes & Tempo)](../lessons/178)
+- [179 - ArgoCD Notifications (Successful/Failed Deployments)](../lessons/179)
