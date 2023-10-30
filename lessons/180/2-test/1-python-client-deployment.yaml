@@ -1,0 +1,39 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: python-app-client
+  namespace: default
+spec:
+  template:
+    metadata:
+      labels:
+        app: python-app-client
+    spec:
+      restartPolicy: Never
+      nodeSelector:
+        service: python-client
+      tolerations:
+        - key: service
+          operator: Equal
+          value: python-client
+          effect: NoSchedule
+      containers:
+        - name: python-app-client
+          image: aputra/client-180:v14
+          command:
+            - /myapp
+            - -maxClients=30
+            - -scaleInterval=4000
+            - -randomSleep=90000
+            - -target=http://python-app:8000/api/images
+          ports:
+            - name: metrics
+              containerPort: 8081
+          resources:
+            requests:
+              memory: 3Gi
+              cpu: 1500m
+            limits:
+              memory: 3Gi
+              cpu: 1500m

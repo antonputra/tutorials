@@ -1,0 +1,15 @@
+---
+appPort: 8000
+otlpEndpoint: localhost:4317
+s3:
+  region: us-west-rack1
+  bucket: images
+  endpoint: http://192.168.50.211:9000
+  pathStyle: true
+  user: admin
+  secret: devops123
+db:
+  user: myuser
+  password: devops123
+  host: "192.168.50.74"
+  database: mydb
