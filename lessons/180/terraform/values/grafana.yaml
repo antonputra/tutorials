@@ -1,0 +1,5 @@
+---
+adminUser: admin
+adminPassword: devops123
+service:
+  type: LoadBalancer

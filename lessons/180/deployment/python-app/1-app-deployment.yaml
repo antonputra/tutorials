@@ -1,0 +1,56 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: python-app
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: python-app
+  template:
+    metadata:
+      labels:
+        app: python-app
+    spec:
+      nodeSelector:
+        service: python
+      tolerations:
+        - key: service
+          operator: Equal
+          value: python
+          effect: NoSchedule
+      containers:
+        - name: python-app
+          image: aputra/python-app-180:v12
+          ports:
+            - name: http
+              containerPort: 8000
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: "1"
+            limits:
+              memory: 512Mi
+              cpu: "2"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 3
+          volumeMounts:
+            - name: config
+              mountPath: /app/config.yaml
+              subPath: config.yaml
+      volumes:
+        - name: config
+          configMap:
+            name: python-app

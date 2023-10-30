@@ -1,0 +1,13 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: python-app
+  namespace: default
+spec:
+  type: LoadBalancer
+  selector:
+    app: python-app
+  ports:
+    - port: 8000
+      targetPort: http

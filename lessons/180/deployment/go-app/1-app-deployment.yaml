@@ -1,0 +1,61 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-app
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: go-app
+  template:
+    metadata:
+      labels:
+        app: go-app
+    spec:
+      nodeSelector:
+        service: golang
+      tolerations:
+        - key: service
+          operator: Equal
+          value: golang
+          effect: NoSchedule
+      containers:
+        - name: go-app
+          image: aputra/go-app-180:v12
+          ports:
+            - name: http
+              containerPort: 8000
+            - name: metrics
+              containerPort: 8081
+          env:
+            - name: GIN_MODE
+              value: release
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: "1"
+            limits:
+              memory: 512Mi
+              cpu: "2"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 3
+          volumeMounts:
+            - name: config
+              mountPath: /config.yaml
+              subPath: config.yaml
+      volumes:
+        - name: config
+          configMap:
+            name: go-app
