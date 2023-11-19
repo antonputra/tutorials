@@ -1,0 +1,25 @@
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: myapp
+  namespace: default
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: myapp
+  minReplicas: 1
+  maxReplicas: 10
+  metrics:
+    # use a "Pods" metric, which takes the average of the
+    # given metric across all pods controlled by the autoscaling target
+    - type: Pods
+      pods:
+        metric:
+          name: myapp_request_duration_seconds
+        # target 500 milli-requests per second,
+        # which is 1 request every two seconds
+        target:
+          type: Value
+          averageValue: 500m

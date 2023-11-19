@@ -1,0 +1,22 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq-consumer
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: rabbitmq-consumer
+  template:
+    metadata:
+      labels:
+        app: rabbitmq-consumer
+    spec:
+      containers:
+        - name: rabbitmq-consumer
+          image: ghcr.io/kedacore/rabbitmq-client:v1.0
+          command:
+            - receive
+          args:
+            - "amqp://myapp:devops123@rabbitmq.rabbitmq.svc.cluster.local:5672"

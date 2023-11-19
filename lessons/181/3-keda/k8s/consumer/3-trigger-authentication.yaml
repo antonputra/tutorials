@@ -1,0 +1,11 @@
+---
+apiVersion: keda.sh/v1alpha1
+kind: TriggerAuthentication
+metadata:
+  name: rabbitmq-consumer-trigger
+  namespace: default
+spec:
+  secretTargetRef:
+    - parameter: host
+      name: rabbitmq-consumer-secret
+      key: RabbitMqHost

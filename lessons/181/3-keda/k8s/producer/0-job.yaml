@@ -1,0 +1,20 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: rabbitmq-publish
+  namespace: default
+spec:
+  template:
+    spec:
+      containers:
+        - name: rabbitmq-client
+          image: ghcr.io/kedacore/rabbitmq-client:v1.0
+          command:
+            [
+              "send",
+              "amqp://myapp:devops123@rabbitmq.rabbitmq.svc.cluster.local:5672",
+              "300",
+            ]
+      restartPolicy: Never
+  backoffLimit: 4

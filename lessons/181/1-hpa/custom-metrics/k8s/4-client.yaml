@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: client
+  namespace: kube-system
+spec:
+  containers:
+    - name: client
+      image: curlimages/curl:latest
+      command: ["/bin/sh", "-c", "--"]
+      args: ["while true; do sleep 30; done;"]
