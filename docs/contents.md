@@ -110,3 +110,4 @@
 - [178 - OpenTelemetry Golang Tutorial (Tracing in Grafana & Kubernetes & Tempo)](../lessons/178)
 - [179 - ArgoCD Notifications (Successful/Failed Deployments)](../lessons/179)
 - [180 - Go (Golang) vs Python Performance Benchmark (Kubernetes - OpenTelemetry - Prometheus - Grafana)](../lessons/180)
+- [181 - Kubernetes Autoscaling: HPA vs. VPA vs. Keda vs. CA vs. Karpenter vs. Fargate](../lessons/181)
