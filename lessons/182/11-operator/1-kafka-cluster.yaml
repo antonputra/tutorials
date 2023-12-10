@@ -1,0 +1,9 @@
+---
+apiVersion: kafka.mycompany.com/v1
+kind: KafkaCluster
+metadata:
+  name: my-cluster
+spec:
+  size: 3
+  storage: 500Gi
+  port: 9092

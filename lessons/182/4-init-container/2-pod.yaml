@@ -1,0 +1,25 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp
+spec:
+  initContainers:
+    - name: init-repo
+      image: busybox:1.28
+      command: ["sh", "-c", "echo clone repo ..."]
+      volumeMounts:
+        - mountPath: /repo
+          name: repo
+  containers:
+    - name: myapp
+      image: aputra/myapp-182:0.1.0
+      ports:
+        - containerPort: 8080
+      volumeMounts:
+        - mountPath: /repo
+          name: repo
+  volumes:
+    - name: repo
+      emptyDir:
+        sizeLimit: 1Gi

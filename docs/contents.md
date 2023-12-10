@@ -111,3 +111,4 @@
 - [179 - ArgoCD Notifications (Successful/Failed Deployments)](../lessons/179)
 - [180 - Go (Golang) vs Python Performance Benchmark (Kubernetes - OpenTelemetry - Prometheus - Grafana)](../lessons/180)
 - [181 - Kubernetes Autoscaling: HPA vs. VPA vs. Keda vs. CA vs. Karpenter vs. Fargate](../lessons/181)
+- [182 - Kubernetes Workload Resources: App vs. Container vs. Pod vs. Deployment vs. StatefulSets & More](../lessons/182)

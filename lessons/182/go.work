@@ -1,0 +1,6 @@
+go 1.21.4
+
+use (
+	./0-app
+	./1-container
+)

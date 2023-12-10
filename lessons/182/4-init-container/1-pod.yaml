@@ -1,0 +1,20 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp
+spec:
+  initContainers:
+    - name: init-mydb
+      image: busybox:1.28
+      command:
+        [
+          "sh",
+          "-c",
+          "until nslookup mydb.pvt; do echo waiting for mydb; sleep 2; done",
+        ]
+  containers:
+    - name: myapp
+      image: aputra/myapp-182:0.1.0
+      ports:
+        - containerPort: 8080
