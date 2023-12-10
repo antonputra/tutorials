@@ -1,0 +1,33 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp
+spec:
+  initContainers:
+    - name: istio-init
+      image: docker.io/istio/proxyv2:1.20.0
+      args:
+        - istio-iptables
+        - -p
+        - "15001"
+        - -z
+        - "15006"
+        - -u
+        - "1337"
+        - -m
+        - REDIRECT
+        - -i
+        - "*"
+        - -x
+        - ""
+        - -b
+        - "*"
+        - -d
+        - 15090,15021,15020
+        - --log_output_level=default:info
+  containers:
+    - name: myapp
+      image: aputra/myapp-182:0.1.0
+      ports:
+        - containerPort: 8080

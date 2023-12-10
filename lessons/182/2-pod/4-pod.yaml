@@ -1,0 +1,24 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  containers:
+    - name: nginx
+      image: nginx:1.25.3
+      ports:
+        - containerPort: 80
+      volumeMounts:
+        - mountPath: /content
+          name: content
+    - name: file-puller
+      image: busybox:1.28
+      command: ["sh", "-c", "sleep 3600"]
+      volumeMounts:
+        - mountPath: /content
+          name: content
+  volumes:
+    - name: content
+      emptyDir:
+        sizeLimit: 1Gi

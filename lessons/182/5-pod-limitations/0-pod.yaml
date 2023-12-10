@@ -1,0 +1,90 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-0
+spec:
+  containers:
+    - name: myapp
+      image: aputra/myapp-182:0.2.0
+      ports:
+        - name: http
+          containerPort: 8080
+      readinessProbe:
+        httpGet:
+          path: /status
+          port: http
+        initialDelaySeconds: 10
+        periodSeconds: 3
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-1
+spec:
+  containers:
+    - name: myapp
+      image: aputra/myapp-182:0.2.0
+      ports:
+        - name: http
+          containerPort: 8080
+      readinessProbe:
+        httpGet:
+          path: /status
+          port: http
+        initialDelaySeconds: 10
+        periodSeconds: 3
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-2
+spec:
+  containers:
+    - name: myapp
+      image: aputra/myapp-182:0.2.0
+      ports:
+        - name: http
+          containerPort: 8080
+      readinessProbe:
+        httpGet:
+          path: /status
+          port: http
+        initialDelaySeconds: 10
+        periodSeconds: 3
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-3
+spec:
+  containers:
+    - name: myapp
+      image: aputra/myapp-182:0.2.0
+      ports:
+        - name: http
+          containerPort: 8080
+      readinessProbe:
+        httpGet:
+          path: /status
+          port: http
+        initialDelaySeconds: 10
+        periodSeconds: 3
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-4
+spec:
+  containers:
+    - name: myapp
+      image: aputra/myapp-182:0.2.0
+      ports:
+        - name: http
+          containerPort: 8080
+      readinessProbe:
+        httpGet:
+          path: /status
+          port: http
+        initialDelaySeconds: 10
+        periodSeconds: 3

@@ -1,0 +1,10 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: migration
+spec:
+  containers:
+    - name: migration
+      image: ubuntu:22.04
+      command: ["echo", "Run migration"]

@@ -1,0 +1,18 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: backup
+spec:
+  schedule: "* * * * *" # every minute
+  # schedule: "0 */6 * * *" # every six hours
+  # schedule: "0 1 * * *" # every day
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: backup
+              image: ubuntu:22.04
+              command: ["echo", "Run migration"]
