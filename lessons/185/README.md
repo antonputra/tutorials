@@ -1,6 +1,6 @@
 # What Is a Graph Database?
 
-You can find tutorial [here](https://youtu.be/JXdM5jfQTvM).
+You can find tutorial [here](https://youtu.be/LuTzJZwMLUQ).
 
 ## Commands
 

@@ -1,6 +1,6 @@
-# New Video - https://youtu.be/JXdM5jfQTvM
+# New Video - https://youtu.be/LuTzJZwMLUQ
 
-[<img src="assets/185.png?raw=true">](https://youtu.be/JXdM5jfQTvM)
+[<img src="assets/185-v2.png?raw=true">](https://youtu.be/LuTzJZwMLUQ)
 
 # Contents
 
