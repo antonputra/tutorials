@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+option go_package = "github.com/antonputra/tutorials/lessons/186";
+
+package event;
+
+message Event {
+    string customer = 1;
+    string action = 2;
+}

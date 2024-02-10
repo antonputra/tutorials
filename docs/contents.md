@@ -114,3 +114,4 @@
 - [182 - Kubernetes Workload Resources: App vs. Container vs. Pod vs. Deployment vs. StatefulSets & More](../lessons/182)
 - [184 - Kubernetes Health Checks: Liveness vs. Readiness vs. Startup Probe](../lessons/184)
 - [185 - Kubernetes Architecture?](../lessons/185)
+- [186 - Apache Kafka Architecture?](../lessons/186)
