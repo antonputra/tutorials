@@ -115,3 +115,4 @@
 - [184 - Kubernetes Health Checks: Liveness vs. Readiness vs. Startup Probe](../lessons/184)
 - [185 - Kubernetes Architecture?](../lessons/185)
 - [186 - Apache Kafka Architecture?](../lessons/186)
+- [187 - Docker vs Kubernetes vs Containerd](../lessons/187)
