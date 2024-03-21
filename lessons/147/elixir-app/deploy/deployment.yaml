@@ -1,0 +1,53 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elixir-app
+  namespace: staging
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: elixir-app
+  template:
+    metadata:
+      labels:
+        app: elixir-app
+    spec:
+      containers:
+        - image: aputra/elixir-app-lesson147:latest
+          imagePullPolicy: Always
+          name: elixir-app
+          env:
+            - name: TLS_ENABLED
+              value: "false"
+          ports:
+            - name: grpc
+              containerPort: 50050
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 200m
+            limits:
+              memory: 512Mi
+              cpu: 200m
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: role
+                    operator: In
+                    values:
+                      - general
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - elixir-app
+              topologyKey: "kubernetes.io/hostname"
+              namespaces:
+                - staging

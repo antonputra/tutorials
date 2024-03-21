@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package hardware;
+
+message Device {
+    string uuid = 1;
+    string mac = 2;
+    string firmware = 3;
+}
+
+message DeviceRequest {
+    string uuid = 1;
+}
+
+service Manager {
+    rpc GetDevice(DeviceRequest) returns (Device) {}
+}
