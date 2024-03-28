@@ -1,0 +1,28 @@
+---
+services:
+
+  loadbalancer:
+    image: nginx:1.25.4
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - 8080:8080
+    networks:
+      - my-net
+
+  server-a:
+    image: aputra/myapp-191:v4
+    environment:
+      - SERVICE_NAME="Server A"
+    networks:
+      - my-net
+
+  server-b:
+    image: aputra/myapp-191:v4
+    environment:
+      - SERVICE_NAME="Server B"
+    networks:
+      - my-net
+
+networks:
+  my-net:
