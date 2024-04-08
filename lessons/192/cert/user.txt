@@ -1,0 +1,39 @@
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            21:e8:78:4a:4f:3c:08:72:3f:64:92:18:6f:78:46:c2:59:4a:fa:48
+    Signature Algorithm: ecdsa-with-SHA256
+        Issuer: C=US, ST=CA, L=Los Banos, CN=DevOps by Example
+        Validity
+            Not Before: Apr  7 08:42:00 2024 GMT
+            Not After : Apr  7 08:42:00 2025 GMT
+        Subject: C=US, ST=CA, L=Los Banos, CN=john@example.com
+        Subject Public Key Info:
+            Public Key Algorithm: id-ecPublicKey
+                Public-Key: (256 bit)
+                pub:
+                    04:1a:6f:eb:b8:6c:95:3c:10:6c:8c:05:75:97:ed:
+                    48:4e:fa:28:47:0d:6a:7e:c9:c2:e5:d5:8a:de:3b:
+                    3f:0a:ae:1c:20:0b:90:ae:7b:86:48:19:c9:77:3a:
+                    a7:86:86:85:62:ec:d4:0c:cd:af:92:23:01:26:16:
+                    28:51:0e:e1:cc
+                ASN1 OID: prime256v1
+                NIST CURVE: P-256
+        X509v3 extensions:
+            X509v3 Key Usage: critical
+                Digital Signature, Key Encipherment
+            X509v3 Extended Key Usage:
+                TLS Web Server Authentication, TLS Web Client Authentication
+            X509v3 Basic Constraints: critical
+                CA:FALSE
+            X509v3 Subject Key Identifier:
+                8A:3A:AD:1F:6B:51:BA:F4:DE:B2:9E:5D:A6:53:89:BE:EC:AE:1A:8E
+            X509v3 Authority Key Identifier:
+                keyid:FF:40:CD:89:70:E1:37:CA:D5:7C:8F:9C:9C:81:D1:8D:89:FD:78:27
+
+    Signature Algorithm: ecdsa-with-SHA256
+         30:45:02:21:00:a6:ee:1e:73:ae:b6:02:0c:00:52:b1:e4:83:
+         19:ca:2e:81:6b:17:61:4a:0a:59:7d:ce:a0:a9:95:3d:90:ad:
+         3a:02:20:38:46:8d:c4:d3:58:8a:64:f8:88:5a:90:e7:21:fd:
+         a0:51:2a:c1:1d:3c:08:02:9c:a4:26:b9:b1:e0:8d:2b:cd
