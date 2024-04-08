@@ -1,0 +1,12 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  name: main
+  namespace: dev
+spec:
+  replicas: 1
+  serviceAccountName: myapp
+  serviceMonitorSelector:
+    matchLabels:
+      prometheus: main

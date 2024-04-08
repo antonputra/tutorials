@@ -1,0 +1,19 @@
+---
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+      - endpoints
+      - namespaces
+    verbs:
+      - get
+      - watch
+      - list
+      - create
+      - delete
+---
+rules:
+  - apiGroups: [""]
+    resources: ["services", "endpoints", "namespaces"]
+    verbs: ["get", "list", "watch", "create", "delete"]

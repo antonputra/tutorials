@@ -1,0 +1,16 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: viewer
+  namespace: default
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - persistentvolumes
+      - nodes
+    verbs:
+      - get
+      - list
+      - watch
