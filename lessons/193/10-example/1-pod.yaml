@@ -1,0 +1,11 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-2
+spec:
+  containers:
+    - name: myapp
+      image: ubuntu:latest
+      command: ["/bin/bash", "-c", "--"]
+      args: ["sleep 2; echo 'System error: failed to write to Kafka'; exit 1;"]
