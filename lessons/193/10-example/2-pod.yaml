@@ -1,0 +1,11 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-3
+spec:
+  containers:
+    - name: myapp
+      image: aputra/myapp-193:v6
+      ports:
+        - containerPort: 8080
