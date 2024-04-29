@@ -122,3 +122,4 @@
 - [191 - Types of Load Balancing Algorithms](../lessons/191)
 - [192 - Kubernetes RBAC Explained](../lessons/192)
 - [193 - How to debug Kubernetes? (Deployments, Services & Ingress)](../lessons/193)
+- [194 - How to debug Kubernetes Ingress? (TLS - Cert-Manager - HTTP-01 & DNS-01 Challenges)](../lessons/194)

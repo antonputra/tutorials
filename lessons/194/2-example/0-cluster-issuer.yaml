@@ -1,0 +1,19 @@
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: dns-01-production
+spec:
+  acme:
+    email: your-email@antonputra.com
+    server: https://acme-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: dns-01-production-cluster-issuer
+    solvers:
+      - selector:
+          dnsZones:
+            - antonputra.com # You MUST update this
+        dns01:
+          route53:
+            region: us-east-1
+            hostedZoneID: Z096843313V3REMT67ZW # You MUST update this
