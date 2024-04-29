@@ -1,0 +1,24 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-ingress-1
+  annotations:
+    cert-manager.io/cluster-issuer: http-01-production
+spec:
+  ingressClassName: external-nginx
+  rules:
+    - host: app.devopsbyexample.com
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: my-service-1
+                port:
+                  number: 8080
+  tls:
+    - hosts:
+        - app.devopsbyexample.com
+      secretName: app-devopsbyexample-com

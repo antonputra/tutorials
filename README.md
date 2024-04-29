@@ -1,6 +1,6 @@
-# New Video - https://youtu.be/hixs2GIGrUw
+# New Video - https://youtu.be/DJ2sa49iEKo
 
-[<img src="assets/193.png?raw=true">](https://youtu.be/hixs2GIGrUw)
+[<img src="assets/194.png?raw=true">](https://youtu.be/DJ2sa49iEKo)
 
 # Playlists
 
