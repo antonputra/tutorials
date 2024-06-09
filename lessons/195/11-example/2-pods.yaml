@@ -1,0 +1,46 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-1
+  namespace: 11-example
+spec:
+  containers:
+    - name: myapp-1
+      image: busybox
+      command: ["/bin/sh"]
+      args:
+        [
+          "-c",
+          "while true; do echo $(date -u) >> /data/out1.txt; sleep 5; done",
+        ]
+      volumeMounts:
+        - name: persistent-storage
+          mountPath: /data
+  volumes:
+    - name: persistent-storage
+      persistentVolumeClaim:
+        claimName: myapp
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-2
+  namespace: 11-example
+spec:
+  containers:
+    - name: myapp-2
+      image: busybox
+      command: ["/bin/sh"]
+      args:
+        [
+          "-c",
+          "while true; do echo $(date -u) >> /data/out1.txt; sleep 5; done",
+        ]
+      volumeMounts:
+        - name: persistent-storage
+          mountPath: /data
+  volumes:
+    - name: persistent-storage
+      persistentVolumeClaim:
+        claimName: myapp
