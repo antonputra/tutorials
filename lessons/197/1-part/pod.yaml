@@ -1,0 +1,25 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp
+spec:
+  containers:
+    - name: myapp
+      image: aputra/myapp-197:v1
+      ports:
+        - name: http
+          containerPort: 8080
+      resources:
+        limits:
+          cpu: 100m
+          memory: 128Mi
+        requests:
+          cpu: 100m
+          memory: 128Mi
+      livenessProbe:
+        httpGet:
+          path: /status
+          port: http
+        initialDelaySeconds: 5
+        periodSeconds: 3
