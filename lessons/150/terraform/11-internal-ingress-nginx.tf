@@ -24,7 +24,7 @@ provider "helm" {
   }
 }
 
-resource "helm_release" "internal_ingress_nginx" {
+resource "helm_release" "internal_ingress_nginx_arm64" {
   name     = "internal"
   provider = helm.demo_arm64
 
