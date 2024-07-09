@@ -1,13 +1,23 @@
 provider "aws" {
-  profile = "terraform"
-  region  = "us-east-1"
+  region = "us-east-1"
 }
 
+
 terraform {
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 3.21"
+      version = "~> 4.15.0"
+    }
+
+    random = {
+      source  = "hashicorp/random"
+      version = "3.1.0"
+    }
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = ">= 2.0.1"
     }
   }
 }
