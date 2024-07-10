@@ -126,3 +126,4 @@
 - [195 - AWS EKS Kubernetes Tutorial](../lessons/195)
 - [196 - AWS EKS Kubernetes Tutorial - Full Course](../lessons/196)
 - [197 - Kubernetes Tutorial for Beginners - Full Course](../lessons/197)
+- [198 - How To Structure Terraform Project (3 Levels)](../lessons/198)
