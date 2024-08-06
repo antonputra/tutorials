@@ -1,0 +1,43 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: users=424432388155.dkr.ecr.us-east-2.amazonaws.com/users:0.x
+    argocd-image-updater.argoproj.io/users.update-strategy: semver
+    argocd-image-updater.argoproj.io/write-back-method: git
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+  name: users-dev
+  namespace: argocd
+spec:
+  destination:
+    namespace: dev
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    helm:
+      parameters:
+      - name: image.repository
+        value: 424432388155.dkr.ecr.us-east-2.amazonaws.com/users
+      - name: service.port
+        value: '8080'
+      - name: livenessProbe.httpGet.path
+        value: /healthz
+      - name: readinessProbe.httpGet.path
+        value: /healthz
+      - name: image.tag
+        value: 0.1.0
+    path: helm-charts/users
+    repoURL: git@github.com:antonputra/k8s.git
+    targetRevision: main
+  syncPolicy:
+    automated:
+      allowEmpty: false
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - Validate=true
+    - CreateNamespace=true
+    - PrunePropagationPolicy=foreground
+    - PruneLast=true
