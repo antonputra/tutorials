@@ -1,4 +1,4 @@
-resource "helm_release" "external_ingress_nginx" {
+resource "helm_release" "external_ingress_nginx_arm64" {
   name = "external"
 
   provider = helm.demo_arm64
