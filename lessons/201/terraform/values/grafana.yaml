@@ -1,0 +1,8 @@
+---
+adminUser: admin
+adminPassword: devops123
+service:
+  type: LoadBalancer
+# TODO: remove
+nodeSelector:
+  kubernetes.io/hostname: node-04
