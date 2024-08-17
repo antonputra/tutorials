@@ -1,0 +1,51 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: java-app
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: java-app
+  template:
+    metadata:
+      labels:
+        app: java-app
+    spec:
+      # TODO: remove
+      nodeSelector:
+        kubernetes.io/hostname: node-01
+      containers:
+      - name: java-app
+        image: aputra/java-app-201:v1
+        imagePullPolicy: Always
+        ports:
+        - name: http
+          containerPort: 8080
+        resources:
+          requests:
+            memory: 256Mi
+            cpu: "3"
+          limits:
+            memory: 256Mi
+            cpu: "3"
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: http
+          periodSeconds: 1
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: http
+          periodSeconds: 1
+        volumeMounts:
+        - name: my-volume
+          mountPath: /tmp
+      volumes:
+      - name: my-volume
+        hostPath:
+          path: /tmp
+          type: DirectoryOrCreate
