@@ -1,0 +1,36 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: cs-app-client
+  namespace: default
+spec:
+  template:
+    metadata:
+      labels:
+        app: cs-app-client
+    spec:
+      restartPolicy: Never
+      nodeSelector:
+        kubernetes.io/hostname: node-01
+      containers:
+      - name: cs-app-client
+        image: aputra/tester-202:v1
+        ports:
+        - name: metrics
+          containerPort: 8081
+        resources:
+          requests:
+            memory: 8Gi
+            cpu: 1900m
+          limits:
+            memory: 8Gi
+            cpu: 1900m
+        volumeMounts:
+        - name: config
+          mountPath: /config.yaml
+          subPath: config.yaml
+      volumes:
+      - name: config
+        configMap:
+          name: cs-app-client

@@ -1,0 +1,12 @@
+---
+adminUser: admin
+adminPassword: devops123
+service:
+  type: LoadBalancer
+
+# Run on control-plane
+nodeSelector:
+  kubernetes.io/hostname: k8s-node
+tolerations:
+- effect: NoSchedule
+  key: node-role.kubernetes.io/control-plane

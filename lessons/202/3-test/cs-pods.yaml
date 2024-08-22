@@ -1,0 +1,25 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cs-app-0
+spec:
+  nodeSelector:
+    kubernetes.io/hostname: node-01
+  containers:
+  - name: cs-app
+    image: aputra/cs-app-202:v10
+    volumeMounts:
+    - name: config
+      mountPath: /config.yaml
+      subPath: config.yaml
+    - name: my-volume
+      mountPath: /tmp
+  volumes:
+  - name: config
+    configMap:
+      name: cs-app
+  - name: my-volume
+    hostPath:
+      path: /tmp
+      type: DirectoryOrCreate
