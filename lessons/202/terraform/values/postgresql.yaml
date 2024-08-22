@@ -1,0 +1,25 @@
+---
+auth:
+  enablePostgresUser: true
+  postgresPassword: "devops123"
+primary:
+  nodeSelector:
+    kubernetes.io/hostname: node-02
+  resources:
+    requests:
+      cpu: 1500m
+      memory: 1Gi
+    limits:
+      cpu: 1500m
+      memory: 1Gi
+  persistence:
+    enabled: false
+  service:
+    type: LoadBalancer
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+    namespace: monitoring
+    labels:
+      prometheus: main

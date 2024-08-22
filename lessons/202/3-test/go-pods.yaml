@@ -1,0 +1,25 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: go-app-0
+spec:
+  nodeSelector:
+    kubernetes.io/hostname: node-00
+  containers:
+  - name: go-app
+    image: aputra/go-app-202:v6
+    volumeMounts:
+    - name: config
+      mountPath: /config.yaml
+      subPath: config.yaml
+    - name: my-volume
+      mountPath: /tmp
+  volumes:
+  - name: config
+    configMap:
+      name: go-app
+  - name: my-volume
+    hostPath:
+      path: /tmp
+      type: DirectoryOrCreate

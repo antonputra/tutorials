@@ -1,0 +1,16 @@
+---
+appPort: 8080
+metricsPort: 8081
+s3:
+  region: us-west-rack1
+  bucket: images
+  endpoint: http://192.168.50.212:9000
+  pathStyle: true
+  user: admin
+  secret: devops123
+  imgPath: /tmp/thumbnail.png
+db:
+  user: goapp
+  password: devops123
+  host: "192.168.50.214"
+  database: mydb

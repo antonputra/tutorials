@@ -1,0 +1,56 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cs-app
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cs-app
+  template:
+    metadata:
+      labels:
+        app: cs-app
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: node-01
+      containers:
+      - name: cs-app
+        image: aputra/cs-app-202:v10
+        imagePullPolicy: Always
+        ports:
+        - name: http
+          containerPort: 8080
+        resources:
+          requests:
+            memory: 256Mi
+            cpu: "2"
+          limits:
+            memory: 256Mi
+            cpu: "2"
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: http
+          periodSeconds: 1
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: http
+          periodSeconds: 1
+        volumeMounts:
+        - name: config
+          mountPath: /app/appsettings.json
+          subPath: appsettings.json
+        - name: my-volume
+          mountPath: /tmp
+      volumes:
+      - name: config
+        configMap:
+          name: cs-app
+      - name: my-volume
+        hostPath:
+          path: /tmp
+          type: DirectoryOrCreate
