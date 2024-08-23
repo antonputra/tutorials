@@ -1,19 +1,23 @@
 using Prometheus;
 using System.Diagnostics;
 using Npgsql;
+using cs_app;
 
 // Initialize the Web App
 var builder = WebApplication.CreateBuilder(args);
 
-// Load app config from file.
-var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-var appConfig = new Config(config);
+// Load configuration
+var dbOptions = new DbOptions();
+builder.Configuration.GetSection(DbOptions.PATH).Bind(dbOptions);
+
+var s3Options = new S3Options();
+builder.Configuration.GetSection(S3Options.PATH).Bind(s3Options);
 
 // Establish S3 session.
-var amazonS3 = new AmazonS3Uploader(appConfig.User, appConfig.Secret, appConfig.S3Endpoint);
+var amazonS3 = new AmazonS3Uploader(s3Options.User, s3Options.Secret, s3Options.Endpoint);
 
 // Create Postgre connection string
-var connString = $"Host={appConfig.DbHost};Username={appConfig.DbUser};Password={appConfig.DbPassword};Database={appConfig.DbDatabase}";
+var connString = $"Host={dbOptions.Host};Username={dbOptions.User};Password={dbOptions.Password};Database={dbOptions.Database}";
 
 Console.WriteLine(connString);
 
@@ -63,7 +67,7 @@ app.MapGet("/api/images", async () =>
     var s3Stopwatch = Stopwatch.StartNew();
 
     // Upload the image to S3.
-    await amazonS3.Upload(appConfig.S3Bucket, image.ObjKey, appConfig.S3ImgPath);
+    await amazonS3.Upload(s3Options.Bucket, image.ObjKey, s3Options.ImgPath);
 
     // Record the duration of the request to S3.
     s3Stopwatch.Stop();
