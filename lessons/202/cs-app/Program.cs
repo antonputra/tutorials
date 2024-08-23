@@ -29,7 +29,7 @@ var connString = $"Host={dbOptions.Host};Username={dbOptions.User};Password={dbO
 Console.WriteLine(connString);
 
 // Establish Postgres connection
-await using var dataSource = NpgsqlDataSource.Create(connString);
+await using var dataSource = new NpgsqlSlimDataSourceBuilder(connString).Build();
 
 // Conuter variable is used to increment image id
 var counter = 0;
