@@ -31,7 +31,7 @@ Console.WriteLine(connString);
 // Establish Postgres connection
 await using var dataSource = new NpgsqlSlimDataSourceBuilder(connString).Build();
 
-// Conuter variable is used to increment image id
+// Counter variable is used to increment image id
 var counter = 0;
 
 var app = builder.Build();
@@ -67,21 +67,21 @@ app.MapGet("/api/devices", () =>
 // Create endpoint that uoloades image to S3 and writes metadate to Postgres
 app.MapGet("/api/images", async () =>
 {
-    // Generate a new image.
-    var image = new Image($"cs-thumbnail-{counter}.png");
+    // Generate a new image, setting its id via an incremental counter.
+    int id = Interlocked.Increment(ref counter);
+    var image = new Image($"cs-thumbnail-{id}.png");
 
     // Get the current time to record the duration of the S3 request.
-    var s3Stopwatch = Stopwatch.StartNew();
+    var s3StartTime = Stopwatch.GetTimestamp();
 
     // Upload the image to S3.
     await amazonS3.Upload(s3Options.Bucket, image.ObjKey, s3Options.ImgPath);
 
     // Record the duration of the request to S3.
-    s3Stopwatch.Stop();
-    summary.WithLabels(["s3"]).Observe(s3Stopwatch.Elapsed.TotalSeconds);
+    summary.WithLabels(["s3"]).Observe(Stopwatch.GetElapsedTime(s3StartTime).TotalSeconds);
 
     // Get the current time to record the duration of the Database request.
-    var dBStopwatch = Stopwatch.StartNew();
+    var dbStartTime = Stopwatch.GetTimestamp();
 
     // Prepare the database query to insert a record.
     const string sqlQuery = "INSERT INTO cs_image VALUES ($1, $2, $3)";
@@ -96,11 +96,7 @@ app.MapGet("/api/images", async () =>
     }
 
     // Record the duration of the insert query.
-    dBStopwatch.Stop();
-    summary.WithLabels(["db"]).Observe(dBStopwatch.Elapsed.TotalSeconds);
-
-    // Increment counter.
-    counter++;
+    summary.WithLabels(["db"]).Observe(Stopwatch.GetElapsedTime(dbStartTime).TotalSeconds);
 
     return Results.Ok("Saved!");
 });
