@@ -14,7 +14,7 @@ var s3Options = new S3Options();
 builder.Configuration.GetSection(S3Options.PATH).Bind(s3Options);
 
 // Establish S3 session.
-var amazonS3 = new AmazonS3Uploader(s3Options.User, s3Options.Secret, s3Options.Endpoint);
+using var amazonS3 = new AmazonS3Uploader(s3Options.User, s3Options.Secret, s3Options.Endpoint);
 
 // Create Postgre connection string
 var connString = $"Host={dbOptions.Host};Username={dbOptions.User};Password={dbOptions.Password};Database={dbOptions.Database}";

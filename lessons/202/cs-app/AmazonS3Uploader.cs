@@ -2,7 +2,7 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.Runtime;
 
-internal sealed class AmazonS3Uploader
+internal sealed class AmazonS3Uploader : IDisposable
 {
     private readonly AmazonS3Client client;
 
@@ -16,6 +16,11 @@ internal sealed class AmazonS3Uploader
         };
 
         client = new AmazonS3Client(credentials, clientConfig);
+    }
+
+    public void Dispose()
+    {
+        client.Dispose();
     }
 
     public async Task Upload(string? bucket, string key, string? path)
