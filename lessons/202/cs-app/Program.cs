@@ -13,7 +13,7 @@ var appConfig = new Config(config);
 var amazonS3 = new AmazonS3Uploader(appConfig.User, appConfig.Secret, appConfig.S3Endpoint);
 
 // Create Postgre connection string
-var connString = string.Format("Host={0};Username={1};Password={2};Database={3}", appConfig.DbHost, appConfig.DbUser, appConfig.DbPassword, appConfig.DbDatabase);
+var connString = $"Host={appConfig.DbHost};Username={appConfig.DbUser};Password={appConfig.DbPassword};Database={appConfig.DbDatabase}";
 
 Console.WriteLine(connString);
 
@@ -57,7 +57,7 @@ app.MapGet("/api/devices", () =>
 app.MapGet("/api/images", async () =>
 {
     // Generate a new image.
-    var image = new Image(string.Format("cs-thumbnail-{0}.png", counter));
+    var image = new Image($"cs-thumbnail-{counter}.png");
 
     // Get the current time to record the duration of the S3 request.
     var s3Stopwatch = Stopwatch.StartNew();
@@ -73,7 +73,7 @@ app.MapGet("/api/images", async () =>
     var dBStopwatch = Stopwatch.StartNew();
 
     // Prepare the database query to insert a record.
-    var sqlQuery = string.Format("INSERT INTO {0} VALUES ($1, $2, $3)", "cs_image");
+    const string sqlQuery = "INSERT INTO cs_image VALUES ($1, $2, $3)";
 
     // Execute the query to create a new image record.
     await using (var cmd = dataSource.CreateCommand(sqlQuery))

@@ -7,7 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lessons", "lessons", "{56D3
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "202", "202", "{36053A30-EDC5-4C04-A2C0-C7F9247AE53A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "cs-app", "lessons\202\cs-app\cs-app.csproj", "{4B5C2757-5E3E-4A50-A929-E26742CB464A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "cs-app", "cs-app\cs-app.csproj", "{4B5C2757-5E3E-4A50-A929-E26742CB464A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
