@@ -1,6 +1,17 @@
-public class Image(string key)
+internal readonly struct Image
 {
-    public Guid ImageUuid = Guid.NewGuid();
-    public DateTime CreatedAt = DateTime.Now;
-    public string ObjKey = key;
+    public string ObjKey { get; }
+    public Guid ImageUuid { get; }
+    public DateTime CreatedAt { get; }
+
+    public Image()
+    {
+        ImageUuid = Guid.NewGuid();
+        CreatedAt = DateTime.Now;
+    }
+
+    public Image(string key) : this()
+    {
+        ObjKey = key;
+    }
 }

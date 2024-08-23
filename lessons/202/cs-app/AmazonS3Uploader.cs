@@ -2,7 +2,7 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.Runtime;
 
-public class AmazonS3Uploader
+internal sealed class AmazonS3Uploader
 {
     private readonly AmazonS3Client client;
 
