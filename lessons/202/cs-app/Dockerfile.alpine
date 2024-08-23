@@ -8,7 +8,8 @@ RUN dotnet restore -a $TARGETARCH
 
 # copy and publish app and libraries
 COPY . .
-RUN dotnet publish --no-restore -a $TARGETARCH -o /app
+RUN dotnet publish --no-restore -a $TARGETARCH -o /app /p:AOT=true /p:UseAppHost=false
+RUN rm /app/*.dbg /app/*.Development.json
 
 
 # Enable globalization and time zones:

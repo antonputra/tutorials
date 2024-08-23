@@ -8,7 +8,8 @@ RUN dotnet restore -a $TARGETARCH
 
 # copy everything else and build app
 COPY . .
-RUN dotnet publish -a $TARGETARCH --no-restore -o /app
+RUN dotnet publish -a $TARGETARCH --no-restore -o /app /p:AOT=true /p:UseAppHost=false
+RUN rm /app/*.dbg /app/*.Development.json
 
 
 # final stage/image
