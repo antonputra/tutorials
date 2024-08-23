@@ -2,9 +2,16 @@ using Prometheus;
 using System.Diagnostics;
 using Npgsql;
 using cs_app;
+using System.Text.Json.Serialization;
 
 // Initialize the Web App
-var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateSlimBuilder(args);
+
+// Configure JSON source generatino for AOT support
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.TypeInfoResolverChain.Insert(0, AppJsonSerializerContext.Default);
+});
 
 // Load configuration
 var dbOptions = new DbOptions();
@@ -41,7 +48,7 @@ app.MapMetrics();
 
 // Create endpoint that returns the status of the application.
 // Placeholder for the health check
-app.MapGet("/healthz", () => "OK");
+app.MapGet("/healthz", () => Results.Ok("OK"));
 
 // Create endpoint that returns a list of connected devices.
 app.MapGet("/api/devices", () =>
@@ -54,7 +61,7 @@ app.MapGet("/api/devices", () =>
         new("e0a1d085-dce5-48db-a794-35640113fa67", "7E-3B-62-A6-09-12", "3.5.6")
     ];
 
-    return devices;
+    return Results.Ok(devices);
 });
 
 // Create endpoint that uoloades image to S3 and writes metadate to Postgres
@@ -92,10 +99,13 @@ app.MapGet("/api/images", async () =>
     dBStopwatch.Stop();
     summary.WithLabels(["db"]).Observe(dBStopwatch.Elapsed.TotalSeconds);
 
-    // Icrement counter.
+    // Increment counter.
     counter++;
 
-    return "Saved!";
+    return Results.Ok("Saved!");
 });
 
 app.Run();
+
+[JsonSerializable(typeof(Device[]))]
+internal partial class AppJsonSerializerContext : JsonSerializerContext;
