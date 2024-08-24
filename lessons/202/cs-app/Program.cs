@@ -67,9 +67,8 @@ app.MapGet("/api/devices", () =>
 // Create endpoint that uoloades image to S3 and writes metadate to Postgres
 app.MapGet("/api/images", async () =>
 {
-    // Generate a new image, setting its id via an incremental counter.
-    int id = Interlocked.Increment(ref counter);
-    var image = new Image($"cs-thumbnail-{id}.png");
+    // Generate a new image.
+    var image = new Image($"cs-thumbnail-{counter}.png");
 
     // Get the current time to record the duration of the S3 request.
     var s3StartTime = Stopwatch.GetTimestamp();
@@ -97,6 +96,9 @@ app.MapGet("/api/images", async () =>
 
     // Record the duration of the insert query.
     summary.WithLabels(["db"]).Observe(Stopwatch.GetElapsedTime(dbStartTime).TotalSeconds);
+
+    // Increment the counter.
+    counter++;
 
     return Results.Ok("Saved!");
 });
