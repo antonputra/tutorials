@@ -9,9 +9,9 @@ RUN go mod download && go mod verify
 
 COPY . .
 
-RUN go build -o /myapp .
+RUN CGO_ENABLED=0 GOARCH=amd64 GOOS=linux go build -ldflags="-s -w" -o /myapp .
 
-FROM gcr.io/distroless/base-debian12
+FROM scratch
 
 COPY --from=build /myapp /myapp
 

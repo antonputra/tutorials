@@ -1,0 +1,61 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rust-app
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rust-app
+  template:
+    metadata:
+      labels:
+        app: rust-app
+    spec:
+      nodeSelector:
+        node: node-01
+      containers:
+      - name: rust-app
+        image: aputra/203-rust-app-amd64:v31
+        imagePullPolicy: Always
+        env:
+        - name: AWS_ACCESS_KEY_ID
+          value: admin
+        - name: AWS_SECRET_ACCESS_KEY
+          value: 867tfc1823fgujhwad$f&1
+        ports:
+        - name: http
+          containerPort: 8080
+        resources:
+          requests:
+            memory: 256Mi
+            cpu: "2"
+          limits:
+            memory: 256Mi
+            cpu: "2"
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: http
+          periodSeconds: 1
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: http
+          periodSeconds: 1
+        volumeMounts:
+        - name: config
+          mountPath: config.toml
+          subPath: config.toml
+        - name: my-volume
+          mountPath: /tmp
+      volumes:
+      - name: config
+        configMap:
+          name: rust-app
+      - name: my-volume
+        hostPath:
+          path: /tmp
+          type: DirectoryOrCreate
