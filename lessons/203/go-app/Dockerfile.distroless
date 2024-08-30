@@ -9,10 +9,10 @@ RUN go mod download && go mod verify
 
 COPY . .
 
-RUN go build -o /tester .
+RUN go build -ldflags "-s -w" -o /server .
 
 FROM gcr.io/distroless/base-debian12
 
-COPY --from=build /tester /tester
+COPY --from=build /server /server
 
-ENTRYPOINT ["/tester"]
+ENTRYPOINT ["/server"]
