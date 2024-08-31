@@ -1,6 +1,6 @@
 use serde_derive::Deserialize;
 use std::fmt;
-use std::fs;
+use tokio::fs;
 use toml;
 
 #[derive(Clone, Deserialize)]
@@ -50,29 +50,19 @@ impl fmt::Display for ConfigError {
 }
 
 impl ConfigData {
-    pub fn load(filename: &String) -> Result<Self, ConfigError> {
-        let contents = match fs::read_to_string(filename) {
-            Ok(c) => c,
-            Err(e) => {
-                return Err(ConfigError {
-                    filename: filename.to_string(),
-                    message: String::from("Failed to read config"),
-                    error: e.to_string(),
-                })
-            }
-        };
+    pub async fn load(filename: &str) -> Result<Self, ConfigError> {
+        let contents = fs::read_to_string(filename)
+            .await
+            .map_err(|e| ConfigError {
+                filename: filename.to_string(),
+                message: String::from("Failed to read config"),
+                error: e.to_string(),
+            })?;
 
-        let data: ConfigData = match toml::from_str(&contents) {
-            Ok(c) => c,
-            Err(e) => {
-                return Err(ConfigError {
-                    filename: filename.to_string(),
-                    message: String::from("Failed to parse config"),
-                    error: e.to_string(),
-                })
-            }
-        };
-
-        Ok(data)
+        toml::from_str(&contents).map_err(|e| ConfigError {
+            filename: filename.to_string(),
+            message: String::from("Failed to parse config"),
+            error: e.to_string(),
+        })
     }
 }

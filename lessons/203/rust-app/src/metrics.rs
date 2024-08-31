@@ -1,11 +1,6 @@
 use prometheus_client::encoding::EncodeLabelSet;
 use prometheus_client::metrics::family::Family;
 use prometheus_client::metrics::histogram::Histogram;
-use prometheus_client::registry::Registry;
-
-pub struct AppState {
-    pub registry: Registry,
-}
 
 #[derive(Clone, Debug, Hash, PartialEq, Eq, EncodeLabelSet)]
 pub struct OperationLabels {
@@ -25,14 +20,6 @@ impl Metrics {
     pub fn new() -> Self {
         Metrics {
             request: Family::new_with_constructor(create_histogram),
-        }
-    }
-}
-
-impl AppState {
-    pub fn new() -> AppState {
-        AppState {
-            registry: Registry::default(),
         }
     }
 }
