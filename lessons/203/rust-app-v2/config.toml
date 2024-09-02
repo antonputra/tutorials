@@ -1,0 +1,15 @@
+[config]
+port = 8080
+
+[s3]
+region = "us-west-rack1"
+bucket = "images"
+endpoint = "http://192.168.50.249:9000"
+path_style = true
+img_path = "/tmp/thumbnail.png"
+
+[db]
+user = "rust"
+password = "devops123"
+host = "192.168.50.249"
+database = "mydb"
