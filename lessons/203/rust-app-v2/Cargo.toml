@@ -1,0 +1,27 @@
+[package]
+name = "rust-app-v2"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.86"
+aws-config = { version = "1.5.5", features = ["behavior-version-latest"] }
+aws-sdk-s3 = "1.47.0"
+axum = "0.7.5"
+chrono = "0.4.38"
+deadpool-postgres = "0.14.0"
+metrics = { version = "0.23.0", default-features = false }
+metrics-exporter-prometheus = { version = "0.15.3", default-features = false }
+serde = { version = "1.0.209", features = ["derive"] }
+tokio = { version = "1.40.0", features = ["full"] }
+tokio-postgres = { version = "0.7.11", features = [
+    "with-uuid-1",
+    "with-chrono-0_4",
+] }
+toml = "0.8.19"
+uuid = { version = "1.10.0", features = ["v4"] }
+
+[profile.release]
+lto = true
+codegen-units = 1
+panic = "abort"
