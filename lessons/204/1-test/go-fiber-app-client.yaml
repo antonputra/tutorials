@@ -1,0 +1,101 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: go-fiber-app-client
+  namespace: default
+spec:
+  parallelism: 20
+  template:
+    metadata:
+      labels:
+        app: go-fiber-app-client
+    spec:
+      restartPolicy: Never
+      nodeSelector:
+        node: node-00
+      containers:
+      - name: go-fiber-app-client
+        imagePullPolicy: Always
+        image: aputra/utils-tester-amd64:v7
+        ports:
+        - name: metrics
+          containerPort: 8081
+        resources:
+          requests:
+            memory: 256Mi
+            cpu: "0.5"
+          limits:
+            memory: 256Mi
+            cpu: "0.5"
+        volumeMounts:
+        - name: config
+          mountPath: /config.yaml
+          subPath: config.yaml
+      volumes:
+      - name: config
+        configMap:
+          name: go-fiber-app-client
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: go-fiber-app-client
+  namespace: default
+data:
+  config.yaml: |
+    type: main
+    url: http://go-fiber-app:8080/devices
+    requestIntervalMs: 40
+    stages:
+    - clients: 1
+      intervalMin: 5
+    - clients: 2
+      intervalMin: 5
+    - clients: 3
+      intervalMin: 5
+    - clients: 4
+      intervalMin: 5
+    - clients: 5
+      intervalMin: 5
+    - clients: 6
+      intervalMin: 5
+    - clients: 7
+      intervalMin: 5
+    - clients: 8
+      intervalMin: 5
+    - clients: 9
+      intervalMin: 5
+    - clients: 10
+      intervalMin: 5
+    - clients: 11
+      intervalMin: 5
+    - clients: 12
+      intervalMin: 5
+    - clients: 13
+      intervalMin: 5
+    - clients: 14
+      intervalMin: 5
+    - clients: 15
+      intervalMin: 5
+    - clients: 16
+      intervalMin: 5
+    - clients: 17
+      intervalMin: 5
+    - clients: 18
+      intervalMin: 5
+    - clients: 19
+      intervalMin: 5
+    - clients: 20
+      intervalMin: 5
+    - clients: 21
+      intervalMin: 5
+    - clients: 22
+      intervalMin: 5
+    - clients: 23
+      intervalMin: 5
+    - clients: 24
+      intervalMin: 5
+    - clients: 25
+      intervalMin: 5
+

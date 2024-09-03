@@ -131,3 +131,5 @@
 - [200 - How to Set Up ArgoCD for Production?](../lessons/200)
 - [201 - Java (Quarkus) vs. Go (Golang): Performance Benchmark in Kubernetes](../lessons/201)
 - [202 - C# (.NET) vs. Go (Golang): Performance Benchmark in Kubernetes](../lessons/202)
+- [203 - Rust (Actix) vs. Go (Golang): Performance Benchmark in Kubernetes (EKS)](../lessons/203)
+- [204 - Go (fiber) vs. Go (stdlib) vs. Go (gin): Performance Benchmark in Kubernetes](../lessons/204)
