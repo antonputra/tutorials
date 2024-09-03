@@ -1,0 +1,17 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: go-gin-app-client
+  namespace: monitoring
+  labels:
+    prometheus: main
+spec:
+  namespaceSelector:
+    matchNames:
+    - default
+  selector:
+    matchLabels:
+      app: go-gin-app-client
+  podMetricsEndpoints:
+  - port: metrics

@@ -1,0 +1,57 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-gin-app
+  namespace: default
+spec:
+  strategy:
+    type: Recreate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: go-gin-app
+  template:
+    metadata:
+      labels:
+        app: go-gin-app
+    spec:
+      nodeSelector:
+        node: node-01
+      containers:
+      - name: go-gin-app
+        image: aputra/go-app-204-gin-amd64:v4
+        imagePullPolicy: Always
+        env:
+        - name: GIN_MODE
+          value: release
+        ports:
+        - name: http
+          containerPort: 8080
+        resources:
+          requests:
+            memory: 2Gi
+            cpu: "2"
+          limits:
+            memory: 2Gi
+            cpu: "2"
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: http
+          periodSeconds: 1
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: http
+          periodSeconds: 1
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - go-gin-app
+            topologyKey: "kubernetes.io/hostname"
