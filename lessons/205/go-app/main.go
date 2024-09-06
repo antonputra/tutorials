@@ -123,7 +123,7 @@ func (ms *MyServer) getImage(w http.ResponseWriter, req *http.Request) {
 	}
 
 	// Save the image metadata to db.
-	err = save(image, "go_image", ms.db, ms.metrics)
+	err = image.save(ms.db, ms.metrics)
 	if err != nil {
 		log.Printf("save failed: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
