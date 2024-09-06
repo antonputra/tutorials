@@ -133,3 +133,4 @@
 - [202 - C# (.NET) vs. Go (Golang): Performance Benchmark in Kubernetes](../lessons/202)
 - [203 - Rust (Actix) vs. Go (Golang): Performance Benchmark in Kubernetes (EKS)](../lessons/203)
 - [204 - Go (fiber) vs. Go (stdlib) vs. Go (gin): Performance Benchmark in Kubernetes](../lessons/204)
+- [205 - Rust (Actix) vs. Go (Stdlib): Performance Benchmark in Kubernetes](../lessons/205)
