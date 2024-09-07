@@ -73,14 +73,9 @@ impl Image {
 
         // Prepare the SQL query.
         let query = "INSERT INTO rust_image VALUES ($1, $2, $3)";
-        let stmt = client
-            .prepare(query)
-            .await
-            .context("failed to prepare query")?;
-
         // Insert the record into the database.
         client
-            .execute(&stmt, &[&self.uuid, &self.key, &self.created_at])
+            .execute(query, &[&self.uuid, &self.key, &self.created_at])
             .await
             .context("failed to execute query")?;
 
