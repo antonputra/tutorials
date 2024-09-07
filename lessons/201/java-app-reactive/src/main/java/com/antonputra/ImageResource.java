@@ -94,7 +94,7 @@ public class ImageResource {
     private Uni<Void> save(Image img) {
         Sample sample = Timer.start(registry);
 
-        return st.execute(Tuple.of(img.imageId, img.objKey, img.createdAt))
+        return st.execute(Tuple.of(img.imageId(), img.objKey(), img.createdAt()))
                 .onItem().ignore().andContinueWithNull()
                 .onItem().invoke(() -> sample.stop(dbTimer));
     }
