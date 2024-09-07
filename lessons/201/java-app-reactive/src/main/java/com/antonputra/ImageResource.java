@@ -14,10 +14,12 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import software.amazon.awssdk.core.sync.RequestBody;
-import software.amazon.awssdk.services.s3.S3Client;
+
+import software.amazon.awssdk.core.async.AsyncRequestBody;
+import software.amazon.awssdk.services.s3.S3AsyncClient;
 
 import io.vertx.mutiny.pgclient.PgPool;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
@@ -26,10 +28,8 @@ import java.io.File;
 
 @Path("/api/images")
 public class ImageResource {
-    @Inject
-    S3Client s3;
 
-    private int counter = 0;
+    private AtomicInteger counter = new AtomicInteger(0);
 
     @ConfigProperty(name = "bucket.name")
     String bucketName;
@@ -38,14 +38,17 @@ public class ImageResource {
     String imgPath;
 
     private final MeterRegistry registry;
+    private PgPool dbClient;
+    private S3AsyncClient s3;
+
     private static Timer s3Timer;
     private static Timer dbTimer;
-    private final PgPool dbClient;
 
-    public ImageResource(PgPool dbClient, MeterRegistry registry) {
+    @Inject
+    public ImageResource(PgPool dbClient, S3AsyncClient s3, MeterRegistry registry) {
         this.registry = registry;
         this.dbClient = dbClient;
-        
+        this.s3 = s3;
 
         s3Timer = Timer.builder("myapp_request_duration_seconds")
                 .publishPercentiles(0.9, 0.99)
@@ -61,27 +64,32 @@ public class ImageResource {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public Uni<String> getImages() {
-        String imgKey = "java-thumbnail-" + counter++ + ".png";
+        String imgKey = "java-thumbnail-" + counter.getAndIncrement() + ".png";
+
         Image img = new Image(imgKey);
 
-        // upload(imgPath, imgKey);
-        save(img);
-
-        return Uni.createFrom().item("Saved!");
+        return upload(imgPath, imgKey)
+                .flatMap(v -> save(img))
+                .replaceWith("Saved!");
     }
 
-    // private void upload(String path, String key) {
-    //     Sample sample = Timer.start(registry);
+    private Uni<Void> upload(String path, String key) {
+        Sample sample = Timer.start(registry);
 
-    //     PutObjectRequest putOb = PutObjectRequest.builder().bucket(bucketName).key(key).build();
-    //     s3.putObject(putOb, RequestBody.fromFile(new File(path)));
+        PutObjectRequest putOb = PutObjectRequest.builder()
+                .bucket(bucketName)
+                .key(key)
+                .build();
 
-    //     sample.stop(s3Timer);
-    // }
+        return Uni.createFrom().completionStage(s3.putObject(putOb,
+                AsyncRequestBody.fromFile(new File(path))))
+                .onItem().ignore().andContinueWithNull()
+                .onItem().invoke(() -> sample.stop(s3Timer));
+    }
 
     private Uni<Void> save(Image img) {
         Sample sample = Timer.start(registry);
-        
+
         PreparedQuery<RowSet<Row>> st = dbClient.preparedQuery("INSERT INTO java_image VALUES ($1, $2, $3)");
 
         return st.execute(Tuple.of(img.imageId, img.objKey, img.createdAt))
