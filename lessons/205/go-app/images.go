@@ -45,15 +45,12 @@ func NewImage() *Image {
 }
 
 // Save inserts a newly generated image into the Postgres database.
-func save(c *Image, table string, dbpool *pgxpool.Pool, m *metrics) error {
+func (i *Image) save(dbpool *pgxpool.Pool, m *metrics) error {
 	// Get the current time to record the duration of the request.
 	now := time.Now()
 
-	// Prepare the database query to insert a record (unsafe).
-	query := fmt.Sprintf("INSERT INTO %s VALUES ($1, $2, $3)", table)
-
 	// Execute the query to create a new image record (pgx automatically prepares and caches statements by default).
-	_, err := dbpool.Exec(context.Background(), query, c.ImageUUID, c.Key, c.CreatedAt)
+	_, err := dbpool.Exec(context.Background(), "INSERT INTO `go_image` VALUES ($1, $2, $3)", i.ImageUUID, i.Key, i.CreatedAt)
 	if err != nil {
 		return fmt.Errorf("dbpool.Exec failed: %w", err)
 	}
