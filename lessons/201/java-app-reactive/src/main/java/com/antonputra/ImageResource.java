@@ -20,11 +20,10 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import software.amazon.awssdk.core.async.AsyncRequestBody;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
-
+import io.vertx.mutiny.core.Vertx;
 import io.vertx.mutiny.pgclient.PgPool;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
-import java.io.File;
 
 @Path("/api/images")
 public class ImageResource {
@@ -37,18 +36,20 @@ public class ImageResource {
     @ConfigProperty(name = "image.path")
     String imgPath;
 
+    private final Vertx vertx;
     private final MeterRegistry registry;
-    private PgPool dbClient;
-    private S3AsyncClient s3;
+    private final S3AsyncClient s3Async;
+    private final PreparedQuery<RowSet<Row>> st;
 
     private static Timer s3Timer;
     private static Timer dbTimer;
 
     @Inject
-    public ImageResource(PgPool dbClient, S3AsyncClient s3, MeterRegistry registry) {
+    public ImageResource(Vertx vertx, PgPool dbClient, S3AsyncClient s3Async, MeterRegistry registry) {
+        this.vertx = vertx;
         this.registry = registry;
-        this.dbClient = dbClient;
-        this.s3 = s3;
+        this.s3Async = s3Async;
+        this.st = dbClient.preparedQuery("INSERT INTO java_image VALUES ($1, $2, $3)");
 
         s3Timer = Timer.builder("myapp_request_duration_seconds")
                 .publishPercentiles(0.9, 0.99)
@@ -81,16 +82,17 @@ public class ImageResource {
                 .key(key)
                 .build();
 
-        return Uni.createFrom().completionStage(s3.putObject(putOb,
-                AsyncRequestBody.fromFile(new File(path))))
+        return vertx.fileSystem().readFile(path)
+                .flatMap(buffer -> {
+                    return Uni.createFrom().completionStage(
+                            s3Async.putObject(putOb, AsyncRequestBody.fromBytes(buffer.getBytes())));
+                })
                 .onItem().ignore().andContinueWithNull()
                 .onItem().invoke(() -> sample.stop(s3Timer));
     }
 
     private Uni<Void> save(Image img) {
         Sample sample = Timer.start(registry);
-
-        PreparedQuery<RowSet<Row>> st = dbClient.preparedQuery("INSERT INTO java_image VALUES ($1, $2, $3)");
 
         return st.execute(Tuple.of(img.imageId, img.objKey, img.createdAt))
                 .onItem().ignore().andContinueWithNull()
