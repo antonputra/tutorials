@@ -40,13 +40,15 @@ pub async fn save_images(State(state): State<AppState>) -> impl IntoResponse {
     // Generate a new image.
     let image = Image::generate();
 
-    // Upload the image to S3.
-    if let Err(err) = image.upload(&state).await {
+    // Start both the S3 upload and DB save concurrently.
+    let (upload_result, save_result) = tokio::join!(image.upload(&state), image.save(&state));
+
+    // Check results and return appropriate response.
+    if let Err(err) = upload_result {
         return (StatusCode::INTERNAL_SERVER_ERROR, err.to_string());
     }
 
-    // Save the image metadata to db.
-    if let Err(err) = image.save(&state).await {
+    if let Err(err) = save_result {
         return (StatusCode::INTERNAL_SERVER_ERROR, err.to_string());
     }
 
