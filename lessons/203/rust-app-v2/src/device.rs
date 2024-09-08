@@ -1,10 +1,8 @@
-use std::borrow::Cow;
-
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Device<'a> {
-    pub uuid: Cow<'a, str>,
-    pub mac: Cow<'a, str>,
-    pub firmware: Cow<'a, str>,
+    pub uuid: &'a str,
+    pub mac: &'a str,
+    pub firmware: &'a str,
 }
