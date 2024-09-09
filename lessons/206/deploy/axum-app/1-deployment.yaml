@@ -1,0 +1,60 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: axum-app
+  namespace: api
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: axum-app
+  template:
+    metadata:
+      labels:
+        app: axum-app
+    spec:
+      nodeSelector:
+        node: node-01
+      containers:
+      - name: axum-app
+        image: aputra/axum-app-206:v1
+        imagePullPolicy: Always
+        ports:
+        - name: http
+          containerPort: 8080
+        resources:
+          requests:
+            memory: 256Mi
+            cpu: "2"
+          limits:
+            memory: 256Mi
+            cpu: "2"
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: http
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 2
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: http
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 2
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - axum-app
+                - axum-app
+                - rocket-app
+            topologyKey: "kubernetes.io/hostname"
