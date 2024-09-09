@@ -1,4 +1,3 @@
-mod device;
 mod routes;
 
 #[macro_use]

@@ -1,4 +1,3 @@
-mod device;
 mod routes;
 
 use axum::{routing::get, Router};
