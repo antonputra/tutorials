@@ -1,11 +1,10 @@
 [package]
-name = "axum-app"
+name = "axum-app-static"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 axum = "0.7.5"
-serde = { version = "1.0.209", features = ["derive"] }
 tokio = { version = "1.40.0", features = ["full"] }
 
 [profile.release]

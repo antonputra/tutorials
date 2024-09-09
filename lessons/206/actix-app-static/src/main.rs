@@ -1,4 +1,3 @@
-mod device;
 mod routes;
 
 use actix_web::{App, HttpServer};
