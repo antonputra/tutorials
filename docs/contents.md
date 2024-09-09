@@ -134,3 +134,4 @@
 - [203 - Rust (Actix) vs. Go (Golang): Performance Benchmark in Kubernetes (EKS)](../lessons/203)
 - [204 - Go (fiber) vs. Go (stdlib) vs. Go (gin): Performance Benchmark in Kubernetes](../lessons/204)
 - [205 - Rust (Actix) vs. Go (Stdlib): Performance Benchmark in Kubernetes](../lessons/205)
+- [206 - Rust (Actix) vs Rust (Axum) vs Rust (Rocket): Performance Benchmark in Kubernetes](../lessons/206)

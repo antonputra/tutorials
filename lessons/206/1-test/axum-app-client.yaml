@@ -1,0 +1,111 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: axum-app-client
+  namespace: api
+spec:
+  parallelism: 20
+  template:
+    metadata:
+      labels:
+        app: axum-app-client
+    spec:
+      restartPolicy: Never
+      nodeSelector:
+        node: node-01
+      containers:
+      - name: axum-app-client
+        imagePullPolicy: Always
+        image: aputra/tester-private-tests:v15
+        ports:
+        - name: metrics
+          containerPort: 8081
+        resources:
+          requests:
+            memory: 512Mi
+            cpu: 500m
+          limits:
+            memory: 512Mi
+            cpu: 500m
+        volumeMounts:
+        - name: config
+          mountPath: /config.yaml
+          subPath: config.yaml
+      volumes:
+      - name: config
+        configMap:
+          name: axum-app-client
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: axum-app-client
+  namespace: api
+data:
+  config.yaml: |
+    type: main
+    url: http://axum-app:8080/api/devices
+    requestIntervalMs: 40
+    requestTimeoutMs: 200
+    stages:
+    - clients: 1
+      intervalMin: 3
+    - clients: 2
+      intervalMin: 3
+    - clients: 3
+      intervalMin: 3
+    - clients: 4
+      intervalMin: 3
+    - clients: 5
+      intervalMin: 3
+    - clients: 6
+      intervalMin: 3
+    - clients: 7
+      intervalMin: 3
+    - clients: 8
+      intervalMin: 3
+    - clients: 9
+      intervalMin: 3
+    - clients: 10
+      intervalMin: 3
+    - clients: 11
+      intervalMin: 3
+    - clients: 12
+      intervalMin: 3
+    - clients: 13
+      intervalMin: 3
+    - clients: 14
+      intervalMin: 3
+    - clients: 15
+      intervalMin: 3
+    - clients: 16
+      intervalMin: 3
+    - clients: 17
+      intervalMin: 3
+    - clients: 18
+      intervalMin: 3
+    - clients: 19
+      intervalMin: 3
+    - clients: 20
+      intervalMin: 3
+    - clients: 21
+      intervalMin: 3
+    - clients: 22
+      intervalMin: 3
+    - clients: 23
+      intervalMin: 3
+    - clients: 24
+      intervalMin: 3
+    - clients: 25
+      intervalMin: 3
+    - clients: 26
+      intervalMin: 3
+    - clients: 27
+      intervalMin: 3
+    - clients: 28
+      intervalMin: 3
+    - clients: 29
+      intervalMin: 3
+    - clients: 30
+      intervalMin: 3
