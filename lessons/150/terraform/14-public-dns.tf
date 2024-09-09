@@ -1,7 +1,5 @@
 locals {
-  public_route53_zone  = "antonputra.com"
-  arm64_public_ingress = "a3857e85e94db4adf95bbcec0c282966-0022ac6243dac1c9.elb.us-east-1.amazonaws.com"
-  amd64_public_ingress = "a1e60f2b9916a48648f5888cdaa97349-edf043af36c52334.elb.us-east-1.amazonaws.com"
+  public_route53_zone = "antonputra.com"
 }
 
 data "aws_route53_zone" "public" {
@@ -10,18 +8,38 @@ data "aws_route53_zone" "public" {
 }
 
 # Do NOT expose Prometheus to Internet (demo only)
+#arm64
+data "kubernetes_service" "external-ingress-arm64" {
+  provider = kubernetes.k8s-arm64
+  metadata {
+    name      = "external-ingress-nginx-controller"
+    namespace = "ingress-nginx"
+  }
+  depends_on = [helm_release.external_ingress_nginx_arm64]
+}
 resource "aws_route53_record" "arm64_prometheus" {
-  zone_id = data.aws_route53_zone.public.zone_id
-  name    = "prometheus.arm64"
-  type    = "CNAME"
-  ttl     = 300
-  records = [local.arm64_public_ingress]
+  zone_id    = data.aws_route53_zone.public.zone_id
+  name       = "prometheus.arm64"
+  type       = "CNAME"
+  ttl        = 300
+  records    = [data.kubernetes_service.external-ingress-arm64.status.0.load_balancer.0.ingress.0.hostname]
+  depends_on = [helm_release.external_ingress_nginx_arm64]
 }
 
+#amd64
+data "kubernetes_service" "external-ingress-amd64" {
+  provider = kubernetes.k8s-amd64
+  metadata {
+    name      = "external-ingress-nginx-controller"
+    namespace = "ingress-nginx"
+  }
+  depends_on = [helm_release.external_ingress_nginx_amd64]
+}
 resource "aws_route53_record" "amd64_prometheus" {
-  zone_id = data.aws_route53_zone.public.zone_id
-  name    = "prometheus.amd64"
-  type    = "CNAME"
-  ttl     = 300
-  records = [local.amd64_public_ingress]
+  zone_id    = data.aws_route53_zone.public.zone_id
+  name       = "prometheus.amd64"
+  type       = "CNAME"
+  ttl        = 300
+  records    = [data.kubernetes_service.external-ingress-amd64.status.0.load_balancer.0.ingress.0.hostname]
+  depends_on = [helm_release.external_ingress_nginx_amd64]
 }
