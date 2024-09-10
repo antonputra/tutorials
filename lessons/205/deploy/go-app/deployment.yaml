@@ -23,6 +23,10 @@ spec:
         image: aputra/go-app-205:v4
         imagePullPolicy: Always
         env:
+        - name: GOGC
+          value: "300"
+        - name: GOMEMLIMIT
+          value: "200MiB"
         - name: AWS_ACCESS_KEY_ID
           value: admin
         - name: AWS_SECRET_ACCESS_KEY
