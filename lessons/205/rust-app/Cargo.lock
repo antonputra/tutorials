@@ -1682,6 +1682,7 @@ dependencies = [
  "metrics",
  "metrics-exporter-prometheus",
  "serde",
+ "socket2",
  "tokio",
  "tokio-postgres",
  "toml",
