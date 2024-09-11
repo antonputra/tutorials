@@ -32,7 +32,7 @@ type MyServer struct {
 }
 
 // Initializes MyServer and establishes connections with S3 and the database.
-func NewMyServer() *MyServer {
+func NewMyServer(ctx context.Context) *MyServer {
 
 	// Load app config from yaml file.
 	var c Config
@@ -58,8 +58,8 @@ func NewMyServer() *MyServer {
 		metrics: m,
 	}
 
-	ms.s3Connect()
-	ms.dbConnect()
+	ms.s3Connect(ctx)
+	ms.dbConnect(ctx)
 
 	return &ms
 }
@@ -75,9 +75,11 @@ func renderJSON(w http.ResponseWriter, s interface{}) {
 }
 
 func main() {
+	ctx, done := context.WithCancel(context.Background())
+	defer done()
 
 	// Initialize MyServer.
-	ms := NewMyServer()
+	ms := NewMyServer(ctx)
 
 	mux := http.NewServeMux()
 
@@ -110,11 +112,13 @@ func (ms *MyServer) getDevices(w http.ResponseWriter, req *http.Request) {
 
 // getImage downloads image from S3
 func (ms *MyServer) getImage(w http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
+
 	// Generate a new image.
 	image := NewImage()
 
 	// Upload the image to S3.
-	err := upload(ms.s3, ms.config.S3Config.Bucket, image.Key, ms.config.S3Config.ImagePath, ms.metrics)
+	err := upload(ctx, ms.s3, ms.config.S3Config.Bucket, image.Key, ms.config.S3Config.ImagePath, ms.metrics)
 	if err != nil {
 		log.Printf("upload failed: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -122,7 +126,7 @@ func (ms *MyServer) getImage(w http.ResponseWriter, req *http.Request) {
 	}
 
 	// Save the image metadata to db.
-	err = image.save(ms.db, ms.metrics)
+	err = image.save(ctx, ms.db, ms.metrics)
 	if err != nil {
 		log.Printf("save failed: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -133,10 +137,10 @@ func (ms *MyServer) getImage(w http.ResponseWriter, req *http.Request) {
 }
 
 // s3Connect initializes the S3 session.
-func (ms *MyServer) s3Connect() {
+func (ms *MyServer) s3Connect(ctx context.Context) {
 
 	// Load the credentials and initialize the S3 configuration.
-	s3c, err := config.LoadDefaultConfig(context.TODO())
+	s3c, err := config.LoadDefaultConfig(ctx)
 	if err != nil {
 		log.Fatalf("failed to load configuration, %v", err)
 	}
@@ -150,12 +154,12 @@ func (ms *MyServer) s3Connect() {
 }
 
 // dbConnect creates a connection pool to connect to Postgres.
-func (ms *MyServer) dbConnect() {
+func (ms *MyServer) dbConnect(ctx context.Context) {
 	url := fmt.Sprintf("postgres://%s:%s@%s:5432/%s",
 		ms.config.DbConfig.User, ms.config.DbConfig.Password, ms.config.DbConfig.Host, ms.config.DbConfig.Database)
 
 	// Connect to the Postgres database.
-	dbpool, err := pgxpool.New(context.Background(), url)
+	dbpool, err := pgxpool.New(ctx, url)
 	if err != nil {
 		log.Fatalf("Unable to create connection pool: %s", err)
 	}
