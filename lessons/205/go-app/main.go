@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 
@@ -91,7 +92,7 @@ func main() {
 // getHealth returns the status of the application.
 func (ms *MyServer) getHealth(w http.ResponseWriter, req *http.Request) {
 	// Placeholder for the health check
-	w.Write([]byte("OK"))
+	io.WriteString(w, "OK")
 }
 
 // getDevices returns a list of connected devices.
@@ -109,7 +110,6 @@ func (ms *MyServer) getDevices(w http.ResponseWriter, req *http.Request) {
 
 // getImage downloads image from S3
 func (ms *MyServer) getImage(w http.ResponseWriter, req *http.Request) {
-
 	// Generate a new image.
 	image := NewImage()
 
@@ -118,8 +118,7 @@ func (ms *MyServer) getImage(w http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		log.Printf("upload failed: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("internal error"))
-
+		io.WriteString(w, "internal error")
 	}
 
 	// Save the image metadata to db.
@@ -127,10 +126,10 @@ func (ms *MyServer) getImage(w http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		log.Printf("save failed: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("internal error"))
+		io.WriteString(w, "internal error")
 	}
 
-	w.Write([]byte("Saved!"))
+	io.WriteString(w, "Saved!")
 }
 
 // s3Connect initializes the S3 session.
