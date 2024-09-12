@@ -32,17 +32,22 @@ type MyServer struct {
 }
 
 // Initializes MyServer and establishes connections with S3 and the database.
-func NewMyServer(ctx context.Context) *MyServer {
-
-	// Load app config from yaml file.
-	var c Config
-	c.loadConfig("config.yaml")
-
-	// Create Prometheus registry
-	reg := prometheus.NewRegistry()
+func NewMyServer(ctx context.Context, c *Config, reg *prometheus.Registry) *MyServer {
+	// Create Prometheus metrics.
 	m := NewMetrics(reg)
 
-	// Create Prometheus HTTP server to expose metrics
+	ms := MyServer{
+		config:  c,
+		metrics: m,
+	}
+
+	ms.s3Connect(ctx)
+	ms.dbConnect(ctx)
+
+	return &ms
+}
+
+func StartPrometheusServer(c *Config, reg *prometheus.Registry) {
 	pMux := http.NewServeMux()
 	promHandler := promhttp.HandlerFor(reg, promhttp.HandlerOpts{})
 	pMux.Handle("/metrics", promHandler)
@@ -52,16 +57,6 @@ func NewMyServer(ctx context.Context) *MyServer {
 	go func() {
 		log.Fatal(http.ListenAndServe(metricsPort, pMux))
 	}()
-
-	ms := MyServer{
-		config:  &c,
-		metrics: m,
-	}
-
-	ms.s3Connect(ctx)
-	ms.dbConnect(ctx)
-
-	return &ms
 }
 
 func renderJSON(w http.ResponseWriter, s interface{}) {
@@ -78,8 +73,14 @@ func main() {
 	ctx, done := context.WithCancel(context.Background())
 	defer done()
 
+	cfg := new(Config)
+	cfg.loadConfig("config.yaml")
+
+	reg := prometheus.NewRegistry()
+	StartPrometheusServer(cfg, reg)
+
 	// Initialize MyServer.
-	ms := NewMyServer(ctx)
+	ms := NewMyServer(ctx, cfg, reg)
 
 	mux := http.NewServeMux()
 
@@ -87,7 +88,7 @@ func main() {
 	mux.HandleFunc("GET /api/images", ms.getImage)
 	mux.HandleFunc("GET /healthz", ms.getHealth)
 
-	appPort := fmt.Sprintf(":%d", ms.config.AppPort)
+	appPort := fmt.Sprintf(":%d", cfg.AppPort)
 	log.Fatal(http.ListenAndServe(appPort, mux))
 }
 
