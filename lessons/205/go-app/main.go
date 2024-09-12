@@ -13,6 +13,8 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"golang.org/x/sync/errgroup"
+
 	_ "go.uber.org/automaxprocs"
 )
 
@@ -113,25 +115,35 @@ func (ms *MyServer) getDevices(w http.ResponseWriter, req *http.Request) {
 
 // getImage downloads image from S3
 func (ms *MyServer) getImage(w http.ResponseWriter, req *http.Request) {
-	ctx := req.Context()
+	// Create an error group to run the tasks concurrently. The created
+	// context will be canceled if any of the tasks fail.
+	grp, ctx := errgroup.WithContext(req.Context())
 
 	// Generate a new image.
 	image := NewImage()
 
 	// Upload the image to S3.
-	err := upload(ctx, ms.s3, ms.config.S3Config.Bucket, image.Key, ms.config.S3Config.ImagePath, ms.metrics)
-	if err != nil {
-		log.Printf("upload failed: %v", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		io.WriteString(w, "internal error")
-	}
+	grp.Go(func() error {
+		err := upload(ctx, ms.s3, ms.config.S3Config.Bucket, image.Key, ms.config.S3Config.ImagePath, ms.metrics)
+		if err != nil {
+			return fmt.Errorf("upload failed: %w", err)
+		}
+		return nil
+	})
 
 	// Save the image metadata to db.
-	err = image.save(ctx, ms.db, ms.metrics)
-	if err != nil {
-		log.Printf("save failed: %v", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		io.WriteString(w, "internal error")
+	grp.Go(func() error {
+		if err := image.save(ctx, ms.db, ms.metrics); err != nil {
+			return fmt.Errorf("save failed: %w", err)
+		}
+		return nil
+	})
+
+	// Log error and return a failed HTTP response.
+	if err := grp.Wait(); err != nil {
+		log.Printf("GetImage failed: %v", err)
+		http.Error(w, "internal error", http.StatusInternalServerError)
+		return
 	}
 
 	io.WriteString(w, "Saved!")
