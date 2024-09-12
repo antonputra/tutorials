@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 
@@ -31,17 +32,22 @@ type MyServer struct {
 }
 
 // Initializes MyServer and establishes connections with S3 and the database.
-func NewMyServer() *MyServer {
-
-	// Load app config from yaml file.
-	var c Config
-	c.loadConfig("config.yaml")
-
-	// Create Prometheus registry
-	reg := prometheus.NewRegistry()
+func NewMyServer(ctx context.Context, c *Config, reg *prometheus.Registry) *MyServer {
+	// Create Prometheus metrics.
 	m := NewMetrics(reg)
 
-	// Create Prometheus HTTP server to expose metrics
+	ms := MyServer{
+		config:  c,
+		metrics: m,
+	}
+
+	ms.s3Connect(ctx)
+	ms.dbConnect(ctx)
+
+	return &ms
+}
+
+func StartPrometheusServer(c *Config, reg *prometheus.Registry) {
 	pMux := http.NewServeMux()
 	promHandler := promhttp.HandlerFor(reg, promhttp.HandlerOpts{})
 	pMux.Handle("/metrics", promHandler)
@@ -51,16 +57,6 @@ func NewMyServer() *MyServer {
 	go func() {
 		log.Fatal(http.ListenAndServe(metricsPort, pMux))
 	}()
-
-	ms := MyServer{
-		config:  &c,
-		metrics: m,
-	}
-
-	ms.s3Connect()
-	ms.dbConnect()
-
-	return &ms
 }
 
 func renderJSON(w http.ResponseWriter, s interface{}) {
@@ -74,9 +70,17 @@ func renderJSON(w http.ResponseWriter, s interface{}) {
 }
 
 func main() {
+	ctx, done := context.WithCancel(context.Background())
+	defer done()
+
+	cfg := new(Config)
+	cfg.loadConfig("config.yaml")
+
+	reg := prometheus.NewRegistry()
+	StartPrometheusServer(cfg, reg)
 
 	// Initialize MyServer.
-	ms := NewMyServer()
+	ms := NewMyServer(ctx, cfg, reg)
 
 	mux := http.NewServeMux()
 
@@ -84,14 +88,14 @@ func main() {
 	mux.HandleFunc("GET /api/images", ms.getImage)
 	mux.HandleFunc("GET /healthz", ms.getHealth)
 
-	appPort := fmt.Sprintf(":%d", ms.config.AppPort)
+	appPort := fmt.Sprintf(":%d", cfg.AppPort)
 	log.Fatal(http.ListenAndServe(appPort, mux))
 }
 
 // getHealth returns the status of the application.
 func (ms *MyServer) getHealth(w http.ResponseWriter, req *http.Request) {
 	// Placeholder for the health check
-	w.Write([]byte("OK"))
+	io.WriteString(w, "OK")
 }
 
 // getDevices returns a list of connected devices.
@@ -109,35 +113,35 @@ func (ms *MyServer) getDevices(w http.ResponseWriter, req *http.Request) {
 
 // getImage downloads image from S3
 func (ms *MyServer) getImage(w http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
 
 	// Generate a new image.
 	image := NewImage()
 
 	// Upload the image to S3.
-	err := upload(ms.s3, ms.config.S3Config.Bucket, image.Key, ms.config.S3Config.ImagePath, ms.metrics)
+	err := upload(ctx, ms.s3, ms.config.S3Config.Bucket, image.Key, ms.config.S3Config.ImagePath, ms.metrics)
 	if err != nil {
 		log.Printf("upload failed: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("internal error"))
-
+		io.WriteString(w, "internal error")
 	}
 
 	// Save the image metadata to db.
-	err = image.save(ms.db, ms.metrics)
+	err = image.save(ctx, ms.db, ms.metrics)
 	if err != nil {
 		log.Printf("save failed: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("internal error"))
+		io.WriteString(w, "internal error")
 	}
 
-	w.Write([]byte("Saved!"))
+	io.WriteString(w, "Saved!")
 }
 
 // s3Connect initializes the S3 session.
-func (ms *MyServer) s3Connect() {
+func (ms *MyServer) s3Connect(ctx context.Context) {
 
 	// Load the credentials and initialize the S3 configuration.
-	s3c, err := config.LoadDefaultConfig(context.TODO())
+	s3c, err := config.LoadDefaultConfig(ctx)
 	if err != nil {
 		log.Fatalf("failed to load configuration, %v", err)
 	}
@@ -151,12 +155,12 @@ func (ms *MyServer) s3Connect() {
 }
 
 // dbConnect creates a connection pool to connect to Postgres.
-func (ms *MyServer) dbConnect() {
+func (ms *MyServer) dbConnect(ctx context.Context) {
 	url := fmt.Sprintf("postgres://%s:%s@%s:5432/%s",
 		ms.config.DbConfig.User, ms.config.DbConfig.Password, ms.config.DbConfig.Host, ms.config.DbConfig.Database)
 
 	// Connect to the Postgres database.
-	dbpool, err := pgxpool.New(context.Background(), url)
+	dbpool, err := pgxpool.New(ctx, url)
 	if err != nil {
 		log.Fatalf("Unable to create connection pool: %s", err)
 	}
