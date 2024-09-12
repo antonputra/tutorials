@@ -59,14 +59,13 @@ func StartPrometheusServer(c *Config, reg *prometheus.Registry) {
 	}()
 }
 
-func renderJSON(w http.ResponseWriter, s interface{}) {
-	b, err := json.Marshal(s)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+func renderJSON(w http.ResponseWriter, value any) {
+	enc := json.NewEncoder(w)
+	enc.SetEscapeHTML(false)
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(b)
+	if err := enc.Encode(value); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }
 
 func main() {

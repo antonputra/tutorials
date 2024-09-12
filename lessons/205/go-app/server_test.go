@@ -76,7 +76,7 @@ func TestDevices(t *testing.T) {
 		`{"uuid":"b16d0b53-14f1-4c11-8e29-b9fcef167c26","mac":"62-46-13-B7-B3-A1","firmware":"3.0.0"},` +
 		`{"uuid":"51bb1937-e005-4327-a3bd-9f32dcf00db8","mac":"96-A8-DE-5B-77-14","firmware":"1.0.1"},` +
 		`{"uuid":"e0a1d085-dce5-48db-a794-35640113fa67","mac":"7E-3B-62-A6-09-12","firmware":"3.5.6"}` +
-		`]`
+		`]` + "\n"
 
 	if got := string(resBytes); got != want {
 		t.Errorf("mismatch: got %q, want %q", got, want)
