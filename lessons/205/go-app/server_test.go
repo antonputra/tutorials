@@ -85,7 +85,7 @@ func TestDevices(t *testing.T) {
 
 //go:generate go test -count 5 -bench . -benchmem -cpuprofile default.pgo
 
-func BenchmarkEndpoints(b *testing.B) {
+func BenchmarkEndToEnd(b *testing.B) {
 	ctx := getContext(b)
 	srv := setupServer(b, ctx)
 
@@ -94,7 +94,7 @@ func BenchmarkEndpoints(b *testing.B) {
 	endpoints := []string{"/healthz", "/api/devices"}
 
 	for _, endpoint := range endpoints {
-		b.Run(endpoint, func(b *testing.B) {
+		b.Run(endpoint[1:], func(b *testing.B) {
 			url := srv.URL + endpoint
 			b.RunParallel(func(pb *testing.PB) {
 				for pb.Next() {
@@ -103,6 +103,28 @@ func BenchmarkEndpoints(b *testing.B) {
 						b.Fatalf("failed to get %s: %v", endpoint, err)
 					}
 					res.Body.Close()
+				}
+			})
+		})
+	}
+}
+
+func BenchmarkEndpoints(b *testing.B) {
+	ctx := getContext(b)
+	ms := NewMyServer(ctx, &Config{}, prometheus.NewRegistry())
+	mux := http.NewServeMux()
+	mux.HandleFunc("GET /healthz", ms.getHealth)
+	mux.HandleFunc("GET /api/devices", ms.getDevices)
+
+	endpoints := []string{"/healthz", "/api/devices"}
+
+	for _, endpoint := range endpoints {
+		b.Run(endpoint[1:], func(b *testing.B) {
+			req := httptest.NewRequest("GET", endpoint, nil)
+			b.RunParallel(func(pb *testing.PB) {
+				for pb.Next() {
+					res := httptest.NewRecorder()
+					mux.ServeHTTP(res, req)
 				}
 			})
 		})
