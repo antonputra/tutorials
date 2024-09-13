@@ -85,6 +85,8 @@ func TestDevices(t *testing.T) {
 
 //go:generate go test -count 5 -bench . -benchmem -cpuprofile default.pgo
 
+const benchmarkSize = 1000
+
 func BenchmarkEndToEnd(b *testing.B) {
 	ctx := getContext(b)
 	srv := setupServer(b, ctx)
@@ -96,15 +98,15 @@ func BenchmarkEndToEnd(b *testing.B) {
 	for _, endpoint := range endpoints {
 		b.Run(endpoint[1:], func(b *testing.B) {
 			url := srv.URL + endpoint
-			b.RunParallel(func(pb *testing.PB) {
-				for pb.Next() {
+			for range b.N {
+				for range benchmarkSize {
 					res, err := client.Get(url)
 					if err != nil {
 						b.Fatalf("failed to get %s: %v", endpoint, err)
 					}
 					res.Body.Close()
 				}
-			})
+			}
 		})
 	}
 }
@@ -121,12 +123,12 @@ func BenchmarkEndpoints(b *testing.B) {
 	for _, endpoint := range endpoints {
 		b.Run(endpoint[1:], func(b *testing.B) {
 			req := httptest.NewRequest("GET", endpoint, nil)
-			b.RunParallel(func(pb *testing.PB) {
-				for pb.Next() {
+			for range b.N {
+				for range benchmarkSize {
 					res := httptest.NewRecorder()
 					mux.ServeHTTP(res, req)
 				}
-			})
+			}
 		})
 	}
 }
