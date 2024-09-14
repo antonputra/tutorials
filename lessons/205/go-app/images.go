@@ -45,12 +45,12 @@ func NewImage() *Image {
 }
 
 // Save inserts a newly generated image into the Postgres database.
-func (i *Image) save(dbpool *pgxpool.Pool, m *metrics) error {
+func (i *Image) save(ctx context.Context, dbpool *pgxpool.Pool, m *metrics) error {
 	// Get the current time to record the duration of the request.
 	now := time.Now()
 
 	// Execute the query to create a new image record (pgx automatically prepares and caches statements by default).
-	_, err := dbpool.Exec(context.Background(), "INSERT INTO `go_image` VALUES ($1, $2, $3)", i.ImageUUID, i.Key, i.CreatedAt)
+	_, err := dbpool.Exec(ctx, "INSERT INTO `go_image` VALUES ($1, $2, $3)", i.ImageUUID, i.Key, i.CreatedAt)
 	if err != nil {
 		return fmt.Errorf("dbpool.Exec failed: %w", err)
 	}
@@ -62,7 +62,7 @@ func (i *Image) save(dbpool *pgxpool.Pool, m *metrics) error {
 }
 
 // upload uploads S3 image to the bicket.
-func upload(client *s3.Client, bucket string, key string, path string, m *metrics) error {
+func upload(ctx context.Context, client *s3.Client, bucket string, key string, path string, m *metrics) error {
 	// Get the current time to record the duration of the request.
 	now := time.Now()
 
@@ -81,7 +81,7 @@ func upload(client *s3.Client, bucket string, key string, path string, m *metric
 	}
 
 	// Upload the file to the S3 bucket.
-	_, err = client.PutObject(context.TODO(), input)
+	_, err = client.PutObject(ctx, input)
 	if err != nil {
 		return fmt.Errorf("svc.PutObject failed: %w", err)
 	}
