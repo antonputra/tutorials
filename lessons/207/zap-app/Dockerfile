@@ -12,7 +12,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN /opt/zig/zig build
+RUN /opt/zig/zig build -Doptimize=ReleaseFast
 
 FROM debian:12.6-slim
 
