@@ -99,7 +99,7 @@ func (ms *MyServer) getHealth(w http.ResponseWriter, req *http.Request) {
 
 // getDevices returns a list of connected devices.
 func (ms *MyServer) getDevices(w http.ResponseWriter, req *http.Request) {
-	devices := []Device{
+	devices := [...]Device{
 		{UUID: "b0e42fe7-31a5-4894-a441-007e5256afea", Mac: "5F-33-CC-1F-43-82", Firmware: "2.1.6"},
 		{UUID: "0c3242f5-ae1f-4e0c-a31b-5ec93825b3e7", Mac: "EF-2B-C4-F5-D6-34", Firmware: "2.1.5"},
 		{UUID: "b16d0b53-14f1-4c11-8e29-b9fcef167c26", Mac: "62-46-13-B7-B3-A1", Firmware: "3.0.0"},
@@ -107,7 +107,7 @@ func (ms *MyServer) getDevices(w http.ResponseWriter, req *http.Request) {
 		{UUID: "e0a1d085-dce5-48db-a794-35640113fa67", Mac: "7E-3B-62-A6-09-12", Firmware: "3.5.6"},
 	}
 
-	renderJSON(w, devices)
+	renderJSON(w, &devices)
 }
 
 // getImage downloads image from S3
