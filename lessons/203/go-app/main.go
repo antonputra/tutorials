@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/credentials"
@@ -74,6 +75,8 @@ func (h *handler) getHealth(c fiber.Ctx) error {
 
 // getDevices returns a list of connected devices.
 func (h *handler) getDevices(c fiber.Ctx) error {
+	now := time.Now()
+
 	devices := []Device{
 		{UUID: "b0e42fe7-31a5-4894-a441-007e5256afea", Mac: "5F-33-CC-1F-43-82", Firmware: "2.1.6"},
 		{UUID: "0c3242f5-ae1f-4e0c-a31b-5ec93825b3e7", Mac: "EF-2B-C4-F5-D6-34", Firmware: "2.1.5"},
@@ -82,7 +85,11 @@ func (h *handler) getDevices(c fiber.Ctx) error {
 		{UUID: "e0a1d085-dce5-48db-a794-35640113fa67", Mac: "7E-3B-62-A6-09-12", Firmware: "3.5.6"},
 	}
 
-	return c.Status(http.StatusOK).JSON(devices)
+	ctx := c.Status(http.StatusOK).JSON(devices)
+
+	h.metrics.duration.With(prometheus.Labels{"op": "devices"}).Observe(time.Since(now).Seconds())
+
+	return ctx
 }
 
 // getImage downloads image from S3
