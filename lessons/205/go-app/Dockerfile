@@ -18,6 +18,8 @@ RUN go mod download && go mod verify
 
 COPY . .
 
+RUN go generate
+
 RUN CGO_ENABLED=0 GOARCH=amd64 GOOS=linux go build -o server -a -ldflags="-s -w" -installsuffix cgo
 
 RUN upx --ultra-brute -qq server && upx -t server
