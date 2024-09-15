@@ -76,7 +76,7 @@ func TestDevices(t *testing.T) {
 		`{"uuid":"b16d0b53-14f1-4c11-8e29-b9fcef167c26","mac":"62-46-13-B7-B3-A1","firmware":"3.0.0"},` +
 		`{"uuid":"51bb1937-e005-4327-a3bd-9f32dcf00db8","mac":"96-A8-DE-5B-77-14","firmware":"1.0.1"},` +
 		`{"uuid":"e0a1d085-dce5-48db-a794-35640113fa67","mac":"7E-3B-62-A6-09-12","firmware":"3.5.6"}` +
-		`]`
+		`]` + "\n"
 
 	if got := string(resBytes); got != want {
 		t.Errorf("mismatch: got %q, want %q", got, want)
@@ -84,6 +84,8 @@ func TestDevices(t *testing.T) {
 }
 
 //go:generate go test -count 5 -bench . -benchmem -cpuprofile default.pgo
+
+const benchmarkSize = 1000
 
 func BenchmarkEndToEnd(b *testing.B) {
 	ctx := getContext(b)
@@ -96,15 +98,15 @@ func BenchmarkEndToEnd(b *testing.B) {
 	for _, endpoint := range endpoints {
 		b.Run(endpoint[1:], func(b *testing.B) {
 			url := srv.URL + endpoint
-			b.RunParallel(func(pb *testing.PB) {
-				for pb.Next() {
+			for range b.N {
+				for range benchmarkSize {
 					res, err := client.Get(url)
 					if err != nil {
 						b.Fatalf("failed to get %s: %v", endpoint, err)
 					}
 					res.Body.Close()
 				}
-			})
+			}
 		})
 	}
 }
@@ -121,12 +123,12 @@ func BenchmarkEndpoints(b *testing.B) {
 	for _, endpoint := range endpoints {
 		b.Run(endpoint[1:], func(b *testing.B) {
 			req := httptest.NewRequest("GET", endpoint, nil)
-			b.RunParallel(func(pb *testing.PB) {
-				for pb.Next() {
+			for range b.N {
+				for range benchmarkSize {
 					res := httptest.NewRecorder()
 					mux.ServeHTTP(res, req)
 				}
-			})
+			}
 		})
 	}
 }
