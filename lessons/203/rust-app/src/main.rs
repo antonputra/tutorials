@@ -40,33 +40,33 @@ async fn get_metrics(state: web::Data<Mutex<AppState>>) -> Result<HttpResponse> 
 // Returns a list of connected devices.
 #[get("/api/devices")]
 async fn get_devices() -> HttpResponse {
-    let devices = Vec::from([
+    let devices = [
         Device {
-            uuid: String::from("b0e42fe7-31a5-4894-a441-007e5256afea"),
-            mac: String::from("5F-33-CC-1F-43-82"),
-            firmware: String::from("2.1.6"),
+            uuid: "b0e42fe7-31a5-4894-a441-007e5256afea",
+            mac: "5F-33-CC-1F-43-82",
+            firmware: "2.1.6",
         },
         Device {
-            uuid: String::from("0c3242f5-ae1f-4e0c-a31b-5ec93825b3e7"),
-            mac: String::from("EF-2B-C4-F5-D6-34"),
-            firmware: String::from("2.1.5"),
+            uuid: "0c3242f5-ae1f-4e0c-a31b-5ec93825b3e7",
+            mac: "EF-2B-C4-F5-D6-34",
+            firmware: "2.1.5",
         },
         Device {
-            uuid: String::from("b16d0b53-14f1-4c11-8e29-b9fcef167c26"),
-            mac: String::from("62-46-13-B7-B3-A1"),
-            firmware: String::from("3.0.0"),
+            uuid: "b16d0b53-14f1-4c11-8e29-b9fcef167c26",
+            mac: "62-46-13-B7-B3-A1",
+            firmware: "3.0.0",
         },
         Device {
-            uuid: String::from("51bb1937-e005-4327-a3bd-9f32dcf00db8"),
-            mac: String::from("96-A8-DE-5B-77-14"),
-            firmware: String::from("1.0.1"),
+            uuid: "51bb1937-e005-4327-a3bd-9f32dcf00db8",
+            mac: "96-A8-DE-5B-77-14",
+            firmware: "1.0.1",
         },
         Device {
-            uuid: String::from("e0a1d085-dce5-48db-a794-35640113fa67"),
-            mac: String::from("7E-3B-62-A6-09-12"),
-            firmware: String::from("3.5.6"),
+            uuid: "e0a1d085-dce5-48db-a794-35640113fa67",
+            mac: "7E-3B-62-A6-09-12",
+            firmware: "3.5.6",
         },
-    ]);
+    ];
 
     HttpResponse::Ok().json(devices)
 }
