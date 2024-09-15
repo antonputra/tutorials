@@ -13,6 +13,6 @@ pub fn generate_image() -> Image {
     Image {
         uuid: id,
         created_at: Utc::now().naive_local(),
-        key: format!("rust-thumbnail-{}.png", id.to_string()),
+        key: format!("rust-thumbnail-{id}.png"),
     }
 }
