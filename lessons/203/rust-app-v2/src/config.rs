@@ -37,8 +37,8 @@ impl Config {
     pub async fn load(filename: &str) -> Result<Self, Error> {
         let contents = fs::read_to_string(filename)
             .await
-            .context(format!("Failed to read config file: {}", filename))?;
+            .with_context(|| format!("Failed to read config file: {}", filename))?;
 
-        toml::from_str(&contents).context(format!("Failed to parse config file: {}", filename))
+        toml::from_str(&contents).with_context(|| format!("Failed to parse config file: {}", filename))
     }
 }
