@@ -53,6 +53,19 @@ Requests/sec: 193313.51
 Transfer/sec:     22.86MB
 ```
 
+
+HTTP.zig in ReleaseFast mode
+```
+Running 30s test @ http://localhost:8086/api/devices
+  4 threads and 100 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency   492.28us  185.23us   6.05ms   83.81%
+    Req/Sec    50.01k    11.59k   60.59k    79.05%
+  5985889 requests in 30.10s, 707.86MB read
+Requests/sec: 198855.02
+Transfer/sec:     23.52MB
+```
+
 ----
 
 Running both with Debug compiles, similar story
@@ -84,7 +97,7 @@ TL;DR - much of a muchness for runtime performance ! There really isnt anything 
 
 Actix generally has better latency, and less scatter (std deviation)
 
-Zig has a better peak throughput
+Zig has a better peak throughput, and uses 1 third the memory (at least with these config tweaks)
 
 -----
 
