@@ -14,8 +14,7 @@ testing with
 
 - `wrk -c 100 -d 30 -t 4 http://localhost:8080/api/devices`
 
-There is really no difference between the healthz endpoint and the api/devices endpoint that needs to JSONify a struct ... so really all the time
-is being spent doing IO
+There is really no difference between the healthz endpoint and the api/devices endpoint that needs to JSONify a struct ... so really all the time is being spent doing IO
 
 
 -----
@@ -56,9 +55,12 @@ Transfer/sec:     22.86MB
 
 TL;DR - much of a muchness !
 
+There really isnt anything between them
+
 Actix generally has better latency, and less scatter (std deviation)
 
-Zig has marginally better throughput
+Zig has a better peak throughput
 
-We are ONLY really measuring IO behaviour here though.  Things would likely get different quickly once the app does anything more concrete
+We are ONLY really measuring IO behaviour here though.
 
+I suspect things would stay about the same across the board as you add more CPU intensive endpoints
