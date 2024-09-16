@@ -1,7 +1,8 @@
 const std = @import("std");
 const httpz = @import("httpz");
+const Device = @import("device.zig");
 
-const port = std.posix.getenv("PORT") orelse "8080";
+const port = 8080;
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
@@ -40,12 +41,6 @@ pub fn main() !void {
     std.debug.print("http.zig listening on http://0.0.0.0:{d}\n", .{port});
     try server.listen();
 }
-
-const Device = struct {
-    id: ?c_int = null,
-    mac: ?[]const u8 = null,
-    firmware: ?[]const u8 = null,
-};
 
 const App = struct {
     fn healthz(_: *App, _: *httpz.Request, res: *httpz.Response) !void {

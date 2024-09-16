@@ -53,14 +53,41 @@ Requests/sec: 193313.51
 Transfer/sec:     22.86MB
 ```
 
-TL;DR - much of a muchness !
+----
 
-There really isnt anything between them
+Running both with Debug compiles, similar story
+
+```
+Actix compiled in Debug mode
+
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     1.50ms  230.25us   5.05ms   86.76%
+    Req/Sec    16.73k     2.05k   67.69k    83.85%
+  1999217 requests in 30.10s, 310.78MB read
+Requests/sec:  66409.49
+Transfer/sec:     10.32MB
+```
+
+```
+Zig compiled in Debug mode
+
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     0.88ms  281.05us  20.30ms   91.38%
+    Req/Sec    28.58k     2.83k   59.14k    87.60%
+  3418569 requests in 30.10s, 404.26MB read
+Requests/sec: 113569.44
+Transfer/sec:     13.43MB
+
+```
+
+TL;DR - much of a muchness for runtime performance ! There really isnt anything between them
 
 Actix generally has better latency, and less scatter (std deviation)
 
 Zig has a better peak throughput
 
-We are ONLY really measuring IO behaviour here though.
+-----
 
-I suspect things would stay about the same across the board as you add more CPU intensive endpoints
+The main difference (to me) is that the Actix build is pulling in a huge number of dependencies :( 
+
+The zig code is only pulling in 1 dependency
