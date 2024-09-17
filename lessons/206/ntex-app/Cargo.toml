@@ -1,10 +1,11 @@
 [package]
-name = "actix-app-static"
+name = "ntex-app"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-actix-web = "4"
+serde = "1"
+ntex = { version = "2", features = ["tokio"] }
 
 [profile.release]
 debug = false
