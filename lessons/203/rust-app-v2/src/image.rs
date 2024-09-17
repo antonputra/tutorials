@@ -74,7 +74,7 @@ impl Image {
         // Prepare the SQL query.
         let query = "INSERT INTO rust_image VALUES ($1, $2, $3)";
         let stmt = client
-            .prepare(query)
+            .prepare_cached(query)
             .await
             .context("failed to prepare query")?;
 
