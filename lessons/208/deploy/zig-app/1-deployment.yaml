@@ -1,0 +1,53 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zig-app
+  namespace: api
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: zig-app
+  template:
+    metadata:
+      labels:
+        app: zig-app
+    spec:
+      tolerations:
+      - effect: NoSchedule
+        operator: Exists
+      nodeSelector:
+        role: general
+        # node: node-01
+      containers:
+      - name: zig-app
+        image: aputra/http.zig-208:v1
+        imagePullPolicy: Always
+        ports:
+        - name: http
+          containerPort: 8080
+        resources:
+          requests:
+            memory: 256Mi
+            cpu: "2"
+          limits:
+            memory: 256Mi
+            cpu: "2"
+        # readinessProbe:
+        #   httpGet:
+        #     path: /healthz
+        #     port: http
+        #   periodSeconds: 20
+        #   timeoutSeconds: 10
+        #   failureThreshold: 3
+        # livenessProbe:
+        #   httpGet:
+        #     path: /healthz
+        #     port: http
+        #   periodSeconds: 20
+        #   timeoutSeconds: 10
+        #   failureThreshold: 3
+
