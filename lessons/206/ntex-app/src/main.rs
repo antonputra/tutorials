@@ -4,6 +4,9 @@ use routes::{devices, health};
 mod device;
 mod routes;
 
+#[global_allocator]
+static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
+
 #[ntex::main]
 async fn main() -> std::io::Result<()> {
     web::server(|| App::new().service((health, devices)))

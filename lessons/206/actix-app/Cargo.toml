@@ -4,8 +4,9 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-serde = { version = "1.0.209", features = ["derive"] }
 actix-web = "4"
+mimalloc = "0.1"
+serde = { version = "1", features = ["derive"] }
 
 [profile.release]
 debug = false

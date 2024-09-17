@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 serde = "1"
+mimalloc = "0.1"
 ntex = { version = "2", features = ["tokio"] }
 
 [profile.release]

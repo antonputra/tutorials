@@ -4,7 +4,8 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-rocket = { version = "0.5.1", features = ["json"] }
+mimalloc = "0.1"
+rocket = { version = "0.5", features = ["json"] }
 
 [profile.release]
 debug = false
