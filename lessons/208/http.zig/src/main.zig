@@ -18,11 +18,12 @@ pub fn main() !void {
         .address = "0.0.0.0",
         .port = port,
         .workers = .{
+            .count = 2,
             .large_buffer_count = 1,
             .large_buffer_size = 1024,
         },
         .thread_pool = .{
-            .count = 1,
+            .count = 2,
             .buffer_size = 1024,
         },
         .request = .{
