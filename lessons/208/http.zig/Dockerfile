@@ -14,7 +14,7 @@ COPY . .
 
 # Using ReleaseSmall instead of ReleaseFast - because there is no CPU intensive work
 # in this app, so ReleaseSmall will give a smaller binary / better use of CPU cache
-RUN /opt/zig/zig build -Doptimize=ReleaseFast -Dcpu=baseline
+RUN /opt/zig/zig build -Doptimize=ReleaseFast
 
 FROM debian:12.7-slim
 
