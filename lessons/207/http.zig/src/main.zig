@@ -18,6 +18,7 @@ pub fn main() !void {
         .address = "0.0.0.0",
         .port = port,
         .workers = .{
+            .max_conn = 4096,
             .large_buffer_count = 1,
             .large_buffer_size = 1024,
         },
