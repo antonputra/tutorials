@@ -1,11 +1,12 @@
 [package]
-name = "rocket-app"
+name = "ntex-app"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+serde = "1"
 mimalloc = "0.1"
-rocket = { version = "0.5", features = ["json"] }
+ntex = { version = "2", features = ["tokio"] }
 
 [profile.release]
 debug = false

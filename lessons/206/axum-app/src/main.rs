@@ -6,6 +6,9 @@ use axum::{routing::get, Router};
 use self::routes::devices;
 use self::routes::health;
 
+#[global_allocator]
+static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
+
 #[tokio::main]
 async fn main() {
     // Create the application router.
