@@ -9,7 +9,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jackc/pgx/v5"
 	"github.com/prometheus/client_golang/prometheus"
 )
 
@@ -45,12 +45,12 @@ func NewImage() *Image {
 }
 
 // Save inserts a newly generated image into the Postgres database.
-func (i *Image) save(ctx context.Context, dbpool *pgxpool.Pool, m *metrics) error {
+func (i *Image) save(ctx context.Context, tx pgx.Tx, m *metrics) error {
 	// Get the current time to record the duration of the request.
 	now := time.Now()
 
 	// Execute the query to create a new image record (pgx automatically prepares and caches statements by default).
-	_, err := dbpool.Exec(ctx, "INSERT INTO `go_image` VALUES ($1, $2, $3)", i.ImageUUID, i.Key, i.CreatedAt)
+	_, err := tx.Exec(ctx, "INSERT INTO `go_image` VALUES ($1, $2, $3)", i.ImageUUID, i.Key, i.CreatedAt)
 	if err != nil {
 		return fmt.Errorf("dbpool.Exec failed: %w", err)
 	}

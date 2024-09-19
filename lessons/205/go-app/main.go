@@ -10,6 +10,7 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -115,32 +116,40 @@ func (ms *MyServer) getDevices(w http.ResponseWriter, req *http.Request) {
 
 // getImage downloads image from S3
 func (ms *MyServer) getImage(w http.ResponseWriter, req *http.Request) {
-	// Create an error group to run the tasks concurrently. The created
-	// context will be canceled if any of the tasks fail.
-	grp, ctx := errgroup.WithContext(req.Context())
+	ctx := req.Context()
 
-	// Generate a new image.
-	image := NewImage()
+	err := pgx.BeginFunc(ctx, ms.db, func(tx pgx.Tx) error {
+		// Create an error group to run the tasks concurrently. The created
+		// context will be canceled if any of the tasks fail.
+		grp, ctx := errgroup.WithContext(ctx)
 
-	// Upload the image to S3.
-	grp.Go(func() error {
-		err := upload(ctx, ms.s3, ms.config.S3Config.Bucket, image.Key, ms.config.S3Config.ImagePath, ms.metrics)
-		if err != nil {
-			return fmt.Errorf("upload failed: %w", err)
-		}
-		return nil
+		// Generate a new image.
+		image := NewImage()
+
+		// Upload the image to S3.
+		grp.Go(func() error {
+			err := upload(ctx, ms.s3, ms.config.S3Config.Bucket, image.Key, ms.config.S3Config.ImagePath, ms.metrics)
+			if err != nil {
+				return fmt.Errorf("upload failed: %w", err)
+			}
+			return nil
+		})
+
+		// Save the image metadata to db.
+		grp.Go(func() error {
+			if err := image.save(ctx, tx, ms.metrics); err != nil {
+				return fmt.Errorf("save failed: %w", err)
+			}
+			return nil
+		})
+
+		// Wait for all tasks to complete / error out. If this returns an error,
+		// the transaction will be rolled back.
+		return grp.Wait()
 	})
 
-	// Save the image metadata to db.
-	grp.Go(func() error {
-		if err := image.save(ctx, ms.db, ms.metrics); err != nil {
-			return fmt.Errorf("save failed: %w", err)
-		}
-		return nil
-	})
-
-	// Log error and return a failed HTTP response.
-	if err := grp.Wait(); err != nil {
+	// If a sub-task failed  or the db transaction failed, report the error.
+	if err != nil {
 		log.Printf("GetImage failed: %v", err)
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
