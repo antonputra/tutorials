@@ -129,18 +129,12 @@ func (ms *MyServer) getImage(w http.ResponseWriter, req *http.Request) {
 		// Upload the image to S3.
 		grp.Go(func() error {
 			err := upload(ctx, ms.s3, ms.config.S3Config.Bucket, image.Key, ms.config.S3Config.ImagePath, ms.metrics)
-			if err != nil {
-				return fmt.Errorf("upload failed: %w", err)
-			}
-			return nil
+			return annotate(err, "upload failed")
 		})
 
 		// Save the image metadata to db.
 		grp.Go(func() error {
-			if err := image.save(ctx, tx, ms.metrics); err != nil {
-				return fmt.Errorf("save failed: %w", err)
-			}
-			return nil
+			return annotate(image.save(ctx, tx, ms.metrics), "save failed")
 		})
 
 		// Wait for all tasks to complete / error out. If this returns an error,
@@ -187,4 +181,14 @@ func (ms *MyServer) dbConnect(ctx context.Context) {
 	}
 
 	ms.db = dbpool
+}
+
+// annotate adds a context message to an error while wrapping it. The context
+// message will be formatted with fmt.Sprintf. If there is no error, then none
+// of the arguments are processed, and nil is returned for ease of use.
+func annotate(err error, format string, args ...any) error {
+	if err != nil {
+		return fmt.Errorf("%s: %w", fmt.Sprintf(format, args...), err)
+	}
+	return nil
 }
