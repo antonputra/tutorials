@@ -56,7 +56,7 @@ func (i *Image) save(ctx context.Context, tx pgx.Tx, m *metrics) (err error) {
 	}()
 
 	// Execute the query to create a new image record (pgx automatically prepares and caches statements by default).
-	_, err = tx.Exec(ctx, "INSERT INTO `go_image` VALUES ($1, $2, $3)", i.ImageUUID, i.Key, i.CreatedAt)
+	_, err = tx.Exec(ctx, `INSERT INTO "go_image" VALUES ($1, $2, $3)`, i.ImageUUID, i.Key, i.CreatedAt)
 	return annotate(err, "dbpool.Exec failed")
 }
 
