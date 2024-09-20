@@ -54,7 +54,8 @@ pub fn main() !void {
     router.get("/healthz", App.healthz, .{});
     router.get("/api/devices", App.getDevices, .{});
 
-    std.debug.print("http.zig (max_conn_handling branch) listening on http://0.0.0.0:{d}\n", .{port});
+    // std.debug.print("http.zig (max_conn_handling branch) listening on http://0.0.0.0:{d}\n", .{port});
+    std.debug.print("http.zig (tweaks branch) listening on http://0.0.0.0:{d}\n", .{port});
     try server.listen();
 }
 
