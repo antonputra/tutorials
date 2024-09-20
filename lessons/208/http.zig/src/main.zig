@@ -30,7 +30,7 @@ pub fn main() !void {
         .address = "0.0.0.0",
         .port = port,
         .workers = .{
-            .count = 4,
+            .count = 2,
             .max_conn = 8 * 1024,
             // .max_conn = 1024, // default 500
             // .large_buffer_count = 1,
@@ -38,7 +38,7 @@ pub fn main() !void {
             // .large_buffer_size = 1024,
         },
         .thread_pool = .{
-            .count = 4,
+            .count = 2,
             .buffer_size = 64 * 1024,
         },
         .request = .{
