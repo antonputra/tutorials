@@ -1,0 +1,15 @@
+.{
+    .name = "zzz",
+    .version = "0.0.0",
+    .dependencies = .{
+        .zzz = .{
+            .url = "git+https://github.com/mookums/zzz?ref=dynamic-completion-size#a6d47a4c9905c47397dcbd92e960b271bcd6595f",
+            .hash = "12204d1d46eef2df05804a779176ad80fe352aac07b459f817ea72148abcae456679",
+        },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+}
