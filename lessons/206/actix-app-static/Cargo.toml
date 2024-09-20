@@ -7,6 +7,8 @@ edition = "2021"
 actix-web = "4"
 
 [profile.release]
-lto = true
+debug = false
+lto = "fat"
 codegen-units = 1
+split-debuginfo = "off"
 panic = "abort"

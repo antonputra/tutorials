@@ -10,9 +10,13 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"golang.org/x/sync/errgroup"
+
+	_ "go.uber.org/automaxprocs"
 )
 
 // MyServer used to connect to S3 and Database.
@@ -114,23 +118,35 @@ func (ms *MyServer) getDevices(w http.ResponseWriter, req *http.Request) {
 func (ms *MyServer) getImage(w http.ResponseWriter, req *http.Request) {
 	ctx := req.Context()
 
-	// Generate a new image.
-	image := NewImage()
+	err := pgx.BeginFunc(ctx, ms.db, func(tx pgx.Tx) error {
+		// Create an error group to run the tasks concurrently. The created
+		// context will be canceled if any of the tasks fail.
+		grp, ctx := errgroup.WithContext(ctx)
 
-	// Upload the image to S3.
-	err := upload(ctx, ms.s3, ms.config.S3Config.Bucket, image.Key, ms.config.S3Config.ImagePath, ms.metrics)
-	if err != nil {
-		log.Printf("upload failed: %v", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		io.WriteString(w, "internal error")
-	}
+		// Generate a new image.
+		image := NewImage()
 
-	// Save the image metadata to db.
-	err = image.save(ctx, ms.db, ms.metrics)
+		// Upload the image to S3.
+		grp.Go(func() error {
+			err := upload(ctx, ms.s3, ms.config.S3Config.Bucket, image.Key, ms.config.S3Config.ImagePath, ms.metrics)
+			return annotate(err, "upload failed")
+		})
+
+		// Save the image metadata to db.
+		grp.Go(func() error {
+			return annotate(image.save(ctx, tx, ms.metrics), "save failed")
+		})
+
+		// Wait for all tasks to complete / error out. If this returns an error,
+		// the transaction will be rolled back.
+		return grp.Wait()
+	})
+
+	// If a sub-task failed  or the db transaction failed, report the error.
 	if err != nil {
-		log.Printf("save failed: %v", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		io.WriteString(w, "internal error")
+		log.Printf("GetImage failed: %v", err)
+		http.Error(w, "internal error", http.StatusInternalServerError)
+		return
 	}
 
 	io.WriteString(w, "Saved!")
@@ -165,4 +181,14 @@ func (ms *MyServer) dbConnect(ctx context.Context) {
 	}
 
 	ms.db = dbpool
+}
+
+// annotate adds a context message to an error while wrapping it. The context
+// message will be formatted with fmt.Sprintf. If there is no error, then none
+// of the arguments are processed, and nil is returned for ease of use.
+func annotate(err error, format string, args ...any) error {
+	if err != nil {
+		return fmt.Errorf("%s: %w", fmt.Sprintf(format, args...), err)
+	}
+	return nil
 }

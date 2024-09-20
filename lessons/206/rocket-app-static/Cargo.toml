@@ -7,6 +7,8 @@ edition = "2021"
 rocket = { version = "0.5.1", features = ["json"] }
 
 [profile.release]
-lto = true
+debug = false
+lto = "fat"
 codegen-units = 1
+split-debuginfo = "off"
 panic = "abort"
