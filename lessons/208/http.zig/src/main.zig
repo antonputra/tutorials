@@ -38,7 +38,7 @@ pub fn main() !void {
             // .large_buffer_size = 1024,
         },
         .thread_pool = .{
-            .count = 2,
+            .count = 4,
             .buffer_size = 64 * 1024,
         },
         .request = .{
@@ -54,7 +54,7 @@ pub fn main() !void {
     router.get("/healthz", App.healthz, .{});
     router.get("/api/devices", App.getDevices, .{});
 
-    std.debug.print("http.zig listening on http://0.0.0.0:{d}\n", .{port});
+    std.debug.print("http.zig (max_conn_handling branch) listening on http://0.0.0.0:{d}\n", .{port});
     try server.listen();
 }
 
