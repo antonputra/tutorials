@@ -8,8 +8,8 @@
             .hash = "1220f5bf1a1b6d2df35859a32d1460b883bab0ec660c69eca5465e6a1b5fae80e44c",
 
             // experimental branch that addresses overflow conditions
-            .url = "git+https://github.com/karlseguin/http.zig#max_conn_handling",
-            .hash = "1220c3984e8292abc9b6e87ccef998d237a832cbf1063f165ac039fd7120c38fa321",
+            //.url = "git+https://github.com/karlseguin/http.zig#max_conn_handling",
+            //.hash = "1220c3984e8292abc9b6e87ccef998d237a832cbf1063f165ac039fd7120c38fa321",
 
             // latest http.zig that has smaller ram requirements by default
             // .url = "git+https://github.com/karlseguin/http.zig#master",
