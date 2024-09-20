@@ -2,6 +2,10 @@ const std = @import("std");
 const zzz = @import("zzz");
 const http = zzz.HTTP;
 
+pub const std_options = .{
+    .log_level = .err,
+};
+
 const Device = struct {
     id: i32,
     mac: []const u8,
