@@ -1,5 +1,6 @@
 const std = @import("std");
 const httpz = @import("httpz");
+const builtin = @import("builtin");
 const Device = @import("device.zig");
 
 const port = 8080;
@@ -7,6 +8,17 @@ const port = 8080;
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
+
+    // If you want to use c_allocator - im not seeing any real difference in speed with this though
+    // var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    // const allocator = if (builtin.mode == .Debug) gpa.allocator() else blk: {
+    //     std.debug.print("Using Raw OS allocator\n", .{});
+    //     break :blk std.heap.raw_c_allocator;
+    // };
+
+    defer if (builtin.mode == .Debug) {
+        _ = gpa.detectLeaks();
+    };
 
     var app = App{};
 
@@ -19,12 +31,15 @@ pub fn main() !void {
         .port = port,
         .workers = .{
             .count = 2,
-            .large_buffer_count = 1,
-            .large_buffer_size = 1024,
+            .max_conn = 8 * 1024,
+            // .max_conn = 1024, // default 500
+            // .large_buffer_count = 1,
+            .large_buffer_count = 0,
+            // .large_buffer_size = 1024,
         },
         .thread_pool = .{
             .count = 2,
-            .buffer_size = 1024,
+            .buffer_size = 64 * 1024,
         },
         .request = .{
             .buffer_size = 1024,
@@ -39,7 +54,8 @@ pub fn main() !void {
     router.get("/healthz", App.healthz, .{});
     router.get("/api/devices", App.getDevices, .{});
 
-    std.debug.print("http.zig listening on http://0.0.0.0:{d}\n", .{port});
+    // std.debug.print("http.zig (max_conn_handling branch) listening on http://0.0.0.0:{d}\n", .{port});
+    std.debug.print("http.zig (tweaks branch) listening on http://0.0.0.0:{d}\n", .{port});
     try server.listen();
 }
 
