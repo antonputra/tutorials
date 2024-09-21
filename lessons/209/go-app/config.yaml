@@ -12,3 +12,4 @@ db:
   password: devops123
   host: "192.168.50.221"
   database: mydb
+  maxConnections: 20
