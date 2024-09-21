@@ -1,0 +1,55 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: go-client
+  namespace: default
+data:
+  Tester.toml: |
+    [test]
+    url = "http://go-app.default.svc.cluster.local:8080/api/devices"
+    parallelism = 1
+    num_threads = 1000
+    stage_interval_s = 20
+    request_interval_ms = 100
+    request_timeout_ms = 1000
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: go-client
+  namespace: default
+spec:
+  parallelism: 35
+  # parallelism: 35
+  template:
+    metadata:
+      labels:
+        app: go-client
+    spec:
+      restartPolicy: Never
+      nodeSelector:
+        # node: node-01
+        role: clients
+      containers:
+      - name: go-client
+        image: aputra/load-tester:v12
+        ports:
+        - name: metrics
+          containerPort: 8080
+        resources:
+          requests:
+            memory: 512Mi
+            cpu: 1000m
+          limits:
+            memory: 512Mi
+            cpu: 1000m
+        volumeMounts:
+        - name: config
+          mountPath: Tester.toml
+          subPath: Tester.toml
+      volumes:
+      - name: config
+        configMap:
+          name: go-client
+

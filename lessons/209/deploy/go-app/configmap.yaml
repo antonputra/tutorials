@@ -1,0 +1,21 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: go-app
+  namespace: default
+data:
+  config.yaml: |
+    appPort: 8080
+    metricsPort: 8081
+    s3:
+      region: us-west-rack1
+      bucket: images
+      endpoint: http://10.0.77.169:9000
+      pathStyle: true
+      imgPath: /tmp/thumbnail.png
+    db:
+      user: go
+      password: devops123
+      host: "10.0.77.169"
+      database: mydb
