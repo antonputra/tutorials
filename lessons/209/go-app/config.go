@@ -63,6 +63,9 @@ type DbConfig struct {
 
 	// Database to store images.
 	Database string `yaml:"database"`
+
+	// Max connections to the database.
+	MaxConnections int `yaml:"maxConnections"`
 }
 
 // loadConfig loads app config from YAML file.

@@ -164,8 +164,8 @@ func (ms *MyServer) s3Connect(ctx context.Context) {
 
 // dbConnect creates a connection pool to connect to Postgres.
 func (ms *MyServer) dbConnect(ctx context.Context) {
-	url := fmt.Sprintf("postgres://%s:%s@%s:5432/%s",
-		ms.config.DbConfig.User, ms.config.DbConfig.Password, ms.config.DbConfig.Host, ms.config.DbConfig.Database)
+	url := fmt.Sprintf("postgres://%s:%s@%s:5432/%s?pool_max_conns=%d",
+		ms.config.DbConfig.User, ms.config.DbConfig.Password, ms.config.DbConfig.Host, ms.config.DbConfig.Database, ms.config.DbConfig.MaxConnections)
 
 	// Connect to the Postgres database.
 	dbpool, err := pgxpool.New(ctx, url)
