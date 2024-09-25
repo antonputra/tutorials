@@ -1,65 +1,69 @@
-import express from "express";
-import save from "./devices.js";
 import summary from "./metrics.js";
+import save from "./devices.js";
 import { randomUUID } from "crypto";
 import { register } from "prom-client";
 import config from "./config.js";
 
-const app = express();
+import * as http from "node:http";
 
-app.use(express.json());
+const server = http.createServer({ keepAliveTimeout: 60000 }, (req, res) => {
+  if (req.url === "/metrics") {
+    res.writeHead(200, { "Content-Type": register.contentType });
+    register.metrics().then((data) => res.end(data));
+    return;
+  }
 
-// Expose Prometheus metrics.
-app.get("/metrics", async (_req, res) => {
-  res.setHeader("Content-Type", register.contentType);
-  register.metrics().then((data) => res.status(200).send(data));
-});
+  if (req.url === "/healthz") {
+    res.writeHead(200, { "Content-Type": "text/plain" });
+    res.end("OK");
+    return;
+  }
 
-// Returns the status of the application.
-app.get("/healthz", async (_req, res) => {
-  // Placeholder for the health check
-  res.send("OK");
-});
+  if (req.method === "GET" && req.url === "/api/devices") {
+    const device = {
+      uuid: "9add349c-c35c-4d32-ab0f-53da1ba40a2a",
+      mac: "5F-33-CC-1F-43-82",
+      firmware: "2.1.6",
+    };
 
-// Returns a list of connected devices.
-app.get("/api/devices", async (_req, res) => {
-  const device = {
-    uuid: "9add349c-c35c-4d32-ab0f-53da1ba40a2a",
-    mac: "5F-33-CC-1F-43-82",
-    firmware: "2.1.6",
-  };
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify(device));
+    return;
+  }
 
-  res.status(200).json(device);
-});
-
-// Registers the device.
-app.post("/api/devices", async (req, res) => {
-  let device = req.body;
-
-  // Generate a new UUID for the device.
-  device.uuid = randomUUID();
-
-  // Get the current time to record the duration of the request.
-  const end = summary.startTimer();
-
-  // Save the device to the database.
-  save(device)
-    .then(() => {
-      // Record the duration of the insert query.
-      end({ op: "db" });
-
-      // Return Device back to the client.
-      res.status(201).json(device);
-    })
-    .catch((error) => {
-      // Log the error.
-      console.error(error);
-
-      // Return a summary of the error to the client.
-      res.status(400).json({ message: error.message });
+  if (req.method === "POST" && req.url === "/api/devices") {
+    let body = "";
+    req.on("data", (chunk) => {
+      body += chunk.toString();
     });
+
+    req.on("end", () => {
+      let device = JSON.parse(body);
+
+      device.uuid = randomUUID();
+
+      const end = summary.startTimer();
+
+      save(device)
+        .then(() => {
+          end({ op: "db" });
+
+          res.writeHead(201, { "Content-Type": "application/json" });
+          res.end(JSON.stringify(device));
+        })
+        .catch((error) => {
+          console.error(error);
+
+          res.writeHead(400, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ message: error.message }));
+        });
+    });
+
+    return;
+  }
+
+  res.writeHead(404, { "Content-Type": "text/plain" });
+  res.end("Not Found");
 });
 
-app.listen(config.appPort, () => {
-  console.log(`Starting the web server on port ${config.appPort}`);
-});
+server.listen(config.appPort);
