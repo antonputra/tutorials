@@ -1,0 +1,9 @@
+---
+appPort: 8080
+metricsPort: 8081
+db:
+  user: go
+  password: devops123
+  host: my-postgres.antonputra.pvt
+  database: mydb
+  maxConnections: 20
