@@ -1,9 +1,10 @@
 import express from "express";
-import save from "./devices.js";
-import summary from "./metrics.js";
-import { randomUUID } from "crypto";
+import { randomUUID } from "node:crypto";
+import http from "node:http";
+import { save } from "./devices.js";
+import { summary } from "./metrics.js";
 import { register } from "prom-client";
-import config from "./config.js";
+import { config } from "./config.js";
 
 const app = express();
 
@@ -12,7 +13,8 @@ app.use(express.json());
 // Expose Prometheus metrics.
 app.get("/metrics", async (_req, res) => {
   res.setHeader("Content-Type", register.contentType);
-  register.metrics().then((data) => res.status(200).send(data));
+  const data = await register.metrics();
+  res.status(200).send(data);
 });
 
 // Returns the status of the application.
@@ -42,24 +44,23 @@ app.post("/api/devices", async (req, res) => {
   // Get the current time to record the duration of the request.
   const end = summary.startTimer();
 
-  // Save the device to the database.
-  save(device)
-    .then(() => {
-      // Record the duration of the insert query.
-      end({ op: "db" });
-
-      // Return Device back to the client.
-      res.status(201).json(device);
-    })
-    .catch((error) => {
-      // Log the error.
-      console.error(error);
-
-      // Return a summary of the error to the client.
-      res.status(400).json({ message: error.message });
-    });
+  try {
+    // Save the device to the database.
+    await save(device);
+    // Record the duration of the insert query.
+    end({ op: "db" });
+    // Return Device back to the client.
+    res.status(201).json(device);
+  } catch (error) {
+    // Log the error.
+    console.error(error);
+    // Return a summary of the error to the client.
+    res.status(400).json({ message: error.message });
+  }
 });
 
-app.listen(config.appPort, () => {
+const server = http.createServer(async (req, res) => app(req, res));
+
+server.listen(config.appPort, () => {
   console.log(`Starting the web server on port ${config.appPort}`);
 });
