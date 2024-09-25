@@ -37,6 +37,9 @@ spec:
       containers:
       - name: go-app
         image: aputra/go-app-210:v3
+        env:
+        - name: GOMAXPROCS
+          value: 1
         ports:
         - name: http
           containerPort: 8080
