@@ -1,119 +1,69 @@
 import summary from "./metrics.js";
 import save from "./devices.js";
-import { randomUUID } from "node:crypto";
+import { randomUUID } from "crypto";
 import { register } from "prom-client";
 import config from "./config.js";
 
-import fastify from "fastify";
-import { serverFactory } from "@geut/fastify-uws";
+import * as http from "node:http";
 
-const app = fastify({
-  serverFactory,
-  keepAliveTimeout: 60000,
-});
+const server = http.createServer({ keepAliveTimeout: 60000 }, (req, res) => {
+  if (req.url === "/metrics") {
+    res.writeHead(200, { "Content-Type": register.contentType });
+    register.metrics().then((data) => res.end(data));
+    return;
+  }
 
-app.get("/metrics", (_req, res) => {
-  res.header("content-type", register.contentType);
+  if (req.url === "/healthz") {
+    res.writeHead(200, { "Content-Type": "text/plain" });
+    res.end("OK");
+    return;
+  }
 
-  register.metrics().then((data) => res.send(data));
-});
-
-app.get("/healthz", (_req, res) => {
-  res.header("content-type", "text/plain");
-
-  res.send("OK");
-});
-
-app.get(
-  "/api/devices",
-  {
-    schema: {
-      response: {
-        200: {
-          type: "object",
-          properties: {
-            uuid: {
-              type: "string",
-            },
-            mac: {
-              type: "string",
-            },
-            firmware: {
-              type: "string",
-            },
-          },
-        },
-      },
-    },
-  },
-  (req, res) => {
+  if (req.method === "GET" && req.url === "/api/devices") {
     const device = {
       uuid: "9add349c-c35c-4d32-ab0f-53da1ba40a2a",
       mac: "5F-33-CC-1F-43-82",
       firmware: "2.1.6",
     };
 
-    res.header("content-type", "application/json");
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify(device));
+    return;
+  }
 
-    res.status(200).send(device);
-  },
-);
+  if (req.method === "POST" && req.url === "/api/devices") {
+    let body = "";
+    req.on("data", (chunk) => {
+      body += chunk.toString();
+    });
 
-app.post(
-  "/api/devices",
-  {
-    schema: {
-      response: {
-        200: {
-          type: "object",
-          properties: {
-            uuid: {
-              type: "string",
-            },
-            mac: {
-              type: "string",
-            },
-            firmware: {
-              type: "string",
-            },
-          },
-        },
-        400: {
-          type: "object",
-          properties: {
-            message: {
-              type: "string",
-            },
-          },
-        },
-      },
-    },
-  },
-  (req, res) => {
-    const device = {
-      uuid: randomUUID(),
-      ...req.body,
-    };
+    req.on("end", () => {
+      let device = JSON.parse(body);
 
-    const end = summary.startTimer();
+      device.uuid = randomUUID();
 
-    save(device)
-      .then(() => {
-        end({ op: "db" });
+      const end = summary.startTimer();
 
-        res.status(201).header("content-type", "application/json").send(device);
-      })
-      .catch((error) => {
-        console.error(error);
+      save(device)
+        .then(() => {
+          end({ op: "db" });
 
-        res
-          .status(400)
-          .header("content-type", "application/json")
-          .send({ message: error.message });
-      });
-  },
-);
+          res.writeHead(201, { "Content-Type": "application/json" });
+          res.end(JSON.stringify(device));
+        })
+        .catch((error) => {
+          console.error(error);
 
-app
-  .listen({ port: config.appPort, host: "0.0.0.0" })
-  .then((address) => console.log("App is listening on ", address));
+          res.writeHead(400, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ message: error.message }));
+        });
+    });
+
+    return;
+  }
+
+  res.writeHead(404, { "Content-Type": "text/plain" });
+  res.end("Not Found");
+});
+
+server.listen(config.appPort);
