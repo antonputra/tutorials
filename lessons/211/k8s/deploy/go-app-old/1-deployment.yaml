@@ -1,0 +1,71 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-old-app
+  namespace: default
+spec:
+  replicas: 2
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: go-old-app
+  template:
+    metadata:
+      labels:
+        app: go-old-app
+    spec:
+      terminationGracePeriodSeconds: 0
+      containers:
+      - name: go-old-app
+        image: aputra/go-app-211:v1
+        ports:
+        - name: http
+          containerPort: 8080
+        - name: metrics
+          containerPort: 8081
+        resources:
+          requests:
+            memory: 128Mi
+            cpu: 500m
+          limits:
+            memory: 256Mi
+            cpu: 1000m
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: http
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: http
+        volumeMounts:
+        - name: config
+          mountPath: /config.yaml
+          subPath: config.yaml
+      volumes:
+      - name: config
+        configMap:
+          name: go-old-app
+      tolerations:
+      - effect: NoSchedule
+        operator: Exists
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - go-old-app
+            topologyKey: "kubernetes.io/hostname"
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node
+                operator: In
+                values:
+                - general
