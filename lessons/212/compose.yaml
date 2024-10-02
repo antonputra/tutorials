@@ -1,0 +1,20 @@
+---
+services:
+  postgres:
+    image: postgres:17.0
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: devops123
+      POSTGRES_DB: mydb
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - private
+
+volumes:
+  postgres-data:
+
+networks:
+  private:

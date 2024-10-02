@@ -139,4 +139,5 @@
 - [208 - Actix (Rust) vs Zap (Zig) vs Stdlib (Zig): Performance Benchmark in Kubernetes](../lessons/208)
 - [209 - Django (Python) vs Stdlib (Go): Performance Benchmark in Kubernetes](../lessons/209)
 - [210 - Node.js vs Golang: Performance Benchmark in Kubernetes](../lessons/210)
-- [211 - Node.js vs Golang (Round 2): Performance Benchmark in Kubernetes ](../lessons/211)
+- [211 - Node.js vs Golang (Round 2): Performance Benchmark in Kubernetes](../lessons/211)
+- [212 - Bun vs Node.js: Performance Benchmark in Kubernetes #212](../lessons/212)
