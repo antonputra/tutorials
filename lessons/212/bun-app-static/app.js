@@ -8,23 +8,19 @@ const server = Bun.serve({
   // Timeout in seconds to match Node.js
   idleTimeout: 60,
   port: config.appPort,
+  static: {
+    "/healthz": new Response("OK"),
+    "/api/devices": new Response.json({
+      uuid: "9add349c-c35c-4d32-ab0f-53da1ba40a2a",
+      mac: "5F-33-CC-1F-43-82",
+      firmware: "2.1.6",
+    })
+  },
   async fetch(req) {
     const path = new URL(req.url).pathname;
 
-    if (path === "/healthz") return new Response("OK");
-
     if (path === "/metrics")
       return register.metrics().then((data) => new Response(data));
-
-    if (req.method === "GET" && path === "/api/devices") {
-      const device = {
-        uuid: "9add349c-c35c-4d32-ab0f-53da1ba40a2a",
-        mac: "5F-33-CC-1F-43-82",
-        firmware: "2.1.6",
-      };
-
-      return Response.json(device);
-    }
 
     if (req.method === "POST" && path === "/api/devices") {
       let device = await req.json();
