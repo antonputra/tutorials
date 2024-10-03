@@ -1,0 +1,8 @@
+---
+appPort: 8080
+db:
+  user: node
+  password: devops123
+  host: my-postgres.antonputra.pvt
+  database: mydb
+  maxConnections: 5
