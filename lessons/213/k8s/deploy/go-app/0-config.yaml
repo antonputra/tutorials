@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: go-app
+  namespace: default
+data:
+  config.yaml: |
+    appPort: 8080
+    metricsPort: 8081
+    db:
+      host: my-store.antonputra.pvt
+      database: mydb
+      maxConnections: 100
