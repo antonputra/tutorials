@@ -32,6 +32,6 @@ func (d *Device) Save(ctx context.Context, db *mongo.Database, m *metrics) (err 
 		}
 	}()
 
-	_, err = db.Collection("go_devices").InsertOne(context.TODO(), d)
+	_, err = db.Collection("go_devices").InsertOne(ctx, d)
 	return annotate(err, "db.Exec failed")
 }
