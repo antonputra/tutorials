@@ -5,7 +5,7 @@ metadata:
   name: go-app
   namespace: default
 spec:
-  replicas: 2
+  replicas: 1
   strategy:
     type: Recreate
   selector:
@@ -30,13 +30,17 @@ spec:
           valueFrom:
             resourceFieldRef:
               resource: limits.cpu
+        - name: GOMEMLIMIT
+          valueFrom:
+            resourceFieldRef:
+              resource: requests.memory
         resources:
           requests:
-            memory: 128Mi
-            cpu: 500m
-          limits:
-            memory: 256Mi
+            memory: 480Mi
             cpu: 1000m
+          limits:
+            memory: 512Mi
+            cpu: 2000m
         readinessProbe:
           httpGet:
             path: /healthz
