@@ -113,6 +113,11 @@ func tailAccessLogFile(m *metrics, path string) {
 		match := exp.FindStringSubmatch(line.Text)
 		result := make(map[string]string)
 
+		if len(match) == 0 {
+			log.Printf("No match found for line: %s", line.Text)
+			continue
+		}
+
 		for i, name := range exp.SubexpNames() {
 			if i != 0 && name != "" {
 				result[name] = match[i]
