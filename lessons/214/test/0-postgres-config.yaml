@@ -1,0 +1,23 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-config-client
+  namespace: default
+data:
+  config.yaml: |
+    port: 8081
+    db:
+      user: myapp
+      password: devops123
+      host: postgresql.antonputra.pvt
+      database: mydb
+      maxConnections: 40
+    test:
+      db: pgx
+      op: read
+      minClients: 1
+      maxClients: 1000
+      stageIntervalS: 30
+      requestDelayMs: 40
+      maxEventId: 60000000
