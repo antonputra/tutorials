@@ -40,33 +40,33 @@ async fn get_metrics(state: web::Data<Mutex<AppState>>) -> Result<HttpResponse> 
 // Returns a list of connected devices.
 #[get("/api/devices")]
 async fn get_devices() -> HttpResponse {
-    let devices = Vec::from([
+    let devices = [
         Device {
-            uuid: String::from("b0e42fe7-31a5-4894-a441-007e5256afea"),
-            mac: String::from("5F-33-CC-1F-43-82"),
-            firmware: String::from("2.1.6"),
+            uuid: "b0e42fe7-31a5-4894-a441-007e5256afea",
+            mac: "5F-33-CC-1F-43-82",
+            firmware: "2.1.6",
         },
         Device {
-            uuid: String::from("0c3242f5-ae1f-4e0c-a31b-5ec93825b3e7"),
-            mac: String::from("EF-2B-C4-F5-D6-34"),
-            firmware: String::from("2.1.5"),
+            uuid: "0c3242f5-ae1f-4e0c-a31b-5ec93825b3e7",
+            mac: "EF-2B-C4-F5-D6-34",
+            firmware: "2.1.5",
         },
         Device {
-            uuid: String::from("b16d0b53-14f1-4c11-8e29-b9fcef167c26"),
-            mac: String::from("62-46-13-B7-B3-A1"),
-            firmware: String::from("3.0.0"),
+            uuid: "b16d0b53-14f1-4c11-8e29-b9fcef167c26",
+            mac: "62-46-13-B7-B3-A1",
+            firmware: "3.0.0",
         },
         Device {
-            uuid: String::from("51bb1937-e005-4327-a3bd-9f32dcf00db8"),
-            mac: String::from("96-A8-DE-5B-77-14"),
-            firmware: String::from("1.0.1"),
+            uuid: "51bb1937-e005-4327-a3bd-9f32dcf00db8",
+            mac: "96-A8-DE-5B-77-14",
+            firmware: "1.0.1",
         },
         Device {
-            uuid: String::from("e0a1d085-dce5-48db-a794-35640113fa67"),
-            mac: String::from("7E-3B-62-A6-09-12"),
-            firmware: String::from("3.5.6"),
+            uuid: "e0a1d085-dce5-48db-a794-35640113fa67",
+            mac: "7E-3B-62-A6-09-12",
+            firmware: "3.5.6",
         },
-    ]);
+    ];
 
     HttpResponse::Ok().json(devices)
 }
@@ -89,17 +89,13 @@ async fn save_images(
     let image = generate_image();
 
     // Upload the image to S3.
-    let upload_result = upload(config, metrics.clone(), s3_client, &image.key).await;
-    match upload_result {
-        Ok(_) => (),
-        Err(_) => return HttpResponse::BadRequest().body("Failed to upload to S3!"),
+    if upload(config, metrics.clone(), s3_client, &image.key).await.is_err() {
+        return HttpResponse::BadRequest().body("Failed to upload to S3!");
     }
 
     // Save the image metadata to db.
-    let save_result = save(metrics.clone(), db_pool, image).await;
-    match save_result {
-        Ok(_) => (),
-        Err(_) => return HttpResponse::BadRequest().body("Failed to write to Database!"),
+    if save(metrics.clone(), db_pool, image).await.is_err() {
+        return HttpResponse::BadRequest().body("Failed to write to Database!");
     }
 
     HttpResponse::Ok().body("Saved!")
@@ -108,8 +104,7 @@ async fn save_images(
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     // Load the app configuration from a TOML file.
-    let config_file = "config.toml";
-    let app_config = ConfigData::load(&config_file.to_string()).unwrap();
+    let app_config = ConfigData::load("config.toml").unwrap();
 
     // Wrap the app configuration in the web::Data type.
     let app_config_data = web::Data::new(app_config.clone());
@@ -193,7 +188,7 @@ async fn upload(
     config: web::Data<ConfigData>,
     metrics: web::Data<Metrics>,
     s3_client: web::Data<Client>,
-    obj_key: &String,
+    obj_key: &str,
 ) -> Result<(), ResultError> {
     // Get the current time to record the duration of the request.
     let start = SystemTime::now();
@@ -202,29 +197,21 @@ async fn upload(
     let body = ByteStream::from_path(Path::new(&config.s3.img_path)).await;
 
     // Upload the file to the S3 bucket.
-    let upload_result = s3_client
+    s3_client
         .put_object()
         .bucket(&config.s3.bucket)
         .key(obj_key)
         .body(body.unwrap())
         .send()
-        .await;
+        .await
+        .map_err(|_| ResultError {})?;
 
-    // Return the status of the operation to the client.
-    let http_result = match upload_result {
-        Ok(_) => {
-            // Stop the timer to measure duration.
-            let end = SystemTime::now();
-
-            // Record the duration of the request to S3.
-            let duration = end.duration_since(start).unwrap().as_secs_f64();
-            metrics.observe(String::from("s3"), duration);
-        }
-        Err(_) => return Err(ResultError {}),
-    };
+    // Record the duration of the request to S3.
+    let duration = start.elapsed().unwrap().as_secs_f64();
+    metrics.observe("s3", duration);
 
     // Return the HTTP result.
-    Ok(http_result)
+    Ok(())
 }
 
 // Save inserts a newly generated image into the Postgres database.
@@ -239,42 +226,26 @@ async fn save(
     // Create a client for the database.
     // The pool object is shared, and a client is obtained with each call.
     // Official ex. - https://github.com/actix/examples/blob/0523eea2f6a8a0fad66d0fbac2e067f7a0a137c6/databases/postgres/src/main.rs#L30
-    let client_result = db_pool.get().await;
-    let client = match client_result {
-        Ok(client) => client,
-        Err(_) => return Err(ResultError {}),
-    };
+    let client = db_pool.get().await.map_err(|_| ResultError {})?;
 
     // Get the object key from the image.
     let obj_key = image.key;
 
     // Prepare the SQL query.
     let query = "INSERT INTO rust_image VALUES ($1, $2, $3)";
-    let stmt_result = client.prepare(&query).await;
-
-    let stmt = match stmt_result {
-        Ok(stmt) => stmt,
-        Err(_) => return Err(ResultError {}),
-    };
+    let stmt = client.prepare(&query).await.map_err(|_| ResultError {})?;
 
     // Insert the record into the database.
-    let save_result = client
+    client
         .query(&stmt, &[&image.uuid, &obj_key, &image.created_at])
-        .await;
+        .await
+        .map_err(|_| ResultError {})?;
 
-    let http_result = match save_result {
-        Ok(_) => {
-            // Stop the timer to measure duration.
-            let end = SystemTime::now();
+    // Record the duration of the request to Db.
+    let duration = start.elapsed().unwrap().as_secs_f64();
+    metrics.observe("db", duration);
 
-            // Record the duration of the request to Db.
-            let duration = end.duration_since(start).unwrap().as_secs_f64();
-            metrics.observe(String::from("db"), duration);
-        }
-        Err(_) => return Err(ResultError {}),
-    };
-
-    Ok(http_result)
+    Ok(())
 }
 
 struct ResultError {}
