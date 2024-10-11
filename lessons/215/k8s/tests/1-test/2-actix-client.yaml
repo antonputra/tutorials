@@ -1,0 +1,48 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: actix-client
+  namespace: default
+spec:
+  parallelism: 19
+  template:
+    metadata:
+      labels:
+        app: actix-client
+    spec:
+      restartPolicy: Never
+      terminationGracePeriodSeconds: 0
+      containers:
+      - name: actix-client
+        image: aputra/load-tester:v18
+        env:
+        - name: TEST_URL
+          value: "http://actix-app.default.svc.cluster.local:8080/api/devices"
+        ports:
+        - name: metrics
+          containerPort: 8085
+        resources:
+          requests:
+            memory: 256Mi
+            cpu: 1000m
+          limits:
+            memory: 256Mi
+            cpu: 1000m
+        volumeMounts:
+        - name: config
+          mountPath: Tester.toml
+          subPath: Tester.toml
+      volumes:
+      - name: config
+        configMap:
+          name: config-client
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node
+                operator: In
+                values:
+                - clients
