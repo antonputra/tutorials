@@ -11,11 +11,11 @@ async fn health() -> HttpResponse {
 /// Returns a list of connected devices.
 #[get("/api/devices")]
 async fn devices() -> HttpResponse {
-    let device = Device {
+    const DEVICE: Device<'static> = Device {
         id: 1,
         mac: "EF-2B-C4-F5-D6-34",
         firmware: "2.1.5",
     };
 
-    HttpResponse::Ok().json(device)
+    HttpResponse::Ok().json(DEVICE)
 }
