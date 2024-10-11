@@ -4,6 +4,8 @@ WORKDIR /app
 
 COPY . .
 
+ENV RUSTFLAGS="-Ctarget-cpu=native"
+
 RUN cargo build --release
 
 FROM debian:12.7-slim
