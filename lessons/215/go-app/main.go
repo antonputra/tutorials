@@ -1,9 +1,10 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
+
+	"github.com/goccy/go-json"
 	"github.com/valyala/fasthttp"
 )
 
