@@ -3,48 +3,72 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"log"
-	"net/http"
+	"github.com/valyala/fasthttp"
 )
 
 const port = 8080
 
-// MyServer placeholder.
+// MyServer placeholder
 type MyServer struct{}
 
-func renderJSON(w http.ResponseWriter, value any, status int) {
-	enc := json.NewEncoder(w)
-	enc.SetEscapeHTML(false)
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	if err := enc.Encode(value); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+// renderJSON efficiently serializes the response into JSON and sets the correct headers
+func renderJSON(ctx *fasthttp.RequestCtx, value any, status int) {
+	// Set the Content-Type header
+	ctx.Response.Header.Set("Content-Type", "application/json")
+	ctx.SetStatusCode(status)
+
+	// Serialize the value to JSON
+	jsonData, err := json.Marshal(value)
+	if err != nil {
+		ctx.Error(err.Error(), fasthttp.StatusInternalServerError)
+		return
 	}
+
+	// Write the response
+	ctx.Write(jsonData)
 }
 
 func main() {
 	ms := MyServer{}
 
-	mux := http.NewServeMux()
-
-	mux.HandleFunc("GET /api/devices", ms.getDevices)
-	mux.HandleFunc("GET /healthz", ms.getHealth)
-
+	// Start the fasthttp server
 	appPort := fmt.Sprintf(":%d", port)
 	log.Printf("Starting the web server on port %d", port)
-	log.Fatal(http.ListenAndServe(appPort, mux))
+
+	if err := fasthttp.ListenAndServe(appPort, ms.router); err != nil {
+		log.Fatalf("Error in ListenAndServe: %s", err)
+	}
+}
+
+// router routes the requests based on the URL path
+func (ms *MyServer) router(ctx *fasthttp.RequestCtx) {
+	switch string(ctx.Path()) {
+	case "/api/devices":
+		if string(ctx.Method()) == "GET" {
+			ms.getDevices(ctx)
+		} else {
+			ctx.Error("Method not allowed", fasthttp.StatusMethodNotAllowed)
+		}
+	case "/healthz":
+		if string(ctx.Method()) == "GET" {
+			ms.getHealth(ctx)
+		} else {
+			ctx.Error("Method not allowed", fasthttp.StatusMethodNotAllowed)
+		}
+	default:
+		ctx.Error("Not Found", fasthttp.StatusNotFound)
+	}
 }
 
 // getHealth returns the status of the application.
-func (ms *MyServer) getHealth(w http.ResponseWriter, req *http.Request) {
+func (ms *MyServer) getHealth(ctx *fasthttp.RequestCtx) {
 	// Placeholder for the health check
-	io.WriteString(w, "OK")
+	ctx.WriteString("OK")
 }
 
 // getDevices returns a list of connected devices.
-func (ms *MyServer) getDevices(w http.ResponseWriter, req *http.Request) {
+func (ms *MyServer) getDevices(ctx *fasthttp.RequestCtx) {
 	device := Device{Id: 1, Mac: "EF-2B-C4-F5-D6-34", Firmware: "2.1.5"}
-
-	renderJSON(w, &device, 200)
+	renderJSON(ctx, &device, fasthttp.StatusOK)
 }
