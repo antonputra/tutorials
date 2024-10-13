@@ -1,7 +1,8 @@
 [server]
 skip_name_resolve = 1
+innodb_redo_log_capacity = 3G
 innodb_buffer_pool_size = 12G
-innodb_buffer_pool_instances = 3
+innodb_buffer_pool_instances = 12
 innodb_flush_log_at_trx_commit = 2
 innodb_log_file_size = 2G
 innodb_log_buffer_size = 32M
@@ -11,7 +12,6 @@ max_heap_table_size= 128M
 slow_query_log = 1
 slow_query_log_file = /var/log/mysql/slow.log
 long_query_time = 1
-
 
 [mysqld]
 max_connections = 300
