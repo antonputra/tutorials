@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 serde = { version = "1.0.209", features = ["derive"] }
-actix-web = "4"
+actix-web = { version = "4" , features = ["experimental-io-uring"] }
 
 [profile.release]
 lto = true
