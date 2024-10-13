@@ -6,10 +6,6 @@ innodb_flush_log_at_trx_commit = 2
 innodb_log_file_size = 2G
 innodb_log_buffer_size = 32M
 innodb_max_dirty_pages_pct = 90
-query_cache_type = 1
-query_cache_limit = 2M
-query_cache_min_res_unit = 2k
-query_cache_size = 128M
 tmp_table_size= 128M
 max_heap_table_size= 128M
 slow_query_log = 1
@@ -18,10 +14,9 @@ long_query_time = 1
 
 
 [mysqld]
+max_connections = 300
 character_set_server = utf8mb4
 collation_server = utf8mb4_general_ci
 transaction_isolation = READ-COMMITTED
 binlog_format = ROW
-innodb_large_prefix=on
-innodb_file_format=barracuda
 innodb_file_per_table=1
