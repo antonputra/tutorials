@@ -13,6 +13,8 @@ I'll use an i3en.large in the following test and may scale it up to an **i3en.xl
 
 Credit to @melroy89 and @nscuro for the initial database configuration [settings](https://github.com/antonputra/tutorials/issues/307).
 
+> To tune PostgreSQL, I used [Pgtune](https://pgtune.leopard.in.ua/), and for MySQL, I used [MySQLTuner-perl](https://github.com/major/MySQLTuner-perl).
+
 - PostgreSQL (17.0) [config](postgresql.conf)
 - MySQL (9.0) [config](50-server.cnf)
 
