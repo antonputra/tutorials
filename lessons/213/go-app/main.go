@@ -112,6 +112,7 @@ func (ms *MyServer) saveDevice(w http.ResponseWriter, req *http.Request) {
 
 	// Parse the device from the request.
 	decoder := json.NewDecoder(req.Body)
+	defer req.Body.Close()
 	var d Device
 	err := decoder.Decode(&d)
 	if err != nil {
