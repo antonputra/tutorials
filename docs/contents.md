@@ -144,3 +144,4 @@
 - [213 - Go (Golang) vs. Bun: Performance (Latency - Throughput - Saturation - Availability)](../lessons/213)
 - [214 - MySQL vs PostgreSQL Performance Benchmark (Latency - Throughput - Saturation)](../lessons/214)
 - [215 - Rust vs Zig vs Go: Performance (Latency - Throughput - Saturation - Availability)](../lessons/215)
+- [216 - MySQL vs PostgreSQL (Round 2) Performance Benchmark (Latency - Throughput - Saturation)](../lessons/216)
