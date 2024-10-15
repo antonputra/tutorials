@@ -1,3 +1,7 @@
+# MySQL vs PostgreSQL (Round 2) Performance Benchmark (Latency - Throughput - Saturation)
+
+You can find tutorial [here](https://youtu.be/17BqoNEQKTM).
+
 ## Hardware Details
 
 | EC2 type       | i3en.large        |
@@ -24,7 +28,7 @@ Credit to @melroy89 and @nscuro for the initial database configuration [settings
 CREATE DATABASE store;
 
 CREATE TABLE customer (
-  id SERIAL PRIMARY KEY,
+  id BIGSERIAL PRIMARY KEY,
   username VARCHAR(50),
   first_name VARCHAR(50),
   last_name VARCHAR(50),
@@ -32,35 +36,35 @@ CREATE TABLE customer (
 );
 
 CREATE TABLE product (
-  id SERIAL PRIMARY KEY,
+  id BIGSERIAL PRIMARY KEY,
   name VARCHAR(100),
   price DECIMAL(10,2),
   stock_quantity INTEGER
 );
 
 CREATE TABLE cart (
-  id SERIAL PRIMARY KEY,
-  customer_id INTEGER REFERENCES customer(id),
+  id BIGSERIAL PRIMARY KEY,
+  customer_id BIGINT REFERENCES customer(id),
   total DECIMAL(10,2)
 );
 
 CREATE TABLE cart_item (
-  id SERIAL PRIMARY KEY,
-  cart_id INTEGER REFERENCES cart(id),
-  product_id INTEGER REFERENCES product(id),
+  id BIGSERIAL PRIMARY KEY,
+  cart_id BIGINT REFERENCES cart(id),
+  product_id BIGINT REFERENCES product(id),
   quantity INTEGER
 );
 
 CREATE TABLE "order" (
-  id SERIAL PRIMARY KEY,
-  customer_id INTEGER REFERENCES customer(id),
+  id BIGSERIAL PRIMARY KEY,
+  customer_id BIGINT REFERENCES customer(id),
   total DECIMAL(10,2)
 );
 
 CREATE TABLE order_item (
-  id SERIAL PRIMARY KEY,
-  order_id INTEGER REFERENCES "order"(id),
-  product_id INTEGER REFERENCES product(id),
+  id BIGSERIAL PRIMARY KEY,
+  order_id BIGINT REFERENCES "order"(id),
+  product_id BIGINT REFERENCES product(id),
   quantity INTEGER
 );
 
@@ -139,4 +143,19 @@ UPDATE product SET stock_quantity = 98 WHERE id = 1;
 -- Delete shopping cart and items
 DELETE FROM cart_item WHERE cart_id = 1;
 DELETE FROM cart WHERE id = 1;
+```
+
+## 2nd Test
+
+```sql
+SELECT
+  customer.username, customer.first_name, customer.last_name, customer.address, product.name, order_item.quantity, `order`.total
+FROM
+  `order`
+  LEFT JOIN customer ON customer.id = `order`.customer_id
+  LEFT JOIN order_item ON order_item.order_id = `order`.id
+  LEFT JOIN product ON product.id = order_item.product_id
+WHERE `order`.id = 431;
+
+SELECT customer.username, customer.first_name, customer.last_name, customer.address, product.name, order_item.quantity, `order`.total FROM `order` LEFT JOIN customer ON customer.id = `order`.customer_id LEFT JOIN order_item ON order_item.order_id = `order`.id LEFT JOIN product ON product.id = order_item.product_id WHERE `order`.id = $1;
 ```
