@@ -50,7 +50,7 @@ impl fmt::Display for ConfigError {
 }
 
 impl ConfigData {
-    pub fn load(filename: &String) -> Result<Self, ConfigError> {
+    pub fn load(filename: &str) -> Result<Self, ConfigError> {
         let contents = match fs::read_to_string(filename) {
             Ok(c) => c,
             Err(e) => {

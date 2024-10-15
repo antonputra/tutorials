@@ -9,7 +9,7 @@ pub struct AppState {
 
 #[derive(Clone, Debug, Hash, PartialEq, Eq, EncodeLabelSet)]
 pub struct OperationLabels {
-    pub op: String,
+    pub op: &'static str,
 }
 
 pub struct Metrics {
@@ -17,7 +17,7 @@ pub struct Metrics {
 }
 
 impl Metrics {
-    pub fn observe(&self, op: String, duration: f64) {
+    pub fn observe(&self, op: &'static str, duration: f64) {
         self.request
             .get_or_create(&OperationLabels { op })
             .observe(duration)
