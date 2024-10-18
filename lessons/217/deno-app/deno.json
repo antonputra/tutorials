@@ -1,0 +1,11 @@
+{
+  "tasks": {
+    "dev": "deno run --watch --allow-read --allow-env --allow-net app.js"
+  },
+  "imports": {
+    "@std/assert": "jsr:@std/assert@1",
+    "js-yaml": "npm:js-yaml@^4.1.0",
+    "postgres": "npm:postgres@^3.4.4",
+    "prom-client": "npm:prom-client@^15.1.3"
+  }
+}
