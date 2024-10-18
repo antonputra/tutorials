@@ -9,9 +9,6 @@ innodb_log_buffer_size = 32M
 innodb_max_dirty_pages_pct = 90
 tmp_table_size= 128M
 max_heap_table_size= 128M
-slow_query_log = 1
-slow_query_log_file = /var/log/mysql/slow.log
-long_query_time = 1
 
 [mysqld]
 max_connections = 300
