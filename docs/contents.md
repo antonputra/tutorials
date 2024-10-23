@@ -146,3 +146,4 @@
 - [215 - Rust vs Zig vs Go: Performance (Latency - Throughput - Saturation - Availability)](../lessons/215)
 - [216 - MySQL vs PostgreSQL (Round 2) Performance Benchmark (Latency - Throughput - Saturation)](../lessons/216)
 - [217 - Deno vs. Node.js vs Bun: Performance (Latency - Throughput - Saturation - Availability)](../lessons/217)
+- [218 - Apache Kafka vs RabbitMQ Performance (Latency - Throughput - Saturation)](../lessons/218)

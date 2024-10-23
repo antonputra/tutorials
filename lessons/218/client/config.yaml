@@ -1,0 +1,16 @@
+---
+port: 8081
+test:
+  requestDelayMs: 400
+rabbitmq:
+  user: admin
+  password: devops123
+  queue: devices
+  port: 5672
+  streamsPort: 5552
+  host: rabbitmq.antonputra.pvt
+kafka:
+  version: 3.8.0
+  topic: devices
+  group: my-consumer-group
+  host: kafka.antonputra.pvt:9092

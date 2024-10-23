@@ -1,6 +1,6 @@
-# New Video - https://youtu.be/yJmyYosyDDM
+# New Video - https://youtu.be/UPkOsXKG4ns
 
-[<img src="assets/217.png?raw=true">](https://youtu.be/yJmyYosyDDM)
+[<img src="assets/218.png?raw=true">](https://youtu.be/UPkOsXKG4ns)
 
 # Playlists
 
@@ -21,4 +21,5 @@
 🎥 - [YouTube](https://www.youtube.com/c/AntonPutra)  
 💼 - [LinkedIn](https://www.linkedin.com/in/anton-putra)  
 🛠️ - [Twitter/X](https://x.com/antonvputra)  
+🙋‍♂️ - [Instagram](https://www.instagram.com/aputrabay)  
 📨 - me@antonputra.com
