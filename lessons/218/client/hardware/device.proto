@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+option go_package = "client/hardware";
+
+message Device {
+    string uuid = 1;
+    string mac = 2;
+    string firmware = 3;
+    uint64 created_at = 4;
+}
