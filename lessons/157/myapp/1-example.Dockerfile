@@ -1,4 +1,4 @@
-FROM python:3.13.0rc2
+FROM python:3.14-rc-slim
 
 COPY main.py .
 
