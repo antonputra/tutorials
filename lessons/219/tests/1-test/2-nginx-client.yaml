@@ -1,0 +1,54 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: nginx-client
+  namespace: default
+spec:
+  parallelism: 10
+  template:
+    metadata:
+      labels:
+        app: nginx-client
+    spec:
+      restartPolicy: Never
+      terminationGracePeriodSeconds: 0
+      containers:
+      - name: nginx-client
+        image: aputra/load-tester:v22
+        env:
+        - name: TEST_URL
+          value: "http://nginx.antonputra.pvt/"
+        ports:
+        - name: metrics
+          containerPort: 8085
+        resources:
+          requests:
+            memory: 256Mi
+            cpu: 1000m
+          limits:
+            memory: 256Mi
+            cpu: 1000m
+        volumeMounts:
+        - name: config
+          mountPath: Tester.toml
+          subPath: Tester.toml
+        - name: tls
+          mountPath: /ca.pem
+          subPath: tls.crt
+      volumes:
+      - name: config
+        configMap:
+          name: config-client
+      - name: tls
+        secret:
+          secretName: my-ca
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node
+                operator: In
+                values:
+                - clients

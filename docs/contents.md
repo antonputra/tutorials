@@ -147,3 +147,4 @@
 - [216 - MySQL vs PostgreSQL (Round 2) Performance Benchmark (Latency - Throughput - Saturation)](../lessons/216)
 - [217 - Deno vs. Node.js vs Bun: Performance (Latency - Throughput - Saturation - Availability)](../lessons/217)
 - [218 - Apache Kafka vs RabbitMQ Performance (Latency - Throughput - Saturation)](../lessons/218)
+- [219 - Nginx vs Apache Performance (Latency - Throughput - Saturation - Availability | HTTP/2 - TLS - Gzip)](../lessons/219)
