@@ -1,26 +1,30 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
+
+	jsoniter "github.com/json-iterator/go"
 )
 
 const port = 8080
+
+// json - jsoniter object
+var json = jsoniter.ConfigFastest
 
 // MyServer placeholder.
 type MyServer struct{}
 
 func renderJSON(w http.ResponseWriter, value any, status int) {
-	enc := json.NewEncoder(w)
-	enc.SetEscapeHTML(false)
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	if err := enc.Encode(value); err != nil {
+	content, err := json.Marshal(value)
+	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
+	w.WriteHeader(status)
+	w.Write(content)
 }
 
 func main() {
@@ -39,7 +43,7 @@ func main() {
 // getHealth returns the status of the application.
 func (ms *MyServer) getHealth(w http.ResponseWriter, req *http.Request) {
 	// Placeholder for the health check
-	io.WriteString(w, "OK")
+	w.Write([]byte("OK"))
 }
 
 // getDevices returns a list of connected devices.
