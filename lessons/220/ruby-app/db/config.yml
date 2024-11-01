@@ -1,0 +1,13 @@
+---
+default: &default
+  adapter: postgresql
+  host: localhost
+  database: putratest
+  username: appodeal
+  password: pass
+
+development:
+  <<: *default
+
+production:
+  <<: *default
