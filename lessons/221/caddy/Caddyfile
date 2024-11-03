@@ -1,4 +1,4 @@
-www-caddy.antonputra.pvt:443 {
+www-caddy.antonputra.pvt {
 	# Set this path to your site's directory.
 	root * /data/my-website
 
@@ -20,7 +20,7 @@ www-caddy.antonputra.pvt:443 {
 	}
 }
 
-api-caddy.antonputra.pvt:443 {
+api-caddy.antonputra.pvt {
     # Configure upstream servers.
 	reverse_proxy api-caddy-0.antonputra.pvt:8080 api-caddy-1.antonputra.pvt:8080
 
