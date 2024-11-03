@@ -1,10 +1,13 @@
 ---
 default: &default
   adapter: postgresql
-  host: localhost
-  database: putratest
-  username: appodeal
-  password: pass
+  encoding: unicode
+  timeout: 5000
+  host: postgresql.antonputra.pvt
+  database: mydb
+  pool: 50
+  username: rails
+  password: devops123
 
 development:
   <<: *default

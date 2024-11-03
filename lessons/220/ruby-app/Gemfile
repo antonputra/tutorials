@@ -10,4 +10,5 @@ gem 'standalone_migrations', require: false
 gem 'oj'
 gem 'prometheus-client'
 gem 'rack'
-gem 'rage-iodine'
+gem 'rage-rb'
+gem 'falcon'

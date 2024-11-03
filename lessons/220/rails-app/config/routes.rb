@@ -1,7 +1,6 @@
 Rails.application.routes.draw do
-
-  scope(:path => '/api') do
-    resources :devices
+  scope(path: "/api") do
+    resources :devices, only: %i[index create]
   end
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
