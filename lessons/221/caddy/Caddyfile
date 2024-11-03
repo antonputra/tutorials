@@ -1,0 +1,37 @@
+www-caddy.antonputra.pvt:443 {
+	# Set this path to your site's directory.
+	root * /data/my-website
+
+    # Enable compression.
+    encode gzip
+
+    # Provide certificate and a private key.
+    tls /etc/ssl/certs/caddy-antonputra-pvt.pem /etc/ssl/private/caddy-antonputra-pvt-key.pem
+
+	# Enable the static file server.
+	file_server
+
+    # Enable access logs similar to nginx/apache
+    log {
+        format transform `{request>remote_ip} - {user_id} [{ts}] "{request>method} {request>uri} {request>proto}" {status} {size}` {
+	    time_format "02/Jan/2006:15:04:05 -0700"
+    }
+		output file /var/log/caddy/access.log
+	}
+}
+
+api-caddy.antonputra.pvt:443 {
+    # Configure upstream servers.
+	reverse_proxy api-caddy-0.antonputra.pvt:8080 api-caddy-1.antonputra.pvt:8080
+
+    # Provide certificate and a private key.
+    tls /etc/ssl/certs/caddy-antonputra-pvt.pem /etc/ssl/private/caddy-antonputra-pvt-key.pem
+
+    # Enable access logs similar to nginx/apache
+    log {
+        format transform `{request>remote_ip} - {user_id} [{ts}] "{request>method} {request>uri} {request>proto}" {status} {size}` {
+	    time_format "02/Jan/2006:15:04:05 -0700"
+    }
+		output file /var/log/caddy/access.log
+	}
+}
