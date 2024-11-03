@@ -16,15 +16,13 @@ bin/iodine -p 8080
 Defaults
 ```bash
 WORKERS_NUM=2
-RAILS_MAX_THREADS=2
-
 ```
 
 ### Local benchmark
 
 #### `rails-app`
 ```bash
-WORKERS_NUM=2 RAILS_MAX_THREADS=2 RAILS_ENV=production rs
+WORKERS_NUM=2 RAILS_ENV=production rs
 wrk -c 10 -t 2 -d 10 --latency http://localhost:8080/api/devices
 Running 10s test @ http://localhost:8080/api/devices
   2 threads and 10 connections
@@ -43,7 +41,7 @@ Transfer/sec:      4.56MB
 
 #### `ruby-app`
 ```bash
-WORKERS_NUM=2 RAILS_MAX_THREADS=2 bin/iodine -p 8080 config.ru
+WORKERS_NUM=2 bin/iodine -p 8080 config.ru
 wrk -c 10 -t 2 -d 10 --latency http://localhost:8080/api/devices
 Running 10s test @ http://localhost:8080/api/devices
   2 threads and 10 connections

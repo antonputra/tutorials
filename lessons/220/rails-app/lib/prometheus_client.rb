@@ -1,35 +1,7 @@
 # frozen_string_literal: true
 
-require 'prometheus/client'
-
-# https://github.com/prometheus/client_ruby/pull/316
-require 'prometheus/client/metric'
-
-module Prometheus
-  module Client
-    class Histogram < Metric
-      def observe(value, labels: {})
-        bucket = buckets.bsearch { |upper_limit| upper_limit >= value  }
-        bucket = "+Inf" if bucket.nil?
-
-        base_label_set = label_set_for(labels)
-
-        # This is basically faster than doing `.merge`
-        bucket_label_set = base_label_set.dup
-        bucket_label_set[:le] = bucket.to_s
-        sum_label_set = base_label_set.dup
-        sum_label_set[:le] = "sum"
-
-        @store.synchronize do
-          @store.increment(labels: bucket_label_set, by: 1)
-          @store.increment(labels: sum_label_set, by: value)
-        end
-      end
-    end
-  end
-end
-
 class PrometheusClient
+  DB_OP = { op: "db" }.freeze
   BUCKETS = [
     0.00001, 0.000015, 0.00002, 0.000025, 0.00003, 0.000035, 0.00004, 0.000045,
     0.00005, 0.000055, 0.00006, 0.000065, 0.00007, 0.000075, 0.00008, 0.000085,
@@ -72,8 +44,12 @@ class PrometheusClient
 
     def create_device_histogram
       @create_device_histogram ||= client.histogram(
-        :myapp_request_duration_seconds, docstring: 'Duration of the request.', labels: [:op], buckets: BUCKETS
+        :myapp_request_duration_seconds, docstring: "Duration of the request.", labels: [ :op ], buckets: BUCKETS
       )
+    end
+
+    def db_histogram
+      @db_histogram ||= create_device_histogram.with_labels(DB_OP)
     end
   end
 end

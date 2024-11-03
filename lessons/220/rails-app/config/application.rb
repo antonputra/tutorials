@@ -1,6 +1,7 @@
 require_relative "boot"
 
-require "rails/all"
+require "active_record/railtie"
+require "action_controller/railtie"
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
@@ -28,5 +29,33 @@ module MyRails
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
+    config.secret_key_base = 'secret'
+
+    config.middleware.delete Rack::Sendfile
+    config.middleware.delete ActionDispatch::Static
+    config.middleware.delete ActionDispatch::Executor
+    config.middleware.delete Rack::Runtime
+    config.middleware.delete ActionDispatch::RequestId
+    config.middleware.delete ActionDispatch::RemoteIp
+    config.middleware.delete Rails::Rack::Logger
+    config.middleware.delete ActionDispatch::ShowExceptions
+    config.middleware.delete ActionDispatch::DebugExceptions
+    config.middleware.delete ActionDispatch::Callbacks
+    config.middleware.delete Rack::Head
+    config.middleware.delete Rack::ConditionalGet
+    config.middleware.delete Rack::ETag
+
+    require 'rage/fiber'
+    require 'rage/fiber_scheduler'
+    require 'rage/middleware/fiber_wrapper'
+    config.middleware.use Rage::FiberWrapper
+
+    Oj.default_options = { mode: :compat }
+    Oj.optimize_rails
+
+    Iodine.workers = ENV.fetch('WORKERS_NUM', 2).to_i
+    Iodine.threads = 1
+
+    Iodine.on_state(:after_fork) { RubyVM::YJIT.enable }
   end
 end
