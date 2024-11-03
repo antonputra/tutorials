@@ -11,11 +11,8 @@ www-caddy.antonputra.pvt {
 	# Enable the static file server.
 	file_server
 
-    # Enable access logs similar to nginx/apache
-    log {
-        format transform `{request>remote_ip} - {user_id} [{ts}] "{request>method} {request>uri} {request>proto}" {status} {size}` {
-	    time_format "02/Jan/2006:15:04:05 -0700"
-    }
+	log {
+		format console
 		output file /var/log/caddy/access.log
 	}
 }
@@ -27,11 +24,8 @@ api-caddy.antonputra.pvt {
     # Provide certificate and a private key.
     tls /etc/ssl/certs/caddy-antonputra-pvt.pem /etc/ssl/private/caddy-antonputra-pvt-key.pem
 
-    # Enable access logs similar to nginx/apache
-    log {
-        format transform `{request>remote_ip} - {user_id} [{ts}] "{request>method} {request>uri} {request>proto}" {status} {size}` {
-	    time_format "02/Jan/2006:15:04:05 -0700"
-    }
+	log {
+		format console
 		output file /var/log/caddy/access.log
 	}
 }
