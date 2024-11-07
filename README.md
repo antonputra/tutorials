@@ -23,3 +23,5 @@
 🛠️ - [Twitter/X](https://x.com/antonvputra)  
 🙋‍♂️ - [Instagram](https://www.instagram.com/aputrabay)  
 📨 - me@antonputra.com
+
+"Bravo champ"
