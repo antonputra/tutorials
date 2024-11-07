@@ -1,0 +1,87 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ruby-app
+  namespace: default
+spec:
+  replicas: 2
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: ruby-app
+  template:
+    metadata:
+      labels:
+        app: ruby-app
+    spec:
+      terminationGracePeriodSeconds: 0
+      initContainers:
+      - name: migration
+        image: aputra/ruby-app-222:v1
+        command: [ 'sh', '-c', "/rails/bin/rake db:migrate" ]
+        volumeMounts:
+        - name: config
+          mountPath: /rails/db/config.yml
+          subPath: config.yml
+      containers:
+      - name: ruby-app
+        image: aputra/ruby-app-222:v3
+        ports:
+        - name: http
+          containerPort: 8080
+        env:
+        - name: WORKERS_NUM
+          value: "1"
+        - name: RAILS_MAX_THREADS
+          value: "1" # 1 for first test and 10 for the second test
+        resources:
+          requests:
+            memory: 512Mi
+            cpu: 750m
+          limits:
+            memory: 512Mi
+            cpu: 1000m
+        readinessProbe:
+          httpGet:
+            path: /up
+            port: http
+        livenessProbe:
+          httpGet:
+            path: /up
+            port: http
+        volumeMounts:
+        - name: config
+          mountPath: /rails/db/config.yml
+          subPath: config.yml
+      volumes:
+      - name: config
+        configMap:
+          name: ruby-app
+      tolerations:
+      - effect: NoSchedule
+        operator: Exists
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - ruby-app
+            topologyKey: "kubernetes.io/hostname"
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node
+                operator: In
+                values:
+                - general
+            - matchExpressions:
+              - key: kubernetes.io/arch
+                operator: In
+                values:
+                - amd64

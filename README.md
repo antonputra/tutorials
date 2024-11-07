@@ -1,16 +1,10 @@
-# New Video - https://youtu.be/N5PAU-vYrN8
+# New Video - https://youtu.be/UbDRSZ3IK2Y
 
-[<img src="assets/221.png?raw=true">](https://youtu.be/N5PAU-vYrN8)
+[<img src="assets/222.png?raw=true">](https://youtu.be/UbDRSZ3IK2Y)
 
 # Playlists
 
-👉 [Kubernetes Tutorials](https://www.youtube.com/playlist?list=PLiMWaCMwGJXnHmccp2xlBENZ1xr4FpjXF)  
-👉 [Terraform Tutorials](https://www.youtube.com/playlist?list=PLiMWaCMwGJXmJdmfJjG3aK1IkU7oWvxIj)  
-👉 [Network Tutorials](https://www.youtube.com/playlist?list=PLiMWaCMwGJXluySjXqWG6fg1H1hzd-zWz)  
-👉 [Apache Kafka Tutorials](https://www.youtube.com/playlist?list=PLiMWaCMwGJXlL8-E-xu8RBwyC5YfS3V5e)  
-👉 [Performance Benchmarks](https://www.youtube.com/playlist?list=PLiMWaCMwGJXl-h2RgOSpdO-pQaSRwlVjd)  
-👉 [Database Tutorials](https://www.youtube.com/playlist?list=PLiMWaCMwGJXnhmmh5pu9sdWekdRwAzV5f)  
-👉 [Argo CD Tutorials](https://www.youtube.com/playlist?list=PLiMWaCMwGJXkktZoHhmL6sbg7ELNjv9Xw)
+👉 [Performance Benchmarks](https://youtube.com/playlist?list=PLiMWaCMwGJXmcDLvMQeORJ-j_jayKaLVn&si=p-UOaVM_6_SFx52H)
 
 # Contents
 
