@@ -1,0 +1,14 @@
+---
+default: &default
+  adapter: postgresql
+  host: postgresql.antonputra.pvt
+  database: mydb
+  username: ruby
+  password: devops123
+  pool: 75
+
+development:
+  <<: *default
+
+production:
+  <<: *default

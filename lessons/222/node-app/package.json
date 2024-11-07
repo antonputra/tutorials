@@ -1,0 +1,18 @@
+{
+  "name": "node-app",
+  "version": "0.1.0",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "type": "module",
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "js-yaml": "^4.1.0",
+    "postgres": "^3.4.4",
+    "prom-client": "^15.1.3"
+  }
+}

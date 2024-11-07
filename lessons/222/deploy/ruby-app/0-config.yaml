@@ -1,0 +1,23 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ruby-app
+  namespace: default
+data:
+  config.yml: |
+    default: &default
+      adapter: postgresql
+      encoding: unicode
+      timeout: 5000
+      host: postgresql.antonputra.pvt
+      database: mydb
+      pool: 75
+      username: ruby
+      password: devops123
+
+    development:
+      !!merge <<: *default
+
+    production:
+      !!merge <<: *default
