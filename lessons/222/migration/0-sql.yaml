@@ -11,12 +11,14 @@ data:
     --
     CREATE USER node WITH PASSWORD 'devops123' SUPERUSER CREATEDB CREATEROLE LOGIN;
     CREATE USER ruby WITH PASSWORD 'devops123' SUPERUSER CREATEDB CREATEROLE LOGIN;
+    CREATE USER elixir WITH PASSWORD 'devops123' SUPERUSER CREATEDB CREATEROLE LOGIN;
 
     --
     -- Clean up idle connections.
     --
     WITH inactive_connections AS (SELECT pid, usename FROM pg_stat_activity WHERE usename = 'node') SELECT pg_terminate_backend(pid) FROM inactive_connections;
     WITH inactive_connections AS (SELECT pid, usename FROM pg_stat_activity WHERE usename = 'ruby') SELECT pg_terminate_backend(pid) FROM inactive_connections;
+    WITH inactive_connections AS (SELECT pid, usename FROM pg_stat_activity WHERE usename = 'elixir') SELECT pg_terminate_backend(pid) FROM inactive_connections;
 
     BEGIN;
     --
