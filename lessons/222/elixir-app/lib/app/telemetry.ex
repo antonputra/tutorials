@@ -18,7 +18,9 @@ defmodule App.Telemetry do
       distribution([:bandit, :request, :stop, :duration],
         tags: [],
         unit: {:native, :millisecond},
-        reporter_options: [buckets: App.Telemetry.Bucket]
+        reporter_options: [
+          peep_bucket_calculator: App.Telemetry.Bucket
+        ]
       )
     ]
   end
