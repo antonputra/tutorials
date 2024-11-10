@@ -1,0 +1,19 @@
+---
+port: 8081
+pgx:
+  user: myapp
+  password: devops123
+  host: postgres.antonputra.pvt
+  database: store
+  maxConnections: 1
+sqlite:
+  database: /data/store.db
+  journal: WAL
+  sync: OFF
+  foreignKeys: 1
+test:
+  db: pgx
+  name: test1
+  stageIntervalS: 30
+  requestDelayMs: 1000
+  maxOrderId: 1000
