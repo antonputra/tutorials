@@ -1,0 +1,21 @@
+---
+http:
+  routers:
+    to-secure-myapp:
+      rule: "Host(`api-traefik.antonputra.pvt`) && PathPrefix(`/`)"
+      service: myapp
+      tls: {}
+
+  services:
+    myapp:
+      loadBalancer:
+        servers:
+        - url: http://api-traefik-0.antonputra.pvt:8080
+        - url: http://api-traefik-1.antonputra.pvt:8080
+        - url: http://api-traefik-2.antonputra.pvt:8080
+        - url: http://api-traefik-3.antonputra.pvt:8080
+
+tls:
+  certificates:
+  - certFile: /etc/ssl/certs/traefik-antonputra-pvt.pem
+    keyFile: /etc/ssl/private/traefik-antonputra-pvt-key.pem
