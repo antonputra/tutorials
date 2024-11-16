@@ -153,3 +153,4 @@
 - [222 - Ruby vs Node.js: Performance Benchmark](../lessons/222)
 - [223 - SQLite vs PostgreSQL](../lessons/223)
 - [224 - Nginx vs Traefik: What Is the BEST Reverse Proxy?](../lessons/224)
+- [225 - Redis vs Memcached Performance Benchmark](../lessons/225)
