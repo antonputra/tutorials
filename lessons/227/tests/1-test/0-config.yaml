@@ -1,0 +1,26 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-client
+  namespace: default
+data:
+  config.yaml: |
+    ---
+    debug: false
+    metricsPort: 8081
+    pgx:
+      user: myapp
+      password: devops123
+      host: postgres.antonputra.pvt
+      database: store
+      maxConnections: 20
+    mongo:
+      host: mongodb.antonputra.pvt
+      database: store
+      maxConnections: 20
+    test:
+      minClients: 1
+      maxClients: 1000
+      stageIntervalS: 60
+      requestDelayMs: 500

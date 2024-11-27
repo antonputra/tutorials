@@ -1,0 +1,25 @@
+---
+services:
+  postgres:
+    image: postgres:17.1
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: myapp
+      POSTGRES_DB: store
+      POSTGRES_PASSWORD: devops123
+    networks:
+      - private
+
+  mongo:
+    image: mongo:8.0.3
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: myapp
+      MONGO_INITDB_ROOT_PASSWORD: devops123
+    networks:
+      - private
+
+networks:
+  private:
