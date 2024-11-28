@@ -24,13 +24,13 @@ data:
 
     COMMIT;
 
-    VACUUM full;
-
     -- Create Tables
 
     CREATE TABLE product (
       id SERIAL PRIMARY KEY,
       jdoc jsonb
     );
-
-    CREATE INDEX product_inx ON product USING GIN (jdoc);
+    
+    CREATE INDEX idx__product__price ON product using BTREE(((jdoc -> 'price')::NUMERIC));
+    
+    VACUUM full;

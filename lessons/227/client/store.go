@@ -34,7 +34,7 @@ func (p *product) create(pg *postgres, mg *mongodb, db string, m *metrics) (err 
 
 	if db == "pg" {
 		b, err := json.Marshal(p)
-		fail(err, "json.Marshal(p) filaed")
+		fail(err, "json.Marshal(p) failed")
 
 		err = pg.dbpool.QueryRow(pg.context, `INSERT INTO product(jdoc) VALUES ($1) RETURNING id`, b).Scan(&p.PostgresId)
 

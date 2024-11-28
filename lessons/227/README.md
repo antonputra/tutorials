@@ -10,7 +10,7 @@ CREATE TABLE product (
     jdoc jsonb
 );
 
-CREATE INDEX product_inx ON product USING GIN (jdoc);
+CREATE INDEX idx__product__price ON product using BTREE(((jdoc -> 'price')::NUMERIC));
 
 INSERT INTO product(jdoc) VALUES ('{"name": "Shampoo", "price": 7.90, "stock": 100}');
 INSERT INTO product(jdoc) VALUES ('{"name": "Hairspray", "price": 11.50, "stock": 100}');
