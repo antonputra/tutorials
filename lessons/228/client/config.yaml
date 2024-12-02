@@ -1,0 +1,16 @@
+---
+metricsPort: 8081
+debug: true
+dragonfly:
+  addr: dragonfly.antonputra.pvt:6379
+  expirationS: 20
+redis:
+  addr: redis.antonputra.pvt:6379
+  addrs: [ redis-0.antonputra.pvt:6379, redis-1.antonputra.pvt:6379, redis-2.antonputra.pvt:6379 ]
+  expirationS: 20
+test:
+  name: test1
+  minClients: 1
+  maxClients: 1000
+  stageIntervalS: 30
+  requestDelayMs: 1000

@@ -1,0 +1,24 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: client-config
+  namespace: default
+data:
+  config.yaml: |
+    ---
+    metricsPort: 8081
+    debug: false
+    dragonfly:
+      addr: dragonfly.antonputra.pvt:6379
+      expirationS: 20
+    redis:
+      addr: redis.antonputra.pvt:6379
+      addrs: [ redis-0.antonputra.pvt:6379, redis-1.antonputra.pvt:6379, redis-2.antonputra.pvt:6379, redis-3.antonputra.pvt:6379 ]
+      expirationS: 20
+    test:
+      name: test1
+      minClients: 1
+      maxClients: 1000
+      stageIntervalS: 22
+      requestDelayMs: 200
