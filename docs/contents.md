@@ -157,3 +157,4 @@
 - [226 - Pingora vs Nginx Performance Benchmark](../lessons/226)
 - [227 - MongoDB vs. PostgreSQL: Performance & Functionality](../lessons/227)
 - [228 - Redis vs Dragonfly Performance (Latency - Throughput - Saturation)](../lessons/228)
+- [229 - FASTEST Go Web Framework: gnet vs fiber vs fasthttp vs net/http?](../lessons/229)
