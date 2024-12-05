@@ -7,6 +7,13 @@ metadata:
 data:
   init.sql: |
     --
+    -- Mongodb buffers writes to journal every 100ms by default.
+    -- Set postgresql to do the same. 
+    --
+    ALTER SYSTEM SET synchronous_commit=OFF;
+    ALTER SYSTEM SET wal_writer_delay='100ms';
+
+    --
     -- Create application users.
     --
     CREATE USER myapp WITH PASSWORD 'devops123' SUPERUSER CREATEDB CREATEROLE LOGIN;
