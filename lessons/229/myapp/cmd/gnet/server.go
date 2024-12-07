@@ -46,7 +46,10 @@ type httpCodec struct {
 	m             *mon.Metrics
 }
 
-var lastChunk = []byte("0\r\n\r\n")
+var (
+	CRLF      = []byte("\r\n\r\n")
+	lastChunk = []byte("0\r\n\r\n")
+)
 
 func (hc *httpCodec) parse(data []byte) (int, []byte, error) {
 	bodyOffset, err := hc.parser.Parse(data)
@@ -56,21 +59,31 @@ func (hc *httpCodec) parse(data []byte) (int, []byte, error) {
 
 	contentLength := hc.getContentLength()
 	if contentLength > -1 {
-		return bodyOffset + contentLength, data[bodyOffset : bodyOffset+contentLength], nil
+		bodyEnd := bodyOffset + contentLength
+		var body []byte
+		if len(data) >= bodyEnd {
+			body = data[bodyOffset:bodyEnd]
+		}
+		return bodyEnd, body, nil
 	}
 
 	// Transfer-Encoding: chunked
-	if idx := bytes.Index(data, lastChunk); idx != -1 {
+	if idx := bytes.Index(data[bodyOffset:], lastChunk); idx != -1 {
 		bodyEnd := idx + 5
-		req, err := http.ReadRequest(bufio.NewReader(bytes.NewReader(data[:bodyEnd])))
-		if err != nil {
-			return bodyEnd, nil, err
-		}
-		body, err := io.ReadAll(req.Body)
-		if err != nil {
-			return bodyEnd, nil, err
+		var body []byte
+		if len(data) >= bodyEnd {
+			req, err := http.ReadRequest(bufio.NewReader(bytes.NewReader(data[:bodyEnd])))
+			if err != nil {
+				return bodyEnd, nil, err
+			}
+			body, _ = io.ReadAll(req.Body)
 		}
 		return bodyEnd, body, nil
+	}
+
+	// Requests without a body.
+	if idx := bytes.Index(data, CRLF); idx != -1 {
+		return idx + 4, nil, nil
 	}
 
 	return 0, nil, errors.New("invalid http request")
@@ -213,15 +226,18 @@ func (hs *httpServer) OnOpen(c gnet.Conn) ([]byte, gnet.Action) {
 
 func (hs *httpServer) OnTraffic(c gnet.Conn) gnet.Action {
 	hc := c.Context().(*httpCodec)
-	buf, _ := c.Next(-1)
+	buf, _ := c.Peek(-1)
+	n := len(buf)
 
 pipeline:
 	nextOffset, body, err := hc.parse(buf)
+	hc.resetParser()
 	if err != nil {
 		goto response
 	}
-
-	hc.resetParser()
+	if len(buf) < nextOffset { // incomplete request
+		goto response
+	}
 	writeResponse(c, body)
 	buf = buf[nextOffset:]
 	if len(buf) > 0 {
@@ -232,6 +248,7 @@ response:
 		c.Write(hc.resp.Bytes())
 	}
 	hc.reset()
+	c.Discard(n - len(buf))
 	return gnet.None
 }
 
