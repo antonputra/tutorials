@@ -81,7 +81,7 @@ func (hc *httpCodec) parse(data []byte) (int, []byte, error) {
 		return bodyEnd, body, nil
 	}
 
-	// Requests without a body.
+	// Request without a body.
 	if idx := bytes.Index(data, CRLF); idx != -1 {
 		return idx + 4, nil, nil
 	}
