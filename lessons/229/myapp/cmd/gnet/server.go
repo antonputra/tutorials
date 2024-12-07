@@ -1,11 +1,14 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"log/slog"
+	"net/http"
 	"strconv"
 	"sync"
 	"time"
@@ -43,7 +46,7 @@ type httpCodec struct {
 	m             *mon.Metrics
 }
 
-var CRLF = []byte("0\r\n")
+var lastChunk = []byte("0\r\n\r\n")
 
 func (hc *httpCodec) parse(data []byte) (int, []byte, error) {
 	bodyOffset, err := hc.parser.Parse(data)
@@ -56,8 +59,18 @@ func (hc *httpCodec) parse(data []byte) (int, []byte, error) {
 		return bodyOffset + contentLength, data[bodyOffset : bodyOffset+contentLength], nil
 	}
 
-	if idx := bytes.Index(data, CRLF); idx != -1 {
-		return idx + 3, nil, nil
+	// Transfer-Encoding: chunked
+	if idx := bytes.Index(data, lastChunk); idx != -1 {
+		bodyEnd := idx + 5
+		req, err := http.ReadRequest(bufio.NewReader(bytes.NewReader(data[:bodyEnd])))
+		if err != nil {
+			return bodyEnd, nil, err
+		}
+		body, err := io.ReadAll(req.Body)
+		if err != nil {
+			return bodyEnd, nil, err
+		}
+		return bodyEnd, body, nil
 	}
 
 	return 0, nil, errors.New("invalid http request")
