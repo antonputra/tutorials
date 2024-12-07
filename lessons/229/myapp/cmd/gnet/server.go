@@ -5,19 +5,21 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
-	"io"
 	"log/slog"
+	"strconv"
+	"sync"
+	"time"
+
 	"myapp/config"
 	"myapp/device"
-	"strconv"
-	"time"
 
 	mon "github.com/antonputra/go-utils/monitoring"
 	"github.com/antonputra/go-utils/util"
 	"github.com/evanphx/wildcat"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/panjf2000/ants/v2"
 	"github.com/panjf2000/gnet/v2"
+	"github.com/panjf2000/gnet/v2/pkg/pool/goroutine"
 	"github.com/prometheus/client_golang/prometheus"
 )
 
@@ -36,38 +38,29 @@ type httpServer struct {
 type httpCodec struct {
 	parser        *wildcat.HTTPParser
 	contentLength int
-	buf           []byte
-	body          []byte
+	resp          bytes.Buffer
 	db            *pgxpool.Pool
 	m             *mon.Metrics
 }
 
-var CRLF = []byte("\r\n\r\n")
+var CRLF = []byte("0\r\n")
 
-func (hc *httpCodec) parse(data []byte, c gnet.Conn) (int, error) {
+func (hc *httpCodec) parse(data []byte) (int, []byte, error) {
 	bodyOffset, err := hc.parser.Parse(data)
 	if err != nil {
-		return 0, err
-	}
-
-	if hc.parser.Post() {
-		body, err := io.ReadAll(hc.parser.BodyReader(data[bodyOffset:], c))
-		if err != nil {
-			panic(err)
-		}
-		hc.body = body
+		return 0, nil, err
 	}
 
 	contentLength := hc.getContentLength()
 	if contentLength > -1 {
-		return bodyOffset + contentLength, nil
+		return bodyOffset + contentLength, data[bodyOffset : bodyOffset+contentLength], nil
 	}
 
 	if idx := bytes.Index(data, CRLF); idx != -1 {
-		return idx + 4, nil
+		return idx + 3, nil, nil
 	}
 
-	return 0, errors.New("invalid http request")
+	return 0, nil, errors.New("invalid http request")
 }
 
 func (hc *httpCodec) getContentLength() int {
@@ -92,35 +85,29 @@ func (hc *httpCodec) resetParser() {
 
 func (hc *httpCodec) reset() {
 	hc.resetParser()
-	hc.buf = hc.buf[:0]
+	hc.resp.Reset()
 }
 
-func (hc *httpCodec) appendResponse() {
-	switch string(hc.parser.Path) {
-	case "/healthz":
-		getHealth(hc)
-	case "/api/devices":
+var (
+	healthzPath = []byte("/healthz")
+	devicesPath = []byte("/api/devices")
+)
+
+func writeResponse(c gnet.Conn, body []byte) {
+	hc := c.Context().(*httpCodec)
+
+	switch hc.parser.Path {
+	case healthzPath:
+		appendResponse(&hc.resp, "HTTP/1.1 200 OK", "OK")
+	case devicesPath:
 		if hc.parser.Get() {
 			getDevices(hc)
 		} else {
-			hc.saveDevice()
+			saveDevice(c, hc, body)
 		}
 	default:
-		msg := "404 page not found"
-		hc.buf = append(hc.buf, "HTTP/1.1 404 Not Found\r\nServer: gnet\r\nContent-Type: text/plain; charset=utf-8\r\nDate: "...)
-		hc.buf = getTime(hc)
-		hc.buf = append(hc.buf, "\r\nX-Content-Type-Options: nosniff"...)
-		hc.buf = append(hc.buf, []byte(fmt.Sprintf("\r\nContent-Length: %d\r\n\r\n", len(msg)))...)
-		hc.buf = append(hc.buf, []byte(msg)...)
+		appendResponse(&hc.resp, "HTTP/1.1 404 Not Found", "404 page not found", "X-Content-Type-Options: nosniff")
 	}
-}
-
-func getHealth(hc *httpCodec) {
-	msg := "OK"
-	hc.buf = append(hc.buf, "HTTP/1.1 200 OK\r\nServer: gnet\r\nContent-Type: text/plain; charset=utf-8\r\nDate: "...)
-	hc.buf = getTime(hc)
-	hc.buf = append(hc.buf, []byte(fmt.Sprintf("\r\nContent-Length: %d\r\n\r\n", len(msg)))...)
-	hc.buf = append(hc.buf, []byte(msg)...)
 }
 
 func getDevices(hc *httpCodec) {
@@ -134,49 +121,70 @@ func getDevices(hc *httpCodec) {
 
 	b, err := json.Marshal(devices)
 	if err != nil {
-		fmt.Println(err)
+		appendError(&hc.resp, "failed to marshal devices")
 		return
 	}
-	hc.buf = append(hc.buf, "HTTP/1.1 200 OK\r\nServer: gnet\r\nContent-Type: application/json\r\nDate: "...)
-	hc.buf = getTime(hc)
-	hc.buf = append(hc.buf, []byte(fmt.Sprintf("\r\nContent-Length: %d\r\n\r\n", len(b)))...)
-	hc.buf = append(hc.buf, []byte(b)...)
+	appendResponse(&hc.resp, "HTTP/1.1 200 OK", b, "Content-Type: application/json")
 }
 
-func (hc *httpCodec) saveDevice() {
+var (
+	bufPool    = sync.Pool{New: func() any { return &bytes.Buffer{} }}
+	workerPool = goroutine.Default()
+)
+
+func saveDevice(c gnet.Conn, hc *httpCodec, body []byte) {
 	ctx, done := context.WithCancel(context.Background())
 	defer done()
 
 	d := new(device.Device)
-	err := json.Unmarshal(hc.body, &d)
+	err := json.Unmarshal(body, &d)
 	if err != nil {
 		hc.m.Errors.With(prometheus.Labels{"op": "decode", "db": "postgres"}).Add(1)
 		util.Warn(err, "failed to decode device")
-		getError(hc, "failed to unmarshal")
+		appendError(&hc.resp, "failed to unmarshal")
 		return
 	}
 
-	sql := `INSERT INTO "gnet_device" (mac, firmware) VALUES ($1, $2) RETURNING id`
-	err = d.Save(ctx, hc.db, hc.m, sql)
-	if err != nil {
-		hc.m.Errors.With(prometheus.Labels{"op": "insert", "db": "postgres"}).Add(1)
-		util.Warn(err, "failed to save device")
-		getError(hc, "failed to save device")
-		return
+	err = workerPool.Submit(func() {
+		buf := bufPool.Get().(*bytes.Buffer)
+
+		sql := `INSERT INTO "gnet_device" (mac, firmware) VALUES ($1, $2) RETURNING id`
+		err := d.Save(ctx, hc.db, hc.m, sql)
+		if err != nil {
+			hc.m.Errors.With(prometheus.Labels{"op": "insert", "db": "postgres"}).Add(1)
+			util.Warn(err, "failed to save device")
+			appendError(buf, "failed to save device")
+			c.AsyncWrite(buf.Bytes(), func(c gnet.Conn, err error) error {
+				buf.Reset()
+				bufPool.Put(buf)
+				return nil
+			})
+			return
+		}
+		slog.Debug("device saved", "id", d.Id, "mac", d.Mac, "firmware", d.Firmware)
+
+		b, err := json.Marshal(d)
+		if err != nil {
+			appendError(buf, "failed to marshal device")
+			c.AsyncWrite(buf.Bytes(), func(c gnet.Conn, err error) error {
+				buf.Reset()
+				bufPool.Put(buf)
+				return nil
+			})
+			return
+		}
+
+		appendResponse(buf, "HTTP/1.1 201 Created", b, "Content-Type: application/json")
+		c.AsyncWrite(buf.Bytes(), func(c gnet.Conn, err error) error {
+			buf.Reset()
+			bufPool.Put(buf)
+			return nil
+		})
+	})
+
+	if errors.Is(err, ants.ErrPoolOverload) {
+		appendError(&hc.resp, "server is overload")
 	}
-	slog.Debug("device saved", "id", d.Id, "mac", d.Mac, "firmware", d.Firmware)
-
-	hc.buf = append(hc.buf, "HTTP/1.1 201 Created\r\nServer: gnet\r\nContent-Type: application/json\r\nDate: "...)
-	hc.buf = time.Now().AppendFormat(hc.buf, "Mon, 02 Jan 2006 15:04:05 GMT")
-
-	b, err := json.Marshal(d)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	hc.buf = append(hc.buf, []byte(fmt.Sprintf("\r\nContent-Length: %d\r\n\r\n", len(b)))...)
-	hc.buf = append(hc.buf, []byte(b)...)
 }
 
 func (hs *httpServer) OnBoot(eng gnet.Engine) gnet.Action {
@@ -195,30 +203,44 @@ func (hs *httpServer) OnTraffic(c gnet.Conn) gnet.Action {
 	buf, _ := c.Next(-1)
 
 pipeline:
-	nextOffset, err := hc.parse(buf, c)
+	nextOffset, body, err := hc.parse(buf)
 	if err != nil {
 		goto response
 	}
 
 	hc.resetParser()
-	hc.appendResponse()
+	writeResponse(c, body)
 	buf = buf[nextOffset:]
 	if len(buf) > 0 {
 		goto pipeline
 	}
 response:
-	c.Write(hc.buf)
+	if hc.resp.Len() > 0 {
+		c.Write(hc.resp.Bytes())
+	}
 	hc.reset()
 	return gnet.None
 }
 
-func getTime(hc *httpCodec) []byte {
-	return time.Now().AppendFormat(hc.buf, "Mon, 02 Jan 2006 15:04:05 GMT")
+func appendError(buf *bytes.Buffer, msg string) {
+	appendResponse(buf, "HTTP/1.1 500 Internal Server Error", msg, "Content-Type: text/plain; charset=utf-8")
 }
 
-func getError(hc *httpCodec, msg string) {
-	hc.buf = append(hc.buf, "HTTP/1.1 500 Internal Server Error\r\nServer: gnet\r\nContent-Type: text/plain; charset=utf-8\r\nDate: "...)
-	hc.buf = getTime(hc)
-	hc.buf = append(hc.buf, []byte(fmt.Sprintf("\r\nContent-Length: %d\r\n\r\n", len(msg)))...)
-	hc.buf = append(hc.buf, []byte(msg)...)
+func appendResponse[T []byte | string](buf *bytes.Buffer, startLine string, msg T, headers ...string) {
+	buf.WriteString(startLine)
+	buf.WriteString("\r\nServer: gnet\r\nDate: ")
+	buf.WriteString(time.Now().Format("Mon, 02 Jan 2006 15:04:05 GMT"))
+	buf.WriteString("\r\nContent-Length: ")
+	buf.WriteString(strconv.Itoa(len(msg)))
+	for _, header := range headers {
+		buf.WriteString("\r\n")
+		buf.WriteString(header)
+	}
+	buf.WriteString("\r\n\r\n")
+	switch v := any(msg).(type) {
+	case []byte:
+		buf.Write(v)
+	case string:
+		buf.WriteString(v)
+	}
 }
