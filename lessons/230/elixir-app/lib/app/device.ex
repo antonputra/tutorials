@@ -12,6 +12,6 @@ defmodule App.Device do
         [uuid, mac, firmware, created_at, updated_at]
       )
 
-    id
+    %{device | id: id}
   end
 end
