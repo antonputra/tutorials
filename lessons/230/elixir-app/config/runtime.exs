@@ -14,6 +14,7 @@ if config_env() == :prod do
     # ssl: true,
     url: database_url,
     pool_size: String.to_integer(System.get_env("REPO_POOL_SIZE", "10")),
+    pool_count: String.to_integer(System.get_env("REPO_POOL_COUNT", "1")),
     queue_target: String.to_integer(System.get_env("REPO_QUEUE_TARGET", "50")),
     queue_interval: String.to_integer(System.get_env("REPO_QUEUE_INTERVAL", "1000")),
     socket_options: maybe_ipv6
