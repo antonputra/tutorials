@@ -159,3 +159,4 @@
 - [228 - Redis vs Dragonfly Performance (Latency - Throughput - Saturation)](../lessons/228)
 - [229 - FASTEST Go Web Framework: gnet vs fiber vs fasthttp vs net/http?](../lessons/229)
 - [230 - Elixir vs Go (Golang) Performance (Latency - Throughput - Saturation - Availability)](../lessons/230)
+- [231 - EPython (FastAPI) vs Go (Golang) Performance Benchmark](../lessons/231)
