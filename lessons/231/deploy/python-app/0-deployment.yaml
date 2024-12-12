@@ -27,7 +27,7 @@ spec:
         - name: MEMCACHED_HOST
           value: "memcache.antonputra.pvt"
         - name: POSTGRES_URI
-          value: "postgresql+psycopg://python_app:devops123@postgres.antonputra.pvt/mydb"
+          value: "postgresql+asyncpg://python_app:devops123@postgres.antonputra.pvt/mydb"
         - name: POSTGRES_POOL_SIZE
           value: "500"
         resources:

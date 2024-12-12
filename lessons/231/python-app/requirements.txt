@@ -1,5 +1,6 @@
 annotated-types==0.7.0
 anyio==4.7.0
+asyncpg==0.30.0
 certifi==2024.8.30
 click==8.1.7
 dnspython==2.7.0

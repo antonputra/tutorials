@@ -14,7 +14,7 @@ from pymemcache.client.base import Client
 
 app = FastAPI()
 
-MEMCACHED_HOST = os.environ['MEMCACHED_HOST']
+MEMCACHED_HOST = os.environ["MEMCACHED_HOST"]
 cache_client = Client(MEMCACHED_HOST)
 
 metrics_app = make_asgi_app()
@@ -67,7 +67,7 @@ async def get_devices():
             "firmware": "4.3.1",
             "created_at": "2024-08-28T15:18:21.137Z",
             "updated_at": "2024-08-28T15:18:21.137Z",
-        }
+        },
     ]
 
     return devices
@@ -84,7 +84,7 @@ async def create_device(device: Device, session: PostgresDep) -> Device:
     # Measure the same insert operation as in Go
     start_time = time.time()
     session.add(device)
-    session.commit()
+    await session.commit()
     H.labels(op="insert", db="postgres").observe(time.time() - start_time)
 
     # Measure the same set operation as in Go
@@ -93,6 +93,6 @@ async def create_device(device: Device, session: PostgresDep) -> Device:
     H.labels(op="set", db="memcache").observe(time.time() - start_time)
 
     # Refresh the device to return it to the client.
-    session.refresh(device)
+    await session.refresh(device)
 
     return device
