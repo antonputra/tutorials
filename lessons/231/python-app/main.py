@@ -5,7 +5,7 @@ import logging
 import os
 
 from fastapi import FastAPI
-from fastapi.responses import PlainTextResponse
+from fastapi.responses import PlainTextResponse, ORJSONResponse
 from models import Device
 from db import PostgresDep
 from metrics import H
@@ -41,7 +41,7 @@ async def health():
     return "OK"
 
 
-@app.get("/api/devices")
+@app.get("/api/devices", response_class=ORJSONResponse)
 async def get_devices():
     devices = [
         {
@@ -70,7 +70,7 @@ async def get_devices():
         },
     ]
 
-    return devices
+    return ORJSONResponse(devices)
 
 
 @app.post("/api/devices", status_code=201)
