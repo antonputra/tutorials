@@ -1,0 +1,13 @@
+---
+debug: true
+appPort: 8080
+metricsPort: 8081
+database:
+  user: go_app
+  password: devops123
+  host: 192.168.50.74
+  database: mydb
+  maxConnections: 500
+cache:
+  host: 192.168.50.19
+  expirationS: 20
