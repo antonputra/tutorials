@@ -1,16 +1,18 @@
-import uuid
-import time
 import datetime
 import logging
 import os
+import time
+import uuid
 
 from fastapi import FastAPI
-from fastapi.responses import PlainTextResponse, ORJSONResponse
-from models import Device
-from db import PostgresDep
-from metrics import H
+from fastapi.responses import ORJSONResponse, PlainTextResponse
 from prometheus_client import make_asgi_app
 from pymemcache.client.base import Client
+from sqlalchemy import insert
+
+from db import PostgresDep
+from metrics import H
+from models import Device
 
 app = FastAPI()
 
@@ -70,29 +72,37 @@ async def get_devices():
         },
     ]
 
-    return ORJSONResponse(devices)
+    return devices
 
 
-@app.post("/api/devices", status_code=201)
+@app.post("/api/devices", status_code=201, response_class=ORJSONResponse)
 async def create_device(device: Device, session: PostgresDep) -> Device:
-    # To match Go implementation instead of using SQLModel factory.
+    # To match Go implementation instead of using SQLAlchemy  factory.
     now = datetime.datetime.now(datetime.timezone.utc)
-    device.uuid = str(uuid.uuid4())
-    device.created_at = now
-    device.updated_at = now
+    device_uuid = uuid.uuid4()
+
+    stmt = (
+        insert(Device)
+        .values(
+            uuid=device_uuid,
+            mac=device.mac,
+            firmware=device.firmware,
+            created_at=now,
+            updated_at=now,
+        )
+        .returning(Device)
+    )
 
     # Measure the same insert operation as in Go
     start_time = time.time()
-    session.add(device)
+    device_result = await session.execute(stmt)
+    device_dict = device_result.mappings().one()
     await session.commit()
     H.labels(op="insert", db="postgres").observe(time.time() - start_time)
 
     # Measure the same set operation as in Go
     start_time = time.time()
-    cache_client.set(device.uuid, device.as_dict(), expire=20)
+    cache_client.set(str(device_uuid), dict(device_dict), expire=20)
     H.labels(op="set", db="memcache").observe(time.time() - start_time)
 
-    # Refresh the device to return it to the client.
-    await session.refresh(device)
-
-    return device
+    return device_dict

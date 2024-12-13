@@ -1,17 +1,31 @@
 import datetime
+from datetime import datetime
+from typing import Optional
+from uuid import UUID
 
-from sqlmodel import Field, SQLModel
+from sqlalchemy import Float, ForeignKey, Index, Integer, String, Text, Time, func, text
+from sqlalchemy.dialects.postgresql import UUID as PostgresUUID
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+Base = declarative_base()
 
 
-class Device(SQLModel, table=True):
-    __tablename__: str = "python_device"
+class Device(Base):
+    __tablename__ = "python_device"
 
-    id: int | None = Field(default=None, primary_key=True)
-    uuid: str | None = Field(default=None, max_length=255)
-    mac: str | None = Field(default=None, max_length=255)
-    firmware: str | None = Field(default=None, max_length=255)
-    created_at: datetime.datetime
-    updated_at: datetime.datetime
+    id: Mapped[int] = mapped_column(
+        primary_key=True,
+    )
+    uuid: Mapped[Optional[UUID]] = mapped_column(
+        PostgresUUID(as_uuid=True), default=None
+    )
+    mac: Mapped[Optional[str]] = mapped_column(String(255), default=None)
+    firmware: Mapped[Optional[str]] = mapped_column(String(255), default=None)
+    created_at: Mapped[datetime] = mapped_column(server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        server_default=func.now(), server_onupdate=func.now()
+    )
 
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}

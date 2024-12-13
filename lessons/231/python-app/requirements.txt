@@ -7,6 +7,7 @@ dnspython==2.7.0
 email_validator==2.2.0
 fastapi==0.115.6
 fastapi-cli==0.0.6
+greenlet==3.1.1
 h11==0.14.0
 httpcore==1.0.7
 httptools==0.6.4
@@ -34,7 +35,6 @@ rich-toolkit==0.12.0
 shellingham==1.5.4
 sniffio==1.3.1
 SQLAlchemy==2.0.36
-sqlmodel==0.0.22
 starlette==0.41.3
 typer==0.15.1
 typing_extensions==4.12.2
