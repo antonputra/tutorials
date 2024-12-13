@@ -21,21 +21,6 @@ cache_client = Client(MEMCACHED_HOST)
 metrics_app = make_asgi_app()
 app.mount("/metrics", metrics_app)
 
-# Disable access logs to match Go implementation
-block_endpoints = ["/api/devices", "/metrics/", "/metrics"]
-
-
-class LogFilter(logging.Filter):
-    def filter(self, record):
-        if record.args and len(record.args) >= 3:
-            if record.args[2] in block_endpoints:
-                return False
-        return True
-
-
-uvicorn_logger = logging.getLogger("uvicorn.access")
-uvicorn_logger.addFilter(LogFilter())
-
 
 @app.get("/healthz", response_class=PlainTextResponse)
 async def health():
