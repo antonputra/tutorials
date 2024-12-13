@@ -21,7 +21,7 @@ COPY --from=build /usr/local/bin /usr/local/bin
 COPY . /app
 
 # Match the number of CPU cores, which is 2 on m7a.large, for the 1st test to reduce throttling.
-# CMD ["uvicorn", "run", "--workers", "2", "main:app", "--no-access-log"]
+# CMD ["uvicorn", "main:app", "--workers", "2", "--no-access-log"]
 
 # 4 for the second test to achieve full CPU utilization
-CMD ["uvicorn", "run", "--workers", "4", "main:app", "--no-access-log"]
+CMD ["uvicorn", "main:app", "--workers", "4", "--no-access-log"]
