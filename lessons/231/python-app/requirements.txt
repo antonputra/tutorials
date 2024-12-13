@@ -19,9 +19,6 @@ mdurl==0.1.2
 orjson==3.10.12
 prometheus-fastapi-instrumentator==7.0.0
 prometheus_client==0.21.1
-psycopg==3.2.3
-psycopg-binary==3.2.3
-psycopg-pool==3.2.4
 pydantic==2.10.3
 pydantic_core==2.27.1
 Pygments==2.18.0
@@ -33,8 +30,6 @@ rich==13.9.4
 rich-toolkit==0.12.0
 shellingham==1.5.4
 sniffio==1.3.1
-SQLAlchemy==2.0.36
-sqlmodel==0.0.22
 starlette==0.41.3
 typer==0.15.1
 typing_extensions==4.12.2

@@ -1,16 +1,17 @@
-import uuid
-import time
 import datetime
 import logging
 import os
+import time
+import uuid
 
 from fastapi import FastAPI
-from fastapi.responses import PlainTextResponse, ORJSONResponse
-from models import Device
-from db import PostgresDep
-from metrics import H
+from fastapi.responses import ORJSONResponse, PlainTextResponse
 from prometheus_client import make_asgi_app
 from pymemcache.client.base import Client
+
+from db import PostgresDep
+from metrics import H
+from models import Device
 
 app = FastAPI()
 
@@ -73,26 +74,33 @@ async def get_devices():
     return ORJSONResponse(devices)
 
 
-@app.post("/api/devices", status_code=201)
-async def create_device(device: Device, session: PostgresDep) -> Device:
+@app.post("/api/devices", status_code=201, response_model=Device)
+async def create_device(device: Device, db: PostgresDep):
+    session, tr = db
     # To match Go implementation instead of using SQLModel factory.
-    now = datetime.datetime.now(datetime.timezone.utc)
+    now = datetime.datetime.now()
     device.uuid = str(uuid.uuid4())
     device.created_at = now
     device.updated_at = now
 
     # Measure the same insert operation as in Go
     start_time = time.time()
-    session.add(device)
-    await session.commit()
+    device_id = await session.fetchval(
+        """INSERT INTO python_device (uuid, mac, firmware, created_at, updated_at) VALUES ($1, $2, $3, $4, $5) RETURNING id""",
+        device.uuid,
+        device.mac,
+        device.firmware,
+        device.created_at,
+        device.updated_at,
+    )
+    device_out = device.model_dump()
+    device_out["id"] = device_id
+    await tr.commit()
     H.labels(op="insert", db="postgres").observe(time.time() - start_time)
 
     # Measure the same set operation as in Go
     start_time = time.time()
-    cache_client.set(device.uuid, device.as_dict(), expire=20)
-    H.labels(op="set", db="memcache").observe(time.time() - start_time)
+    # cache_client.set(device.uuid, device_out, expire=20)
+    # H.labels(op="set", db="memcache").observe(time.time() - start_time)
 
-    # Refresh the device to return it to the client.
-    await session.refresh(device)
-
-    return device
+    return ORJSONResponse(device_out)
