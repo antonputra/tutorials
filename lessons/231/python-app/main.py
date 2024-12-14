@@ -94,15 +94,15 @@ async def create_device(device: Device, session: PostgresDep) -> Device:
     )
 
     # Measure the same insert operation as in Go
-    start_time = time.time()
+    start_time = time.perf_counter()
     device_result = await session.execute(stmt)
     device_dict = device_result.mappings().one()
     await session.commit()
-    H.labels(op="insert", db="postgres").observe(time.time() - start_time)
+    H.labels(op="insert", db="postgres").observe(time.perf_counter() - start_time)
 
     # Measure the same set operation as in Go
-    start_time = time.time()
+    start_time = time.perf_counter()
     cache_client.set(str(device_uuid), dict(device_dict), expire=20)
-    H.labels(op="set", db="memcache").observe(time.time() - start_time)
+    H.labels(op="set", db="memcache").observe(time.perf_counter() - start_time)
 
     return device_dict
