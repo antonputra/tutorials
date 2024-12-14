@@ -9,7 +9,7 @@ from fastapi.responses import ORJSONResponse, PlainTextResponse
 from prometheus_client import make_asgi_app
 from pymemcache.client.base import Client
 from sqlalchemy import insert
-
+from asyncer import asyncify
 from db import PostgresDep
 from metrics import H
 from models import Device
@@ -102,7 +102,7 @@ async def create_device(device: Device, session: PostgresDep) -> Device:
 
     # Measure the same set operation as in Go
     start_time = time.time()
-    cache_client.set(str(device_uuid), dict(device_dict), expire=20)
+    await asyncify(cache_client.set)(str(device_uuid), dict(device_dict), expire=20)
     H.labels(op="set", db="memcache").observe(time.time() - start_time)
 
     return device_dict
