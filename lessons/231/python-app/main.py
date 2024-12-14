@@ -9,7 +9,7 @@ from fastapi.responses import ORJSONResponse, PlainTextResponse
 from prometheus_client import make_asgi_app
 from pymemcache.client.base import Client
 from sqlalchemy import insert
-
+from asyncer import asyncify
 from db import PostgresDep
 from metrics import H
 from models import Device
