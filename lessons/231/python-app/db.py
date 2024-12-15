@@ -1,27 +1,83 @@
+import logging
 import os
-from typing import Annotated
+from contextlib import asynccontextmanager
+from typing import Annotated, AsyncGenerator
 
-from fastapi import Depends
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+import asyncpg
+from fastapi import Depends, FastAPI
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 
 POSTGRES_URI = os.environ["POSTGRES_URI"]
 POSTGRES_POOL_SIZE = int(os.environ["POSTGRES_POOL_SIZE"])
 
 
-engine = create_async_engine(
-    POSTGRES_URI,
-    echo=False,
-    pool_pre_ping=False,
-    pool_size=POSTGRES_POOL_SIZE,
-    max_overflow=0,
-)
+class Database:
+    def __init__(self):
+        self.pool = None
 
-async_session = async_sessionmaker(engine, expire_on_commit=False)
+    async def create_pool(self):
+        """Create connection pool if it doesn't exist"""
+        if self.pool is None:
+            try:
+                self.pool = await asyncpg.create_pool(
+                    POSTGRES_URI,
+                    min_size=10,
+                    max_size=POSTGRES_POOL_SIZE,
+                    max_inactive_connection_lifetime=300,
+                )
+                logger.info(f"Database pool created: {self.pool}")
+            except asyncpg.exceptions.PostgresError as e:
+                logging.error(f"Error creating PostgreSQL connection pool: {e}")
+                raise ValueError("Failed to create PostgreSQL connection pool")
+            except Exception as e:
+                logging.error(f"Unexpected error while creating connection pool: {e}")
+                raise
+
+    @asynccontextmanager
+    async def get_connection(self) -> AsyncGenerator[asyncpg.Connection, None]:
+        """Get database connection from pool"""
+        if not self.pool:
+            await self.create_pool()
+        async with self.pool.acquire() as connection:
+            logger.info("Connection acquired from pool")
+            yield connection
+            logger.info("Connection released back to pool")
+
+    async def close(self):
+        """Close the pool when shutting down"""
+        if self.pool:
+            await self.pool.close()
+            logger.info("Database pool closed")
+            self.pool = None
 
 
-async def get_postgres_session():
-    async with async_session() as session:
-        yield session
+db = Database()
 
 
-PostgresDep = Annotated[AsyncSession, Depends(get_postgres_session)]
+async def get_db() -> AsyncGenerator[asyncpg.Connection, None]:
+    async with db.get_connection() as conn:
+        yield conn
+
+
+PostgresDep = Annotated[asyncpg.Connection, Depends(get_db)]
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Lifespan context manager for database connection"""
+    print(" Starting up database connection...")
+    try:
+        await db.create_pool()
+        logger.info(" Database pool created successfully")
+        yield
+    except Exception as e:
+        logger.info(f"Failed to create database pool: {e}")
+        raise
+    finally:
+        # Shutdown: close all connections
+        logger.info(" Shutting down database connection...")
+        await db.close()
+        logger.info(" Database connections closed")
