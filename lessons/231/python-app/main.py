@@ -1,6 +1,5 @@
 import datetime
 import logging
-import os
 import time
 import uuid
 
@@ -11,15 +10,12 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import ORJSONResponse, PlainTextResponse
 from prometheus_client import make_asgi_app
 from pydantic import BaseModel
-from pymemcache.client.base import Client
 
-from db import PostgresDep, lifespan
+from db import MemcachedDep, PostgresDep, lifespan
 from metrics import H
 
 app = FastAPI(lifespan=lifespan)
 
-MEMCACHED_HOST = os.environ["MEMCACHED_HOST"]
-cache_client = aiomcache.Client(MEMCACHED_HOST)
 
 metrics_app = make_asgi_app()
 app.mount("/metrics", metrics_app)
@@ -83,7 +79,9 @@ class DeviceRequest(BaseModel):
 
 
 @app.post("/api/devices", status_code=201, response_class=ORJSONResponse)
-async def create_device(device: DeviceRequest, conn: PostgresDep):
+async def create_device(
+    device: DeviceRequest, conn: PostgresDep, cache_client: MemcachedDep
+):
     try:
         now = datetime.datetime.now(datetime.timezone.utc)
         device_uuid = uuid.uuid4()
@@ -91,7 +89,7 @@ async def create_device(device: DeviceRequest, conn: PostgresDep):
         insert_query = """
             INSERT INTO python_device (uuid, mac, firmware, created_at, updated_at)
             VALUES ($1, $2, $3, $4, $5)
-            RETURNING id, uuid, mac, firmware, created_at, updated_at;
+            RETURNING id ;
             """
 
         start_time = time.perf_counter()
@@ -102,13 +100,25 @@ async def create_device(device: DeviceRequest, conn: PostgresDep):
 
         H.labels(op="insert", db="postgres").observe(time.perf_counter() - start_time)
 
-        device_dict = dict(row)
+        if not row:
+            raise HTTPException(
+                status_code=500, detail="Failed to create device record"
+            )
+
+        device_dict = {
+            "id": row["id"],
+            "uuid": str(device_uuid),
+            "mac": device.mac,
+            "firmware": device.firmware,
+            "created_at": now,  #
+            "updated_at": now,
+        }
 
         # Measure cache operation
         start_time = time.perf_counter()
 
         await cache_client.set(
-            device_uuid.bytes,
+            str(device_uuid).encode("utf-8"),
             orjson.dumps(device_dict),
             exptime=20,
         )
@@ -121,12 +131,42 @@ async def create_device(device: DeviceRequest, conn: PostgresDep):
         raise HTTPException(
             status_code=500, detail="Database error occurred while creating device"
         )
+
     except aiomcache.exceptions.ClientException as e:
+
         raise HTTPException(
             status_code=500,
-            detail="Memcached Database error occurred while creating device",
+            detail=" Memcached Database error occurred while creating device",
+        )
+
+    except Exception as e:
+        print(f"Unexpected error during device creation: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail="An unexpected error occurred while creating device"
+        )
+
+
+@app.get("/api/devices/stats", response_class=ORJSONResponse)
+async def get_device_stats(cache_client: MemcachedDep):
+    try:
+        # start_time = time.perf_counter()
+        stats = await cache_client.stats()
+        # H.labels(op="stats", db="memcache").observe(time.perf_counter() - start_time)
+
+        return {
+            "curr_items": stats.get(b"curr_items", 0),
+            "total_items": stats.get(b"total_items", 0),
+            "bytes": stats.get(b"bytes", 0),
+            "curr_connections": stats.get(b"curr_connections", 0),
+            "get_hits": stats.get(b"get_hits", 0),
+            "get_misses": stats.get(b"get_misses", 0),
+        }
+    except aiomcache.exceptions.ClientException as e:
+        raise HTTPException(
+            status_code=500, detail="Memcached error occurred while retrieving stats"
         )
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail="An unexpected error occurred while creating device"
+            status_code=500,
+            detail="An unexpected error occurred while retrieving stats",
         )
