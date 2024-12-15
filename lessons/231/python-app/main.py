@@ -39,12 +39,12 @@ uvicorn_logger.addFilter(LogFilter())
 
 
 @app.get("/healthz", response_class=PlainTextResponse)
-async def health():
+def health():
     return "OK"
 
 
 @app.get("/api/devices", response_class=ORJSONResponse)
-async def get_devices():
+def get_devices():
     devices = [
         {
             "id": 1,
