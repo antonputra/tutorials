@@ -21,7 +21,7 @@ COPY --from=build /usr/local/bin /usr/local/bin
 COPY . /app
 
 # Match the number of CPU cores, which is 2 on m7a.large, for the 1st test to reduce throttling.
-# CMD ["fastapi", "run", "--workers", "2", "main.py"]
+# CMD ["gunicorn", "-b", "0.0.0.0:8000", "-w", "2", "-k", "uvicorn.workers.UvicornWorker", "main:app"]
 
 # 4 for the second test to achieve full CPU utilization
-CMD ["fastapi", "run", "--workers", "4", "main.py"]
+CMD ["gunicorn", "-b", "0.0.0.0:8000", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "main:app"]

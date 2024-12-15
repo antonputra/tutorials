@@ -7,46 +7,40 @@ import uuid
 import aiomcache
 import orjson
 from asyncpg import PostgresError
-from fastapi import FastAPI, HTTPException
-from fastapi.responses import ORJSONResponse, PlainTextResponse
+from starlette.applications import Starlette
+from starlette.requests import Request
+from starlette.responses import PlainTextResponse, Response
+from starlette.exceptions import HTTPException
+from starlette.routing import Route, Mount
 from prometheus_client import make_asgi_app
 from pydantic import BaseModel
-from pymemcache.client.base import Client
 
-from db import PostgresDep, lifespan
+from db import db, lifespan
 from metrics import H
 
-app = FastAPI(lifespan=lifespan)
 
 MEMCACHED_HOST = os.environ["MEMCACHED_HOST"]
 cache_client = aiomcache.Client(MEMCACHED_HOST)
 
-metrics_app = make_asgi_app()
-app.mount("/metrics", metrics_app)
 
-# Disable access logs to match Go implementation
-block_endpoints = ["/api/devices", "/metrics/", "/metrics"]
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 
-class LogFilter(logging.Filter):
-    def filter(self, record):
-        if record.args and len(record.args) >= 3:
-            if record.args[2] in block_endpoints:
-                return False
-        return True
+class ORJSONResponse(Response):
+    media_type = "application/json"
+
+    def render(self, content) -> bytes:
+        return orjson.dumps(
+            content, option=orjson.OPT_NON_STR_KEYS | orjson.OPT_SERIALIZE_NUMPY
+        )
 
 
-uvicorn_logger = logging.getLogger("uvicorn.access")
-uvicorn_logger.addFilter(LogFilter())
+def health(request: Request):
+    return PlainTextResponse("OK")
 
 
-@app.get("/healthz", response_class=PlainTextResponse)
-def health():
-    return "OK"
-
-
-@app.get("/api/devices", response_class=ORJSONResponse)
-def get_devices():
+def get_devices(request: Request):
     devices = [
         {
             "id": 1,
@@ -74,7 +68,7 @@ def get_devices():
         },
     ]
 
-    return devices
+    return ORJSONResponse(content=devices)
 
 
 class DeviceRequest(BaseModel):
@@ -82,10 +76,10 @@ class DeviceRequest(BaseModel):
     firmware: str
 
 
-@app.post("/api/devices", status_code=201, response_class=ORJSONResponse)
-async def create_device(device: DeviceRequest, conn: PostgresDep):
+async def create_device(request: Request):
+    device = DeviceRequest.model_validate(orjson.loads(await request.body()))
     try:
-        now = datetime.datetime.now(datetime.timezone.utc)
+        now = datetime.datetime.now()
         device_uuid = uuid.uuid4()
 
         insert_query = """
@@ -96,9 +90,10 @@ async def create_device(device: DeviceRequest, conn: PostgresDep):
 
         start_time = time.perf_counter()
 
-        row = await conn.fetchrow(
-            insert_query, device_uuid, device.mac, device.firmware, now, now
-        )
+        async with db.get_connection() as conn:
+            row = await conn.fetchrow(
+                insert_query, device_uuid.hex, device.mac, device.firmware, now, now
+            )
 
         H.labels(op="insert", db="postgres").observe(time.perf_counter() - start_time)
 
@@ -108,25 +103,39 @@ async def create_device(device: DeviceRequest, conn: PostgresDep):
         start_time = time.perf_counter()
 
         await cache_client.set(
-            device_uuid.bytes,
+            device_uuid.hex.encode(),
             orjson.dumps(device_dict),
             exptime=20,
         )
 
         H.labels(op="set", db="memcache").observe(time.perf_counter() - start_time)
 
-        return device_dict
+        return ORJSONResponse(content=device_dict, status_code=201)
 
-    except PostgresError as e:
+    except PostgresError:
+        logger.exception("kaka")
         raise HTTPException(
             status_code=500, detail="Database error occurred while creating device"
         )
-    except aiomcache.exceptions.ClientException as e:
+    except aiomcache.exceptions.ClientException:
+        logger.exception("kaka")
         raise HTTPException(
             status_code=500,
             detail="Memcached Database error occurred while creating device",
         )
-    except Exception as e:
+    except Exception:
+        logger.exception("kaka")
         raise HTTPException(
             status_code=500, detail="An unexpected error occurred while creating device"
         )
+
+
+routes = [
+    Route("/healthz", endpoint=health),
+    Route("/api/devices", endpoint=get_devices, methods=["GET"]),
+    Route("/api/devices", endpoint=create_device, methods=["POST"]),
+    Mount("/metrics", make_asgi_app()),
+]
+
+
+app = Starlette(lifespan=lifespan, routes=routes)

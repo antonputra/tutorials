@@ -1,0 +1,30 @@
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: db
+    ports:
+      - "25432:5432"
+
+  memcached:
+    image: memcached
+    command:
+      - --conn-limit=1024
+      - --memory-limit=64
+      - --threads=4
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      POSTGRES_URI: postgresql://user:password@db:5432/db
+      MEMCACHED_HOST: memcached
+      POSTGRES_POOL_SIZE: 500

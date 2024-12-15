@@ -1,14 +1,14 @@
 import logging
 import os
 from contextlib import asynccontextmanager
-from typing import Annotated, AsyncGenerator
+from typing import AsyncGenerator
 
 import asyncpg
-from fastapi import Depends, FastAPI
+from starlette.applications import Starlette
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
+logger.setLevel(logging.DEBUG)
 
 POSTGRES_URI = os.environ["POSTGRES_URI"]
 POSTGRES_POOL_SIZE = int(os.environ["POSTGRES_POOL_SIZE"])
@@ -62,11 +62,8 @@ async def get_db() -> AsyncGenerator[asyncpg.Connection, None]:
         yield conn
 
 
-PostgresDep = Annotated[asyncpg.Connection, Depends(get_db)]
-
-
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(app: Starlette):
     """Lifespan context manager for database connection"""
     print(" Starting up database connection...")
     try:
