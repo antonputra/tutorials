@@ -1,17 +1,23 @@
 import logging
 import os
 from contextlib import asynccontextmanager
-from typing import Annotated, AsyncGenerator
+from typing import Annotated, AsyncGenerator, Optional
 
+import aiomcache
 import asyncpg
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, HTTPException
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-POSTGRES_URI = os.environ["POSTGRES_URI"]
+POSTGRES_URI = POSTGRES_URI = os.environ["POSTGRES_URI"]
 POSTGRES_POOL_SIZE = int(os.environ["POSTGRES_POOL_SIZE"])
+MEMCACHED_HOST = os.environ.get["MEMCACHED_HOST"]
+MEMCACHED_POOL_SIZE = os.environ.get["MEMCACHED_POOL_SIZE"]
+
+
+# os.environ.get["MEMCACHED_POOL_SIZE"]
 
 
 class Database:
@@ -65,6 +71,43 @@ async def get_db() -> AsyncGenerator[asyncpg.Connection, None]:
 PostgresDep = Annotated[asyncpg.Connection, Depends(get_db)]
 
 
+class MemcachedClient:
+    client: Optional[aiomcache.Client] = None
+
+    @classmethod
+    async def initialize(cls):
+        """Initialize the Memcached client with connection pooling"""
+        if not cls.client:
+            cls.client = aiomcache.Client(
+                host=MEMCACHED_HOST, pool_size=MEMCACHED_POOL_SIZE
+            )
+
+    @classmethod
+    async def close(cls):
+        """Close the Memcached client"""
+        if cls.client:
+            await cls.client.close()
+            cls.client = None
+
+    @classmethod
+    def get_client(cls) -> aiomcache.Client:
+        """Get the Memcached client instance"""
+        if not cls.client:
+            raise HTTPException(
+                status_code=503, detail="Memcached client is not initialized"
+            )
+        return cls.client
+
+
+async def get_cache_client() -> AsyncGenerator[aiomcache.Client, None]:
+    """Dependency for getting Memcached client"""
+    client = MemcachedClient.get_client()
+    try:
+        yield client
+    except aiomcache.exceptions.ClientException as e:
+        raise HTTPException(status_code=503, detail=f"Memcached error: {str(e)}")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Lifespan context manager for database connection"""
@@ -72,6 +115,8 @@ async def lifespan(app: FastAPI):
     try:
         await db.create_pool()
         logger.info(" Database pool created successfully")
+        await MemcachedClient.initialize()
+        logger.info("Memcached Db pool created successfully")
         yield
     except Exception as e:
         logger.info(f"Failed to create database pool: {e}")
@@ -80,4 +125,8 @@ async def lifespan(app: FastAPI):
         # Shutdown: close all connections
         logger.info(" Shutting down database connection...")
         await db.close()
+        await MemcachedClient.close()
         logger.info(" Database connections closed")
+
+
+MemcachedDep = Annotated[aiomcache.Client, Depends(get_cache_client)]
