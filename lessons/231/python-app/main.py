@@ -5,18 +5,25 @@ import time
 import uuid
 
 import aiomcache
+import anyio
 import orjson
 from asyncpg import PostgresError
+from db import PostgresDep, lifespan
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import ORJSONResponse, PlainTextResponse
+from metrics import H
 from prometheus_client import make_asgi_app
 from pydantic import BaseModel
 from pymemcache.client.base import Client
 
-from db import PostgresDep, lifespan
-from metrics import H
 
-app = FastAPI(lifespan=lifespan)
+async def startup():
+    # Increase the max threads that can be used
+    limitter = anyio.to_thread.current_default_thread_limiter()
+    limitter.total_tokens = 1000
+
+
+app = FastAPI(lifespan=lifespan, on_startup=[startup])
 
 MEMCACHED_HOST = os.environ["MEMCACHED_HOST"]
 cache_client = aiomcache.Client(MEMCACHED_HOST)
@@ -47,7 +54,7 @@ def health():
 
 @app.get("/api/devices", response_class=ORJSONResponse)
 def get_devices():
-    devices = [
+    devices = (
         {
             "id": 1,
             "uuid": "9add349c-c35c-4d32-ab0f-53da1ba40a2a",
@@ -72,7 +79,7 @@ def get_devices():
             "created_at": "2024-08-28T15:18:21.137Z",
             "updated_at": "2024-08-28T15:18:21.137Z",
         },
-    ]
+    )
 
     return devices
 
