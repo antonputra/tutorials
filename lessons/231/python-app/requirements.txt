@@ -1,3 +1,4 @@
+aiomcache==0.8.2
 annotated-types==0.7.0
 anyio==4.7.0
 asyncpg==0.30.0

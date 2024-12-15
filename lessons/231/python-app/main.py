@@ -4,6 +4,8 @@ import os
 import time
 import uuid
 
+import aiomcache
+import orjson
 from asyncpg import PostgresError
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import ORJSONResponse, PlainTextResponse
@@ -17,7 +19,7 @@ from metrics import H
 app = FastAPI(lifespan=lifespan)
 
 MEMCACHED_HOST = os.environ["MEMCACHED_HOST"]
-cache_client = Client(MEMCACHED_HOST)
+cache_client = aiomcache.Client(MEMCACHED_HOST)
 
 metrics_app = make_asgi_app()
 app.mount("/metrics", metrics_app)
@@ -104,14 +106,25 @@ async def create_device(device: DeviceRequest, conn: PostgresDep):
 
         # Measure cache operation
         start_time = time.perf_counter()
-        cache_client.set(str(device_uuid), device_dict, expire=20)
+
+        await cache_client.set(
+            device_uuid.bytes,
+            orjson.dumps(device_dict),
+            exptime=20,
+        )
+
         H.labels(op="set", db="memcache").observe(time.perf_counter() - start_time)
 
-        return row
+        return device_dict
 
     except PostgresError as e:
         raise HTTPException(
             status_code=500, detail="Database error occurred while creating device"
+        )
+    except aiomcache.exceptions.ClientException as e:
+        raise HTTPException(
+            status_code=500,
+            detail="Memcached Database error occurred while creating device",
         )
     except Exception as e:
         raise HTTPException(
