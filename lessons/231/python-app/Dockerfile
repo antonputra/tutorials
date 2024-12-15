@@ -24,4 +24,4 @@ COPY . /app
 # CMD ["fastapi", "run", "--workers", "2", "main.py"]
 
 # 4 for the second test to achieve full CPU utilization
-CMD ["fastapi", "run", "--workers", "4", "main.py"]
+CMD ["uvicorn", "--workers", "4", "--no-access-log", "main:app"]
