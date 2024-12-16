@@ -45,7 +45,7 @@ def health():
 
 @app.get("/api/devices", response_class=ORJSONResponse)
 def get_devices():
-    devices = [
+    devices = (
         {
             "id": 1,
             "uuid": "9add349c-c35c-4d32-ab0f-53da1ba40a2a",
@@ -70,7 +70,7 @@ def get_devices():
             "created_at": "2024-08-28T15:18:21.137Z",
             "updated_at": "2024-08-28T15:18:21.137Z",
         },
-    ]
+    )
 
     return devices
 
