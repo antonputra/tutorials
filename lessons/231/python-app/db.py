@@ -13,8 +13,8 @@ logger = logging.getLogger(__name__)
 
 POSTGRES_URI = POSTGRES_URI = os.environ["POSTGRES_URI"]
 POSTGRES_POOL_SIZE = int(os.environ["POSTGRES_POOL_SIZE"])
-MEMCACHED_HOST = os.environ.get["MEMCACHED_HOST"]
-MEMCACHED_POOL_SIZE = os.environ.get["MEMCACHED_POOL_SIZE"]
+MEMCACHED_HOST = os.environ["MEMCACHED_HOST"]
+MEMCACHED_POOL_SIZE = os.environ["MEMCACHED_POOL_SIZE"]
 
 
 # os.environ.get["MEMCACHED_POOL_SIZE"]

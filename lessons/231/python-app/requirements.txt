@@ -8,6 +8,7 @@ dnspython==2.7.0
 email_validator==2.2.0
 fastapi==0.115.6
 fastapi-cli==0.0.6
+gunicorn==23.0.0
 h11==0.14.0
 httpcore==1.0.7
 httptools==0.6.4
@@ -18,6 +19,7 @@ markdown-it-py==3.0.0
 MarkupSafe==3.0.2
 mdurl==0.1.2
 orjson==3.10.12
+packaging==24.2
 prometheus-fastapi-instrumentator==7.0.0
 prometheus_client==0.21.1
 psycopg==3.2.3
