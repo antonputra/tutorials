@@ -144,7 +144,6 @@ async def create_device(
 
     except Exception:
         logger.exception("Unknown error")
-        print(f"Unexpected error during device creation: {str(e)}")
         raise HTTPException(
             status_code=500, detail="An unexpected error occurred while creating device"
         )
