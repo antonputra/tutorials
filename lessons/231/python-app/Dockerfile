@@ -24,4 +24,11 @@ COPY . /app
 # CMD ["fastapi", "run", "--workers", "2", "main.py"]
 
 # 4 for the second test to achieve full CPU utilization
-CMD ["fastapi", "run", "--workers", "4", "main.py"]
+CMD ["gunicorn", 
+     "-w", "4", 
+     "-k", "uvicorn.workers.UvicornWorker", 
+     "--timeout", "60", 
+     "--graceful-timeout", "60", 
+     "--log-level", "error", 
+     "main:app", 
+     "--bind", "0.0.0.0:8000"]
