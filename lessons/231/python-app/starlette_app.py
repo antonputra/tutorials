@@ -71,6 +71,8 @@ class DeviceRequest(BaseModel):
     mac: str
     firmware: str
 
+H_MEMCACHED_LABEL = H.labels(op="set", db="memcache")
+H_POSTGRES_LABEL = H.labels(op="insert", db="postgres")
 
 async def create_device(request: Request):
     device = DeviceRequest.model_validate(orjson.loads(await request.body()))
@@ -91,7 +93,7 @@ async def create_device(request: Request):
                 insert_query, device_uuid.hex, device.mac, device.firmware, now, now
             )
 
-        H.labels(op="insert", db="postgres").observe(time.perf_counter() - start_time)
+        H_POSTGRES_LABEL.observe(time.perf_counter() - start_time)
 
         if not row:
             raise HTTPException(
@@ -117,7 +119,7 @@ async def create_device(request: Request):
             exptime=20,
         )
 
-        H.labels(op="set", db="memcache").observe(time.perf_counter() - start_time)
+        H_MEMCACHED_LABEL.observe(time.perf_counter() - start_time)
 
         return ORJSONResponse(content=device_dict, status_code=201)
 
