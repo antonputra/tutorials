@@ -37,7 +37,7 @@ class Database:
                 max_size=POSTGRES_POOL_SIZE,
                 max_inactive_connection_lifetime=300,
             )
-            logger.info(f"Database pool created: {pool}")
+            logger.info("Database pool created: %s", pool)
 
             return Database(pool)
         except asyncpg.exceptions.PostgresError as e:
@@ -83,10 +83,10 @@ class MemcachedClient:
             client = aiomcache.Client(
                 host=MEMCACHED_HOST, pool_size=MEMCACHED_POOL_SIZE
             )
-            logger.info(f"Memcached client created: {client}")
+            logger.info(f"Memcached client created: %s", client)
             return MemcachedClient(client)
-        except Exception as e:
-            logging.error(f"Error creating Memcached client: {e}")
+        except Exception:
+            logging.exception(f"Error creating Memcached client")
             raise ValueError("Failed to create Memcached client")
         
 
@@ -109,7 +109,7 @@ async def get_cache_client() -> AsyncGenerator[aiomcache.Client, None]:
     try:
         yield client
     except aiomcache.exceptions.ClientException as e:
-        raise HTTPException(status_code=503, detail=f"Memcached error: {str(e)}")
+        raise HTTPException(status_code=503, detail=f"Memcached error: {e}")
 
 
 @asynccontextmanager
@@ -124,8 +124,8 @@ async def lifespan(app: FastAPI):
         memcached = await MemcachedClient.initialize()
         logger.info("Memcached Db pool created successfully")
         yield
-    except Exception as e:
-        logger.info(f"Failed to create database pool: {e}")
+    except Exception:
+        logger.exception(f"Failed to create database pool")
         raise
     finally:
         # Shutdown: close all connections
