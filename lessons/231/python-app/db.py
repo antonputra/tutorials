@@ -71,38 +71,41 @@ async def get_db() -> AsyncGenerator[asyncpg.Connection, None]:
 
 PostgresDep = Annotated[asyncpg.Connection, Depends(get_db)]
 
-
 class MemcachedClient:
-    client: Optional[aiomcache.Client] = None
+    __slots__ = ("_client",)
+    def __init__(self, client: aiomcache.Client):
+        self._client = client
 
-    @classmethod
-    async def initialize(cls):
+    @staticmethod
+    async def initialize() -> MemcachedClient:
         """Initialize the Memcached client with connection pooling"""
-        if not cls.client:
-            cls.client = aiomcache.Client(
+        try:
+            client = aiomcache.Client(
                 host=MEMCACHED_HOST, pool_size=MEMCACHED_POOL_SIZE
             )
+            logger.info(f"Memcached client created: {client}")
+            return MemcachedClient(client)
+        except Exception as e:
+            logging.error(f"Error creating Memcached client: {e}")
+            raise ValueError("Failed to create Memcached client")
+        
 
-    @classmethod
-    async def close(cls):
+    async def close(self):
         """Close the Memcached client"""
-        if cls.client:
-            await cls.client.close()
-            cls.client = None
+        await self._client.close()
+        logger.info("Memcached client closed")
 
-    @classmethod
-    def get_client(cls) -> aiomcache.Client:
+    def get_client(self) -> aiomcache.Client:
         """Get the Memcached client instance"""
-        if not cls.client:
-            raise HTTPException(
-                status_code=503, detail="Memcached client is not initialized"
-            )
-        return cls.client
+        return self._client
+    
+
+memcached: MemcachedClient
 
 
 async def get_cache_client() -> AsyncGenerator[aiomcache.Client, None]:
     """Dependency for getting Memcached client"""
-    client = MemcachedClient.get_client()
+    client = memcached.get_client()
     try:
         yield client
     except aiomcache.exceptions.ClientException as e:
@@ -117,7 +120,8 @@ async def lifespan(app: FastAPI):
         global db
         db = await Database.from_postgres()
         logger.info(" Database pool created successfully")
-        await MemcachedClient.initialize()
+        global memcached
+        memcached = await MemcachedClient.initialize()
         logger.info("Memcached Db pool created successfully")
         yield
     except Exception as e:
