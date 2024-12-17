@@ -15,7 +15,7 @@ from starlette.routing import Route, Mount
 from prometheus_client import make_asgi_app
 from pydantic import BaseModel
 
-from db import db, lifespan, MemcachedClient
+from db import db, lifespan, memcached
 from metrics import H
 
 
@@ -109,7 +109,7 @@ async def create_device(request: Request):
 
         # Measure cache operation
         start_time = time.perf_counter()
-        cache_client = MemcachedClient.get_client()
+        cache_client = memcached.get_client()
         
         await cache_client.set(
             device_uuid.hex.encode(),
@@ -142,7 +142,7 @@ async def create_device(request: Request):
 async def get_device_stats(request: Request):
     try:
         # start_time = time.perf_counter()
-        cache_client = MemcachedClient.get_client()
+        cache_client = memcached.get_client()
         stats = await cache_client.stats()
         # H.labels(op="stats", db="memcache").observe(time.perf_counter() - start_time)
 

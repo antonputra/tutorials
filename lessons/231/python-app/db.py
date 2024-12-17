@@ -131,7 +131,7 @@ async def lifespan(app: FastAPI):
         # Shutdown: close all connections
         logger.info(" Shutting down database connection...")
         await db.close()
-        await MemcachedClient.close()
+        await memcached.close()
         logger.info(" Database connections closed")
 
 
