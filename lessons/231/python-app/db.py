@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 import os
 from contextlib import asynccontextmanager
@@ -14,53 +16,52 @@ logger = logging.getLogger(__name__)
 POSTGRES_URI = POSTGRES_URI = os.environ["POSTGRES_URI"]
 POSTGRES_POOL_SIZE = int(os.environ["POSTGRES_POOL_SIZE"])
 MEMCACHED_HOST = os.environ["MEMCACHED_HOST"]
-MEMCACHED_POOL_SIZE = os.environ["MEMCACHED_POOL_SIZE"]
+MEMCACHED_POOL_SIZE = int(os.environ["MEMCACHED_POOL_SIZE"])
 
 
 # os.environ.get["MEMCACHED_POOL_SIZE"]
 
 
 class Database:
-    def __init__(self):
-        self.pool = None
+    __slots__ = ("_pool",)
+    def __init__(self, pool: asyncpg.Pool):
+        self._pool = pool
 
-    async def create_pool(self):
+    @staticmethod
+    async def from_postgres() -> Database:
         """Create connection pool if it doesn't exist"""
-        if self.pool is None:
-            try:
-                self.pool = await asyncpg.create_pool(
-                    POSTGRES_URI,
-                    min_size=10,
-                    max_size=POSTGRES_POOL_SIZE,
-                    max_inactive_connection_lifetime=300,
-                )
-                logger.info(f"Database pool created: {self.pool}")
-            except asyncpg.exceptions.PostgresError as e:
-                logging.error(f"Error creating PostgreSQL connection pool: {e}")
-                raise ValueError("Failed to create PostgreSQL connection pool")
-            except Exception as e:
-                logging.error(f"Unexpected error while creating connection pool: {e}")
-                raise
+        try:
+            pool = await asyncpg.create_pool(
+                POSTGRES_URI,
+                min_size=10,
+                max_size=POSTGRES_POOL_SIZE,
+                max_inactive_connection_lifetime=300,
+            )
+            logger.info("Database pool created: %s", pool)
+
+            return Database(pool)
+        except asyncpg.exceptions.PostgresError as e:
+            logging.error(f"Error creating PostgreSQL connection pool: {e}")
+            raise ValueError("Failed to create PostgreSQL connection pool")
+        except Exception as e:
+            logging.error(f"Unexpected error while creating connection pool: {e}")
+            raise
 
     @asynccontextmanager
     async def get_connection(self) -> AsyncGenerator[asyncpg.Connection, None]:
         """Get database connection from pool"""
-        if not self.pool:
-            await self.create_pool()
-        async with self.pool.acquire() as connection:
+        async with self._pool.acquire() as connection:
             logger.info("Connection acquired from pool")
             yield connection
             logger.info("Connection released back to pool")
 
     async def close(self):
         """Close the pool when shutting down"""
-        if self.pool:
-            await self.pool.close()
-            logger.info("Database pool closed")
-            self.pool = None
+        await self._pool.close()
+        logger.info("Database pool closed")
 
 
-db = Database()
+db: Database
 
 
 async def get_db() -> AsyncGenerator[asyncpg.Connection, None]:
@@ -70,42 +71,45 @@ async def get_db() -> AsyncGenerator[asyncpg.Connection, None]:
 
 PostgresDep = Annotated[asyncpg.Connection, Depends(get_db)]
 
-
 class MemcachedClient:
-    client: Optional[aiomcache.Client] = None
+    __slots__ = ("_client",)
+    def __init__(self, client: aiomcache.Client):
+        self._client = client
 
-    @classmethod
-    async def initialize(cls):
+    @staticmethod
+    async def initialize() -> MemcachedClient:
         """Initialize the Memcached client with connection pooling"""
-        if not cls.client:
-            cls.client = aiomcache.Client(
+        try:
+            client = aiomcache.Client(
                 host=MEMCACHED_HOST, pool_size=MEMCACHED_POOL_SIZE
             )
+            logger.info(f"Memcached client created: %s", client)
+            return MemcachedClient(client)
+        except Exception:
+            logging.exception(f"Error creating Memcached client")
+            raise ValueError("Failed to create Memcached client")
+        
 
-    @classmethod
-    async def close(cls):
+    async def close(self):
         """Close the Memcached client"""
-        if cls.client:
-            await cls.client.close()
-            cls.client = None
+        await self._client.close()
+        logger.info("Memcached client closed")
 
-    @classmethod
-    def get_client(cls) -> aiomcache.Client:
+    def get_client(self) -> aiomcache.Client:
         """Get the Memcached client instance"""
-        if not cls.client:
-            raise HTTPException(
-                status_code=503, detail="Memcached client is not initialized"
-            )
-        return cls.client
+        return self._client
+    
+
+memcached: MemcachedClient
 
 
 async def get_cache_client() -> AsyncGenerator[aiomcache.Client, None]:
     """Dependency for getting Memcached client"""
-    client = MemcachedClient.get_client()
+    client = memcached.get_client()
     try:
         yield client
     except aiomcache.exceptions.ClientException as e:
-        raise HTTPException(status_code=503, detail=f"Memcached error: {str(e)}")
+        raise HTTPException(status_code=503, detail=f"Memcached error: {e}")
 
 
 @asynccontextmanager
@@ -113,19 +117,21 @@ async def lifespan(app: FastAPI):
     """Lifespan context manager for database connection"""
     print(" Starting up database connection...")
     try:
-        await db.create_pool()
+        global db
+        db = await Database.from_postgres()
         logger.info(" Database pool created successfully")
-        await MemcachedClient.initialize()
+        global memcached
+        memcached = await MemcachedClient.initialize()
         logger.info("Memcached Db pool created successfully")
         yield
-    except Exception as e:
-        logger.info(f"Failed to create database pool: {e}")
+    except Exception:
+        logger.exception(f"Failed to create database pool")
         raise
     finally:
         # Shutdown: close all connections
         logger.info(" Shutting down database connection...")
         await db.close()
-        await MemcachedClient.close()
+        await memcached.close()
         logger.info(" Database connections closed")
 
 
