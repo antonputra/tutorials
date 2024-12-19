@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 
+# Print the commands.
 set -x
+
+# Exit script on error.
+set -e
 
 # To run, execute: ./build.sh go-app v1
 USERNAMR="${USERNAMR:-aputra}"
