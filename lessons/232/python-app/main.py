@@ -7,7 +7,7 @@ import aiomcache
 import orjson
 from asyncpg import PostgresError
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import ORJSONResponse, PlainTextResponse
+from fastapi.responses import ORJSONResponse, PlainTextResponse, Response
 from prometheus_client import make_asgi_app
 from pydantic import BaseModel
 
@@ -66,7 +66,7 @@ class DeviceRequest(BaseModel):
     firmware: str
 
 
-@app.post("/api/devices", status_code=201, response_class=ORJSONResponse)
+@app.post("/api/devices", status_code=201, response_class=Response)
 async def create_device(
     device: DeviceRequest, conn: PostgresDep, cache_client: MemcachedDep
 ):
@@ -102,18 +102,20 @@ async def create_device(
             "updated_at": now,
         }
 
+        device_json = orjson.dumps(device_dict)
+
         # Measure cache operation
         start_time = time.perf_counter()
 
         await cache_client.set(
             device_uuid.hex.encode(),
-            orjson.dumps(device_dict),
+            device_json,
             exptime=20,
         )
 
         H.labels(op="set", db="memcache").observe(time.perf_counter() - start_time)
 
-        return ORJSONResponse(device_dict)
+        return Response(device_json, media_type="application/json")
 
     except PostgresError:
         logger.exception("Postgres error")
