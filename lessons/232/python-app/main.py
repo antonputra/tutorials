@@ -25,12 +25,12 @@ logger.setLevel(logging.DEBUG)
 
 
 @app.get("/healthz", response_class=PlainTextResponse)
-def health():
+async def health():
     return PlainTextResponse("OK")
 
 
 @app.get("/api/devices", response_class=ORJSONResponse)
-def get_devices():
+async def get_devices():
     devices = (
         {
             "id": 1,
