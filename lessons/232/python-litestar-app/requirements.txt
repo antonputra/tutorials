@@ -4,3 +4,5 @@ asyncpg==0.30.0
 litestar==2.13.0
 pydantic==2.10.4
 prometheus_client==0.21.1
+gunicorn==23.0.0
+uvicorn==0.34.0
