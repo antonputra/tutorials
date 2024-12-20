@@ -44,4 +44,3 @@ uvloop==0.21.0
 watchfiles==1.0.0
 websockets==14.1
 asyncer==0.0.8
-litestar==2.13.0
