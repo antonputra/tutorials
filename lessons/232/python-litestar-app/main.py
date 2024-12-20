@@ -3,12 +3,14 @@ import logging
 import time
 import uuid
 from contextlib import asynccontextmanager
+from dataclasses import dataclass
 
 import aiomcache
 import orjson
 from asyncpg import PostgresError
 from litestar import Litestar, Request, get, post
 from litestar.exceptions import HTTPException
+from litestar.logging import LoggingConfig
 from litestar.openapi.config import OpenAPIConfig
 from litestar.openapi.plugins import SwaggerRenderPlugin
 from pydantic import BaseModel
@@ -19,7 +21,16 @@ from metrics import H
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
+logging_config = LoggingConfig(
+    root={"level": "ERROR", "handlers": ["queue_listener"]},
+    formatters={
+        "standard": {"format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"}
+    },
+    log_exceptions="always",
+)
 
+
+@dataclass(slots=True)
 class DeviceRequest(BaseModel):
     mac: str
     firmware: str
@@ -27,6 +38,11 @@ class DeviceRequest(BaseModel):
 
 H_MEMCACHED_LABEL = H.labels(op="set", db="memcache")
 H_POSTGRES_LABEL = H.labels(op="insert", db="postgres")
+INSERT_QUERY = """
+    INSERT INTO python_device (uuid, mac, firmware, created_at, updated_at)
+    VALUES ($1, $2, $3, $4, $5)
+    RETURNING id;
+"""
 
 
 @get("/healthz")
@@ -65,22 +81,21 @@ async def get_devices_handler(request: Request) -> list[dict]:
 
 
 @post("/api/devices")
-async def create_device_handler(request: Request) -> dict:
-    device_req = DeviceRequest.model_validate(await request.json())
+async def create_device_handler(data: DeviceRequest, request: Request) -> dict:
+    device_request = data
     try:
         now = datetime.datetime.now(datetime.timezone.utc)
         device_uuid = uuid.uuid4()
 
-        insert_query = """
-            INSERT INTO python_device (uuid, mac, firmware, created_at, updated_at)
-            VALUES ($1, $2, $3, $4, $5)
-            RETURNING id;
-        """
-
         start_time = time.perf_counter()
         async with request.app.state.db.get_connection() as conn:
             row = await conn.fetchrow(
-                insert_query, device_uuid, device_req.mac, device_req.firmware, now, now
+                INSERT_QUERY,
+                device_uuid,
+                device_request.mac,
+                device_request.firmware,
+                now,
+                now,
             )
 
         H_POSTGRES_LABEL.observe(time.perf_counter() - start_time)
@@ -93,8 +108,8 @@ async def create_device_handler(request: Request) -> dict:
         device_dict = {
             "id": row["id"],
             "uuid": str(device_uuid),
-            "mac": device_req.mac,
-            "firmware": device_req.firmware,
+            "mac": device_request.mac,
+            "firmware": device_request.firmware,
             "created_at": now,
             "updated_at": now,
         }
@@ -168,4 +183,5 @@ app = Litestar(
         render_plugins=[SwaggerRenderPlugin(version="5.1.3")],
         path="/docs",
     ),
+    logging_config=logging_config,
 )
