@@ -7,7 +7,7 @@ import aiomcache
 import orjson
 from asyncpg import PostgresError
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import ORJSONResponse, PlainTextResponse, Response
+from fastapi.responses import ORJSONResponse, PlainTextResponse
 from prometheus_client import make_asgi_app
 from pydantic import BaseModel
 
@@ -25,12 +25,12 @@ logger.setLevel(logging.DEBUG)
 
 
 @app.get("/healthz", response_class=PlainTextResponse)
-async def health():
-    return PlainTextResponse("OK")
+def health():
+    return "OK"
 
 
 @app.get("/api/devices", response_class=ORJSONResponse)
-async def get_devices():
+def get_devices():
     devices = (
         {
             "id": 1,
@@ -58,7 +58,7 @@ async def get_devices():
         },
     )
 
-    return ORJSONResponse(devices)
+    return devices
 
 
 class DeviceRequest(BaseModel):
@@ -66,7 +66,7 @@ class DeviceRequest(BaseModel):
     firmware: str
 
 
-@app.post("/api/devices", status_code=201, response_class=Response)
+@app.post("/api/devices", status_code=201, response_class=ORJSONResponse)
 async def create_device(
     device: DeviceRequest, conn: PostgresDep, cache_client: MemcachedDep
 ):
@@ -102,20 +102,18 @@ async def create_device(
             "updated_at": now,
         }
 
-        device_json = orjson.dumps(device_dict)
-
         # Measure cache operation
         start_time = time.perf_counter()
 
         await cache_client.set(
             device_uuid.hex.encode(),
-            device_json,
+            orjson.dumps(device_dict),
             exptime=20,
         )
 
         H.labels(op="set", db="memcache").observe(time.perf_counter() - start_time)
 
-        return Response(device_json, media_type="application/json")
+        return device_dict
 
     except PostgresError:
         logger.exception("Postgres error")
@@ -144,14 +142,14 @@ async def get_device_stats(cache_client: MemcachedDep):
         stats = await cache_client.stats()
         # H.labels(op="stats", db="memcache").observe(time.perf_counter() - start_time)
 
-        return ORJSONResponse({
+        return {
             "curr_items": stats.get(b"curr_items", 0),
             "total_items": stats.get(b"total_items", 0),
             "bytes": stats.get(b"bytes", 0),
             "curr_connections": stats.get(b"curr_connections", 0),
             "get_hits": stats.get(b"get_hits", 0),
             "get_misses": stats.get(b"get_misses", 0),
-        })
+        }
     except aiomcache.exceptions.ClientException:
         logger.exception("Memcached error")
         raise HTTPException(
