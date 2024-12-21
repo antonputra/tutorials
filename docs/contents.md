@@ -161,3 +161,4 @@
 - [230 - Elixir vs Go (Golang) Performance (Latency - Throughput - Saturation - Availability)](../lessons/230)
 - [231 - Python (FastAPI) vs Go (Golang) Performance Benchmark](../lessons/231)
 - [232 - Python (FastAPI) vs Go (Golang) Performance Benchmark (Round 2)](../lessons/232)
+- [233 - PElixir vs Go Performance Benchmark (Round 2)](../lessons/233)
