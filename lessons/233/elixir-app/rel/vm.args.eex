@@ -8,5 +8,8 @@
 ##-env ERL_FULLSWEEP_AFTER 10
 
 +sbwt none
++sbwtdcpu none
++sbwtdio none
+
 # Enable SMP automatically based on availability
 -smp auto
