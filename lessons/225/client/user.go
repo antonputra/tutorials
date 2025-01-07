@@ -9,7 +9,7 @@ import (
 	"github.com/bradfitz/gomemcache/memcache"
 	"github.com/google/uuid"
 	"github.com/prometheus/client_golang/prometheus"
-	"github.com/redis/go-redis/v9"
+	"github.com/redis/rueidis"
 )
 
 type User struct {
@@ -77,7 +77,7 @@ func (u *User) GetFromMC(mc *memcache.Client, m *metrics, debug bool) (err error
 	return nil
 }
 
-func (u *User) SaveToRedis(ctx context.Context, rdb *redis.Client, m *metrics, exp int32, debug bool) (err error) {
+func (u *User) SaveToRedis(ctx context.Context, rdb rueidis.Client, m *metrics, exp int32, debug bool) (err error) {
 	b, err := json.Marshal(u)
 	if err != nil {
 		return annotate(err, "json.Marshal failed")
@@ -85,7 +85,7 @@ func (u *User) SaveToRedis(ctx context.Context, rdb *redis.Client, m *metrics, e
 
 	expr := time.Duration(time.Duration(exp) * time.Second)
 	now := time.Now()
-	err = rdb.Set(ctx, u.Uuid, b, expr).Err()
+	err = rdb.Do(ctx, rdb.B().Set().Key(u.Uuid).Value(rueidis.BinaryString(b)).Ex(expr).Build()).Error()
 	if err != nil {
 		return annotate(err, "rdb.Set failed")
 	}
@@ -98,7 +98,7 @@ func (u *User) SaveToRedis(ctx context.Context, rdb *redis.Client, m *metrics, e
 	return nil
 }
 
-func (u *User) GetFromRedis(ctx context.Context, rdb *redis.Client, m *metrics, debug bool) (err error) {
+func (u *User) GetFromRedis(ctx context.Context, rdb rueidis.Client, m *metrics, debug bool) (err error) {
 	now := time.Now()
 	defer func() {
 		if err == nil {
@@ -106,7 +106,7 @@ func (u *User) GetFromRedis(ctx context.Context, rdb *redis.Client, m *metrics, 
 		}
 	}()
 
-	it, err := rdb.Get(ctx, u.Uuid).Result()
+	it, err := rdb.Do(ctx, rdb.B().Get().Key(u.Uuid).Build()).ToString()
 	if err != nil {
 		return annotate(err, "mc.Get failed")
 	}

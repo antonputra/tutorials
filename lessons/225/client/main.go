@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/redis/go-redis/v9"
+	"github.com/redis/rueidis"
 
 	"github.com/bradfitz/gomemcache/memcache"
 	"github.com/prometheus/client_golang/prometheus"
@@ -39,19 +39,22 @@ func runTest(cfg Config, m *metrics) {
 	var ctx = context.Background()
 	currentClients := cfg.Test.MinClients
 
-	var rdb *redis.Client
+	var rdb rueidis.Client
 	var mc *memcache.Client
 
 	if client == "memcache" {
 		mc = memcache.New(fmt.Sprintf("%s:11211", cfg.Memcache.Host))
 		mc.MaxIdleConns = 500
 	} else {
-		rdb = redis.NewClient(&redis.Options{
-			Addr:     fmt.Sprintf("%s:6379", cfg.Redis.Host),
-			Password: "",
-			DB:       0,
-			PoolSize: 500,
+		var err error
+		rdb, err = rueidis.NewClient(rueidis.ClientOption{
+			InitAddress:      []string{fmt.Sprintf("%s:6379", cfg.Redis.Host)},
+			AlwaysPipelining: true,
+			MaxFlushDelay:    20 * time.Microsecond,
 		})
+		if err != nil {
+			log.Fatalf("Failed to create Redis client: %v", err)
+		}
 	}
 
 	for {
