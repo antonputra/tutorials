@@ -163,3 +163,4 @@
 - [232 - Python (FastAPI) vs Go (Golang) Performance Benchmark (Round 2)](../lessons/232)
 - [233 - Elixir vs Go Performance Benchmark (Round 2)](../lessons/233)
 - [234 - PostgreSQL vs Amazon RDS: Performance & Price](../lessons/234)
+- [235 - Terraform GCP Tutorial (Getting Started with Google Cloud Platform)](../lessons/235)
