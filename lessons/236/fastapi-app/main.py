@@ -1,4 +1,5 @@
 import datetime
+import json
 import logging
 import time
 import uuid
@@ -6,16 +7,13 @@ import uuid
 import aiomcache
 import orjson
 from asyncpg import PostgresError
-from fastapi import FastAPI, HTTPException
-from fastapi.responses import ORJSONResponse, PlainTextResponse
+from db import MemcachedDep, PostgresDep
+from metrics import H
 from prometheus_client import make_asgi_app
 from pydantic import BaseModel
+from robyn import Response, Robyn
 
-from db import MemcachedDep, PostgresDep, lifespan
-from metrics import H
-
-app = FastAPI(lifespan=lifespan)
-
+app = Robyn(__name__)
 
 metrics_app = make_asgi_app()
 app.mount("/metrics", metrics_app)
@@ -24,13 +22,13 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-@app.get("/healthz", response_class=PlainTextResponse)
+@app.get("/healthz")
 def health():
     return "OK"
 
 
-@app.get("/api/devices", response_class=ORJSONResponse)
-def get_devices():
+@app.get("/api/devices")
+async def get_devices():
     devices = (
         {
             "id": 1,
@@ -58,7 +56,7 @@ def get_devices():
         },
     )
 
-    return devices
+    return Response(200, {}, json.dumps(devices))
 
 
 class DeviceRequest(BaseModel):
@@ -69,7 +67,8 @@ class DeviceRequest(BaseModel):
 H_MEMCACHED_LABEL = H.labels(op="set", db="memcache")
 H_POSTGRES_LABEL = H.labels(op="insert", db="postgres")
 
-@app.post("/api/devices", status_code=201, response_class=ORJSONResponse)
+
+@app.post("/api/devices")
 async def create_device(
     device: DeviceRequest, conn: PostgresDep, cache_client: MemcachedDep
 ):
@@ -92,8 +91,8 @@ async def create_device(
         H_POSTGRES_LABEL.observe(time.perf_counter() - start_time)
 
         if not row:
-            raise HTTPException(
-                status_code=500, detail="Failed to create device record"
+            raise Response(
+                status_code=500, description="Failed to create device record"
             )
 
         device_dict = {
@@ -120,25 +119,26 @@ async def create_device(
 
     except PostgresError:
         logger.exception("Postgres error")
-        raise HTTPException(
-            status_code=500, detail="Database error occurred while creating device"
+        raise Response(
+            status_code=500, description="Database error occurred while creating device"
         )
 
     except aiomcache.exceptions.ClientException:
         logger.exception("Memcached error")
-        raise HTTPException(
+        raise Response(
             status_code=500,
-            detail=" Memcached Database error occurred while creating device",
+            description=" Memcached Database error occurred while creating device",
         )
 
     except Exception:
         logger.exception("Unknown error")
-        raise HTTPException(
-            status_code=500, detail="An unexpected error occurred while creating device"
+        raise Response(
+            status_code=500,
+            description="An unexpected error occurred while creating device",
         )
 
 
-@app.get("/api/devices/stats", response_class=ORJSONResponse)
+@app.get("/api/devices/stats")
 async def get_device_stats(cache_client: MemcachedDep):
     try:
         # start_time = time.perf_counter()
@@ -155,12 +155,16 @@ async def get_device_stats(cache_client: MemcachedDep):
         }
     except aiomcache.exceptions.ClientException:
         logger.exception("Memcached error")
-        raise HTTPException(
-            status_code=500, detail="Memcached error occurred while retrieving stats"
+        raise Response(
+            status_code=500,
+            description="Memcached error occurred while retrieving stats",
         )
     except Exception:
         logger.exception("Unknown error")
-        raise HTTPException(
+        raise Response(
             status_code=500,
-            detail="An unexpected error occurred while retrieving stats",
+            description="An unexpected error occurred while retrieving stats",
         )
+
+
+app.start("0.0.0.0", 8080)
