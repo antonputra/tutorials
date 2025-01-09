@@ -1,0 +1,20 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: node-app
+  namespace: default
+data:
+  config.yaml: |
+    ---
+    appPort: 8080
+    db:
+      user: node_app
+      password: devops123
+      host: postgres.antonputra.pvt
+      database: mydb
+      maxConnections: 250
+    cache:
+      host: memcache.antonputra.pvt
+      expirationS: 20
+      poolSize: 250
