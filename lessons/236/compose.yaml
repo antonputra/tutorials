@@ -1,0 +1,22 @@
+---
+services:
+  postgres:
+    image: postgres:17.2
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: node_app
+      POSTGRES_DB: mydb
+      POSTGRES_PASSWORD: devops123
+    networks:
+      - private
+
+  memcache:
+    image: memcached:1.6.34
+    ports:
+      - 11211:11211
+    networks:
+      - private
+
+networks:
+  private:

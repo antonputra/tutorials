@@ -1,0 +1,76 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: python-app
+  namespace: default
+spec:
+  replicas: 2
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: python-app
+  template:
+    metadata:
+      labels:
+        app: python-app
+    spec:
+      terminationGracePeriodSeconds: 0
+      containers:
+      - name: python-app
+        image: aputra/fastapi-app-236:v5
+        ports:
+        - name: http
+          containerPort: 8080
+        env:
+        - name: MEMCACHED_HOST
+          value: "memcache.antonputra.pvt"
+        - name: MEMCACHED_POOL_SIZE
+          value: "250"
+        - name: POSTGRES_URI
+          value: "postgres://fastapi_app:devops123@postgres.antonputra.pvt/mydb"
+        - name: POSTGRES_POOL_SIZE
+          value: "125" # 125 * 2 = 250
+        resources:
+          requests:
+            memory: 512Mi
+            cpu: 750m
+          limits:
+            memory: 512Mi
+            cpu: 1000m
+        # TODO: Uncomment for use in production.
+        # readinessProbe:
+        #   httpGet:
+        #     path: /healthz
+        #     port: http
+        # livenessProbe:
+        #   httpGet:
+        #     path: /healthz
+        #     port: http
+      tolerations:
+      - effect: NoSchedule
+        operator: Exists
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - python-app
+            topologyKey: "kubernetes.io/hostname"
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node
+                operator: In
+                values:
+                - general
+            - matchExpressions:
+              - key: kubernetes.io/arch
+                operator: In
+                values:
+                - amd64
