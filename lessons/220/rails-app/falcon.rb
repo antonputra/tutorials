@@ -9,6 +9,6 @@ service hostname do
   include Falcon::Environment::Rack
 
   append preload('preload.rb')
-  count ENV.fetch('WEB_CONCURRENCY', 1).to_i
+  count ENV.fetch('WEB_CONCURRENCY', Etc.nprocessors).to_i
   endpoint Async::HTTP::Endpoint.parse("http://0.0.0.0:#{port}")
 end
