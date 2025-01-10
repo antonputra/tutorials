@@ -10,7 +10,7 @@ Bundler.require(*Rails.groups)
 module MyRails
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 7.2
+    config.load_defaults 8.0
 
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
@@ -45,17 +45,7 @@ module MyRails
     config.middleware.delete Rack::ConditionalGet
     config.middleware.delete Rack::ETag
 
-    require 'rage/fiber'
-    require 'rage/fiber_scheduler'
-    require 'rage/middleware/fiber_wrapper'
-    config.middleware.use Rage::FiberWrapper
-
     Oj.default_options = { mode: :compat }
     Oj.optimize_rails
-
-    Iodine.workers = ENV.fetch('WORKERS_NUM', 2).to_i
-    Iodine.threads = 1
-
-    Iodine.on_state(:after_fork) { RubyVM::YJIT.enable }
   end
 end

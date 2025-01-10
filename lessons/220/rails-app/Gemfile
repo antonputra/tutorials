@@ -4,7 +4,7 @@ gem "falcon"
 gem "oj"
 gem "pg"
 gem "prometheus-client"
-gem "rage-rb"
+gem "sqlite3" # For test
 
 gem "rails"
 
