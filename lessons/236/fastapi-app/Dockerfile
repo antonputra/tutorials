@@ -20,4 +20,5 @@ COPY --from=build /usr/local/bin /usr/local/bin
 
 COPY . /app
 
-CMD ["gunicorn", "-w", "2", "-k", "uvicorn.workers.UvicornWorker", "--timeout", "60", "--graceful-timeout", "60",  "--log-level", "error", "main:app",  "--bind", "0.0.0.0:8080"]
+# CMD ["gunicorn", "-w", "2", "-k", "uvicorn.workers.UvicornWorker", "--timeout", "60", "--graceful-timeout", "60",  "--log-level", "error", "main:app",  "--bind", "0.0.0.0:8080"]
+CMD ["python3", "-m", "socketify", "main:app", "-w", "2", "--host", "0.0.0.0", "--port", "8080"]
