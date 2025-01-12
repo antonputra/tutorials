@@ -165,3 +165,5 @@
 - [234 - PostgreSQL vs Amazon RDS: Performance & Price](../lessons/234)
 - [235 - Terraform GCP Tutorial (Getting Started with Google Cloud Platform)](../lessons/235)
 - [236 - FastAPI vs Node.js Performance](../lessons/236)
+- [237 - VM vs Kubernetes: Performance 🚀](../lessons/237)
+- [238 - Create GKE Cluster using Terraform](../lessons/238)
