@@ -167,3 +167,4 @@
 - [236 - FastAPI vs Node.js Performance](../lessons/236)
 - [237 - VM vs Kubernetes: Performance 🚀](../lessons/237)
 - [238 - Create GKE Cluster using Terraform](../lessons/238)
+- [239 - FastAPI vs Go (Golang) vs Node.js: Performance & Price](../lessons/239)

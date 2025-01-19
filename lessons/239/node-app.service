@@ -1,0 +1,19 @@
+[Unit]
+Description=Node App
+Wants=network-online.target
+After=network-online.target
+
+StartLimitIntervalSec=500
+StartLimitBurst=5
+
+[Service]
+WorkingDirectory=/opt/node-app
+User=root
+Group=root
+Type=simple
+Restart=on-failure
+RestartSec=5s
+ExecStart=/home/aputra/.nvm/versions/node/v23.6.0/bin/node /opt/node-app/app.js
+
+[Install]
+WantedBy=multi-user.target
