@@ -53,6 +53,10 @@ resource "helm_release" "aws_lbc" {
     name  = "serviceAccount.name"
     value = "aws-load-balancer-controller"
   }
+  set {
+    name  = "vpcId"
+    value = aws_vpc.main.id
+  }
 
   depends_on = [helm_release.cluster_autoscaler]
 }
