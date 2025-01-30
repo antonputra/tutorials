@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+option go_package = "github.com/antonputra/tutorials/lessons/240/myappasd/device";
+
+package device;
+
+message Device {
+    int32 id = 1;
+    string uuid = 2;
+    string mac = 3;
+    string firmware = 4;
+    string created_at = 5;
+    string updated_at = 6;
+}
+
+message CreateDeviceRequest {
+    string mac = 1;
+    string firmware = 2;
+}
+
+message DeviceRequest {}
+
+message DeviceResponse {
+    repeated Device devices = 1;
+}
+
+service Cloud {
+    rpc CreateDevice(CreateDeviceRequest) returns (Device) {}
+    rpc GetDevices(DeviceRequest) returns (DeviceResponse) {}
+}
