@@ -1,0 +1,71 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: graphql-config-client
+  namespace: benchmark
+data:
+  Tester.toml: |
+    [test]
+    debug = false
+    request = "get-graphql"
+    protocol = "http1"
+    min_clients = 1
+    max_clients = 1000
+    stage_interval_s = 20
+    request_delay_ms = 40
+    request_timeout_ms = 1000
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: graphql-client
+  namespace: benchmark
+spec:
+  parallelism: 14
+  template:
+    metadata:
+      labels:
+        app: graphql-client
+    spec:
+      restartPolicy: Never
+      terminationGracePeriodSeconds: 0
+      containers:
+      - name: graphql-client
+        image: quay.io/aputra/tester:v1
+        env:
+        - name: TEST_URL
+          value: "http://graphql-server.benchmark.svc.cluster.local:8080/query"
+        ports:
+        - name: metrics
+          containerPort: 8085
+        # resources:
+        #   requests:
+        #     memory: 1Gi
+        #     cpu: 1000m
+        #   limits:
+        #     memory: 1Gi
+        #     cpu: 1000m
+        volumeMounts:
+        - name: config
+          mountPath: Tester.toml
+          subPath: Tester.toml
+        - name: tls
+          mountPath: /ca.pem
+          subPath: tls.crt
+      volumes:
+      - name: config
+        configMap:
+          name: graphql-config-client
+      - name: tls
+        secret:
+          secretName: my-ca
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node
+                operator: In
+                values:
+                - clients
