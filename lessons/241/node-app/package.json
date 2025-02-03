@@ -1,0 +1,19 @@
+{
+  "name": "node-app",
+  "version": "0.1.0",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "type": "module",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.740.0",
+    "js-yaml": "^4.1.0",
+    "postgres": "^3.4.5",
+    "prom-client": "^15.1.3"
+  }
+}
