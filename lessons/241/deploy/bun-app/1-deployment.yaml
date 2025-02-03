@@ -1,0 +1,83 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bun-app
+  namespace: benchmark
+spec:
+  replicas: 2
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: bun-app
+  template:
+    metadata:
+      labels:
+        app: bun-app
+    spec:
+      terminationGracePeriodSeconds: 0
+      containers:
+      - name: bun-app
+        image: quay.io/aputra/bun-app-241:v7
+        ports:
+        - name: http
+          containerPort: 8080
+        env:
+        - name: POSTGRES_URL
+          value: "postgresql://bun_app:devops123@postgres.antonputra.pvt:5432/mydb"
+        resources:
+          requests:
+            memory: 3Gi
+            cpu: 750m
+          limits:
+            memory: 3Gi
+            cpu: 1000m
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: http
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: http
+        volumeMounts:
+        - name: config
+          mountPath: config.yaml
+          subPath: config.yaml
+        - name: tmp
+          mountPath: /tmp
+      volumes:
+      - name: config
+        configMap:
+          name: bun-app
+      - name: tmp
+        hostPath:
+          path: /tmp
+          type: DirectoryOrCreate
+      tolerations:
+      - effect: NoSchedule
+        operator: Exists
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - bun-app
+            topologyKey: "kubernetes.io/hostname"
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node
+                operator: In
+                values:
+                - general
+            - matchExpressions:
+              - key: kubernetes.io/arch
+                operator: In
+                values:
+                - amd64
