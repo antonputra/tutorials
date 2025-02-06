@@ -1,0 +1,54 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: rust-multi-client
+  namespace: benchmark
+spec:
+  parallelism: 14
+  template:
+    metadata:
+      labels:
+        app: rust-multi-client
+    spec:
+      restartPolicy: Never
+      terminationGracePeriodSeconds: 0
+      containers:
+      - name: rust-multi-client
+        image: quay.io/aputra/load-tester:v26
+        env:
+        - name: TEST_URL
+          value: "http://rust-app-multi.antonputra.pvt:8080/api/devices"
+        ports:
+        - name: metrics
+          containerPort: 8085
+        resources:
+          requests:
+            memory: 1Gi
+            cpu: 1000m
+          limits:
+            memory: 1Gi
+            cpu: 1000m
+        volumeMounts:
+        - name: config
+          mountPath: Tester.toml
+          subPath: Tester.toml
+        - name: tls
+          mountPath: /ca.pem
+          subPath: tls.crt
+      volumes:
+      - name: config
+        configMap:
+          name: config-client
+      - name: tls
+        secret:
+          secretName: my-ca
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node
+                operator: In
+                values:
+                - clients
