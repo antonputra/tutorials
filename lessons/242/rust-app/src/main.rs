@@ -14,6 +14,18 @@ const PORT: i16 = 8080;
 fn main() {
     let mode = std::env::var("MODE").expect("The `MODE` env variable is missing");
 
+    // The job & its connection will be terminated after this amount of requests inorder to give
+    // a chance to requests pending in the queue. This approach is not ideal and will ork only is
+    // test scenarios such as Jmeter (i.e. it's not suitable for productive usage),
+    // but is very simple to implement in order to demonstrate the performance benefits of
+    // keep-alive.
+    //
+    // Larger value will lead to higher latency. Smaller value will lead to worse throughout.
+    let max_req = std::env::var("MAX_REQUEST").unwrap_or_else(|_| "200".to_owned());
+    let max_req = max_req
+        .parse::<usize>()
+        .expect("The `MAX_REQUEST` env variable is invalid");
+
     let addr = format!("0.0.0.0:{}", PORT);
     let listener = TcpListener::bind(addr).unwrap();
 
@@ -22,7 +34,7 @@ fn main() {
             println!("Starting a web server in single-threaded mode.");
             for stream in listener.incoming() {
                 match stream {
-                    Ok(stream) => handle_connection(stream),
+                    Ok(stream) => handle_connection(stream, max_req),
                     Err(err) => print!("{:?}", err),
                 }
             }
@@ -39,8 +51,8 @@ fn main() {
             for stream in listener.incoming() {
                 match stream {
                     Ok(stream) => {
-                        pool.execute(|| {
-                            handle_connection(stream);
+                        pool.execute(move || {
+                            handle_connection(stream, max_req);
                         });
                     }
                     Err(err) => print!("{:?}", err),
