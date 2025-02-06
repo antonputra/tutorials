@@ -1,5 +1,6 @@
 use crate::device::Device;
 use serde_json;
+use std::io::BufWriter;
 use std::{
     io::{prelude::*, BufReader},
     net::TcpStream,
@@ -63,16 +64,16 @@ pub fn not_found() -> (u16, String, usize) {
 }
 
 pub fn handle_connection(stream: TcpStream) {
-    let mut stream = &stream;
-    let mut lines = BufReader::new(stream).lines();
+    let mut input = BufReader::new(&stream).lines();
+    let mut output = BufWriter::new(&stream);
 
     let mut keep_alive = true;
     while keep_alive {
-        if let Some(request_line) = lines.next() {
+        if let Some(request_line) = input.next() {
             match request_line {
                 Ok(line) => {
                     keep_alive = false;
-                    while let Some(header) = lines.next() {
+                    while let Some(header) = input.next() {
                         let Ok(header) = header else {
                             println!("Error reading header line");
                             break;
@@ -93,15 +94,16 @@ pub fn handle_connection(stream: TcpStream) {
                     };
 
                     if let Err(e) =
-                        write!(stream, "HTTP/1.1 {status}\r\nContent-Length: {length}\r\n")
+                        write!(output, "HTTP/1.1 {status}\r\nContent-Length: {length}\r\n")
                             .and_then(|_| {
                                 if keep_alive {
-                                    write!(stream, "Connection: keep-alive\r\n")
+                                    write!(output, "Connection: keep-alive\r\n")
                                 } else {
-                                    write!(stream, "Connection: close\r\n")
+                                    write!(output, "Connection: close\r\n")
                                 }
                             })
-                            .and_then(|_| write!(stream, "\r\n{body}"))
+                            .and_then(|_| write!(output, "\r\n{body}"))
+                            .and_then(|_| output.flush())
                     {
                         println!("Failed to write response: {e}");
                         break;
