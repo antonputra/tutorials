@@ -1,11 +1,12 @@
 use crate::device::Device;
 use serde_json;
+use std::io::BufWriter;
 use std::{
     io::{prelude::*, BufReader},
     net::TcpStream,
 };
 
-pub fn get_devices() -> (String, String, usize) {
+pub fn get_devices() -> (u16, String, usize) {
     let devices = [
         Device {
             id: 1,
@@ -49,39 +50,70 @@ pub fn get_devices() -> (String, String, usize) {
         },
     ];
 
-    let status = String::from("HTTP/1.1 200 OK");
     let body = serde_json::to_string(&devices).unwrap();
     let length = body.len();
 
-    (status, body, length)
+    (200, body, length)
 }
 
-pub fn not_found() -> (String, String, usize) {
-    let status = String::from("HTTP/1.1 404 NOT FOUND");
+pub fn not_found() -> (u16, String, usize) {
     let body = serde_json::to_string("Not Found").unwrap();
     let length = body.len();
 
-    (status, body, length)
+    (404, body, length)
 }
 
-pub fn handle_connection(mut stream: TcpStream) {
-    let buf_reader = BufReader::new(&stream);
-    let request_line = buf_reader.lines().next();
+pub fn handle_connection(stream: TcpStream) {
+    let mut input = BufReader::new(&stream).lines();
+    let mut output = BufWriter::new(&stream);
 
-    match request_line {
-        Some(result) => match result {
-            Ok(line) => {
-                let (status, body, length) = match &line[..] {
-                    "GET /api/devices HTTP/1.1" => get_devices(),
-                    _ => not_found(),
-                };
+    let mut keep_alive = true;
+    while keep_alive {
+        if let Some(request_line) = input.next() {
+            match request_line {
+                Ok(line) => {
+                    keep_alive = false;
+                    while let Some(header) = input.next() {
+                        let Ok(header) = header else {
+                            println!("Error reading header line");
+                            break;
+                        };
 
-                let response = format!("{status}\r\nContent-Length: {length}\r\n\r\n{body}");
+                        if header.is_empty() {
+                            break;
+                        }
 
-                stream.write_all(response.as_bytes()).unwrap();
+                        if !keep_alive && header.ends_with("keep-alive") {
+                            keep_alive = true;
+                        }
+                    }
+
+                    let (status, body, length) = match &line[..] {
+                        "GET /api/devices HTTP/1.1" => get_devices(),
+                        _ => not_found(),
+                    };
+
+                    if let Err(e) =
+                        write!(output, "HTTP/1.1 {status}\r\nContent-Length: {length}\r\n")
+                            .and_then(|_| {
+                                if keep_alive {
+                                    write!(output, "Connection: keep-alive\r\n")
+                                } else {
+                                    write!(output, "Connection: close\r\n")
+                                }
+                            })
+                            .and_then(|_| write!(output, "\r\n{body}"))
+                            .and_then(|_| output.flush())
+                    {
+                        println!("Failed to write response: {e}");
+                        break;
+                    }
+                }
+                Err(e) => {
+                    print!("Failed to read request line: {:?}", e);
+                    break;
+                }
             }
-            Err(err) => print!("{:?}", err),
-        },
-        None => println!("request line is empty"),
+        }
     }
 }
