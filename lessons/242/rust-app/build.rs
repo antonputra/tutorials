@@ -1,4 +1,36 @@
-use crate::device::Device;
+use std::{
+    fs::File,
+    io::{BufWriter, Write},
+    path::Path,
+};
+
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Device<'a> {
+    pub id: i32,
+    pub uuid: &'a str,
+    pub mac: &'a str,
+    pub firmware: &'a str,
+    pub created_at: &'a str,
+    pub updated_at: &'a str,
+}
+
+fn main() {
+    println!("cargo::rerun-if-changed=src/routes.rs");
+    let path = Path::new("./src/body.rs");
+
+    let file = File::create(path).unwrap();
+    let mut writer = BufWriter::new(file);
+    writeln!(writer, "// THIS FILE IS AUTOGENERATE\n").unwrap();
+    writeln!(writer, "const RES_OK: &[u8] = br#\"{}\"#;", get_devices()).unwrap();
+    writeln!(
+        writer,
+        "const RES_NOT_FOUND: &[u8] = br#\"{}\"#;",
+        not_found()
+    )
+    .unwrap();
+}
 
 pub fn get_devices() -> String {
     let devices = [

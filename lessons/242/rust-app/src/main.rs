@@ -1,6 +1,4 @@
-mod device;
 mod job;
-mod res_body;
 mod routes;
 mod thread_pool;
 mod worker;
@@ -9,7 +7,6 @@ use crate::routes::handle_connection;
 use crate::thread_pool::ThreadPool;
 
 use std::net::TcpListener;
-use std::sync::Arc;
 
 const PORT: i16 = 8080;
 
@@ -30,17 +27,13 @@ fn main() {
 
     let addr = format!("0.0.0.0:{}", PORT);
     let listener = TcpListener::bind(addr).unwrap();
-    let ok = Arc::new(res_body::get_devices());
-    let not_found = Arc::new(res_body::not_found());
     match mode.as_str() {
         "SINGLE" => {
             println!("Starting a web server in single-threaded mode.");
             for stream in listener.incoming() {
                 match stream {
                     Ok(stream) => {
-                        if let Err(err) =
-                            handle_connection(stream, max_req, ok.clone(), not_found.clone())
-                        {
+                        if let Err(err) = handle_connection(stream, max_req) {
                             eprintln!("{}", err);
                         }
                     }
@@ -58,12 +51,10 @@ fn main() {
                 thread_count
             );
             for stream in listener.incoming() {
-                let ok = ok.clone();
-                let not_found = not_found.clone();
                 match stream {
                     Ok(stream) => {
                         pool.execute(move || {
-                            if let Err(err) = handle_connection(stream, max_req, ok, not_found) {
+                            if let Err(err) = handle_connection(stream, max_req) {
                                 eprintln!("{}", err);
                             }
                         });

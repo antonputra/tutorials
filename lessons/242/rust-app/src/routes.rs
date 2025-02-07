@@ -1,16 +1,12 @@
 use std::io::{self, BufWriter};
-use std::sync::Arc;
 use std::{
     io::{prelude::*, BufReader},
     net::TcpStream,
 };
 
-pub fn handle_connection(
-    stream: TcpStream,
-    max_requests_per_connection: usize,
-    ok: Arc<String>,
-    not_found: Arc<String>,
-) -> io::Result<()> {
+include!("body.rs");
+
+pub fn handle_connection(stream: TcpStream, max_requests_per_connection: usize) -> io::Result<()> {
     let mut input = BufReader::new(&stream).lines();
     let mut output = BufWriter::new(&stream);
 
@@ -35,8 +31,8 @@ pub fn handle_connection(
             keep_alive = requests_processed <= max_requests_per_connection;
         }
         let (res, status) = match line.as_str() {
-            "GET /api/devices HTTP/1.1" => (ok.clone(), b"200"),
-            _ => (not_found.clone(), b"404"),
+            "GET /api/devices HTTP/1.1" => (RES_OK, b"200"),
+            _ => (RES_NOT_FOUND, b"404"),
         };
         output.write_all(b"HTTP/1.1 ")?;
         output.write_all(status)?;
@@ -51,7 +47,7 @@ pub fn handle_connection(
             output.write_all(b"Connection: close\r\n")?;
         }
         output.write_all(b"\r\n")?;
-        output.write_all(res.as_bytes())?;
+        output.write_all(res)?;
         output.flush()?;
     }
     Ok(())
