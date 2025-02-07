@@ -18,7 +18,8 @@ pub struct Device<'a> {
 
 fn main() {
     println!("cargo::rerun-if-changed=src/routes.rs");
-    let path = Path::new("./src/body.rs");
+    println!("cargo::rerun-if-changed=src/body.rs");
+    let path = Path::new("src/body.rs");
 
     let file = File::create(path).unwrap();
     let mut writer = BufWriter::new(file);
