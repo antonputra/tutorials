@@ -63,13 +63,17 @@ pub fn not_found() -> (u16, String, usize) {
     (404, body, length)
 }
 
-pub fn handle_connection(stream: TcpStream) {
+pub fn handle_connection(stream: TcpStream, max_requests_per_connection: usize) {
     let mut input = BufReader::new(&stream).lines();
     let mut output = BufWriter::new(&stream);
 
+    let mut requests_processed = 0;
     let mut keep_alive = true;
+
     while keep_alive {
         if let Some(request_line) = input.next() {
+            requests_processed += 1;
+
             match request_line {
                 Ok(line) => {
                     keep_alive = false;
@@ -84,7 +88,7 @@ pub fn handle_connection(stream: TcpStream) {
                         }
 
                         if !keep_alive && header.ends_with("keep-alive") {
-                            keep_alive = true;
+                            keep_alive = requests_processed <= max_requests_per_connection;
                         }
                     }
 
@@ -109,6 +113,7 @@ pub fn handle_connection(stream: TcpStream) {
                         break;
                     }
                 }
+
                 Err(e) => {
                     print!("Failed to read request line: {:?}", e);
                     break;
