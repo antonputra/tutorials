@@ -19,17 +19,22 @@ pub fn handle_connection(stream: TcpStream, max_requests_per_connection: usize) 
             None => return Ok(()),
         };
         let line = line?;
-        requests_processed += 1;
 
+        requests_processed += 1;
         keep_alive = false;
-        let header = if let Some(v) = input.next() {
-            v
-        } else {
-            return Ok(());
-        }?;
-        if !keep_alive && header.ends_with("keep-alive") {
-            keep_alive = requests_processed <= max_requests_per_connection;
+
+        for header in input.by_ref() {
+            let header = header?;
+
+            if header.is_empty() {
+                break;
+            }
+
+            if !keep_alive && header.ends_with("keep-alive") {
+                keep_alive = requests_processed <= max_requests_per_connection;
+            }
         }
+
         let (res, status) = match line.as_str() {
             "GET /api/devices HTTP/1.1" => (RES_OK, b"200"),
             _ => (RES_NOT_FOUND, b"404"),
