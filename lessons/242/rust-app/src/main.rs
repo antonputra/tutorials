@@ -1,4 +1,3 @@
-mod device;
 mod job;
 mod routes;
 mod thread_pool;
@@ -28,13 +27,16 @@ fn main() {
 
     let addr = format!("0.0.0.0:{}", PORT);
     let listener = TcpListener::bind(addr).unwrap();
-
     match mode.as_str() {
         "SINGLE" => {
             println!("Starting a web server in single-threaded mode.");
             for stream in listener.incoming() {
                 match stream {
-                    Ok(stream) => handle_connection(stream, max_req),
+                    Ok(stream) => {
+                        if let Err(err) = handle_connection(stream, max_req) {
+                            eprintln!("{}", err);
+                        }
+                    }
                     Err(err) => print!("{:?}", err),
                 }
             }
@@ -52,7 +54,9 @@ fn main() {
                 match stream {
                     Ok(stream) => {
                         pool.execute(move || {
-                            handle_connection(stream, max_req);
+                            if let Err(err) = handle_connection(stream, max_req) {
+                                eprintln!("{}", err);
+                            }
                         });
                     }
                     Err(err) => print!("{:?}", err),
