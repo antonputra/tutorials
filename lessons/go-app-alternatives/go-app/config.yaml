@@ -1,0 +1,4 @@
+---
+debug: false
+appPort: 8080
+server: std
