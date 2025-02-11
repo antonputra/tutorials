@@ -44,7 +44,7 @@ pub async fn get_devices() -> impl IntoResponse {
         },
     ];
 
-    (StatusCode::OK, axum::Json(devices))
+    (StatusCode::OK, Json(devices))
 }
 
 pub async fn create_device(
