@@ -49,11 +49,13 @@ pub async fn create_device(
 ) -> Result<Json<Device>, (StatusCode, String)> {
     let conn = pool.get().await.map_err(internal_error)?;
 
+    let stmt = conn
+        .prepare_cached("INSERT INTO rust_device (mac, firmware) VALUES ($1, $2) RETURNING id")
+        .await
+        .map_err(internal_error)?;
+
     let row = conn
-        .query_one(
-            "INSERT INTO rust_device (mac, firmware) VALUES ($1, $2) RETURNING id",
-            &[&device.mac, &device.firmware],
-        )
+        .query_one(&stmt, &[&device.mac, &device.firmware])
         .await
         .map_err(internal_error)?;
 
