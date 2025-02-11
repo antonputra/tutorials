@@ -19,28 +19,28 @@ pub async fn get_devices() -> impl IntoResponse {
     let devices = [
         Device {
             id: Some(0),
-            mac: String::from("5F-33-CC-1F-43-82"),
-            firmware: String::from("2.1.6"),
+            mac: Box::from("5F-33-CC-1F-43-82"),
+            firmware: Box::from("2.1.6"),
         },
         Device {
             id: Some(1),
-            mac: String::from("44-39-34-5E-9C-F2"),
-            firmware: String::from("3.0.1"),
+            mac: Box::from("44-39-34-5E-9C-F2"),
+            firmware: Box::from("3.0.1"),
         },
         Device {
             id: Some(2),
-            mac: String::from("2B-6E-79-C7-22-1B"),
-            firmware: String::from("1.8.9"),
+            mac: Box::from("2B-6E-79-C7-22-1B"),
+            firmware: Box::from("1.8.9"),
         },
         Device {
             id: Some(3),
-            mac: String::from("06-0A-79-47-18-E1"),
-            firmware: String::from("4.0.9"),
+            mac: Box::from("06-0A-79-47-18-E1"),
+            firmware: Box::from("4.0.9"),
         },
         Device {
             id: Some(4),
-            mac: String::from("68-32-8F-00-B6-F4"),
-            firmware: String::from("5.0.0"),
+            mac: Box::from("68-32-8F-00-B6-F4"),
+            firmware: Box::from("5.0.0"),
         },
     ];
 
