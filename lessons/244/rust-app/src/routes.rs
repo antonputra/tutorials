@@ -3,11 +3,7 @@ use axum::{http::StatusCode, response::IntoResponse};
 use crate::device::Device;
 
 use axum::{extract::State, Json};
-use bb8::Pool;
-use bb8_postgres::PostgresConnectionManager;
-use tokio_postgres::NoTls;
-
-type ConnectionPool = Pool<PostgresConnectionManager<NoTls>>;
+use deadpool_postgres::Pool;
 
 // (Placeholder) Returns the status of the application.
 pub async fn health() -> impl IntoResponse {
@@ -48,7 +44,7 @@ pub async fn get_devices() -> impl IntoResponse {
 }
 
 pub async fn create_device(
-    State(pool): State<ConnectionPool>,
+    State(pool): State<Pool>,
     Json(device): Json<Device>,
 ) -> Result<Json<Device>, (StatusCode, String)> {
     let conn = pool.get().await.map_err(internal_error)?;
