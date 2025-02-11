@@ -1,0 +1,19 @@
+[package]
+name = "rust-app"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+axum = "0.8.1"
+serde = { version = "1", features = ["derive"] }
+tokio = { version = "1", features = ["full"] }
+bb8 = "0.9.0"
+bb8-postgres = "0.9.0"
+tokio-postgres = "0.7.2"
+
+[profile.release]
+debug = false
+lto = "fat"
+codegen-units = 1
+split-debuginfo = "off"
+panic = "abort"

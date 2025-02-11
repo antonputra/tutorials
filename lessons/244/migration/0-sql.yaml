@@ -1,0 +1,35 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sql
+  namespace: benchmark
+data:
+  init.sql: |
+    --
+    -- Create application users.
+    --
+    CREATE USER gnet WITH PASSWORD 'devops123' SUPERUSER CREATEDB CREATEROLE LOGIN;
+    CREATE USER rust WITH PASSWORD 'devops123' SUPERUSER CREATEDB CREATEROLE LOGIN;
+
+    --
+    -- Clean up idle connections.
+    --
+    WITH inactive_connections AS (SELECT pid, usename FROM pg_stat_activity WHERE usename = 'gnet') SELECT pg_terminate_backend(pid) FROM inactive_connections;
+    WITH inactive_connections AS (SELECT pid, usename FROM pg_stat_activity WHERE usename = 'rust') SELECT pg_terminate_backend(pid) FROM inactive_connections;
+
+    BEGIN;
+    --
+    -- Drop tables.
+    --
+    DROP TABLE IF EXISTS gnet_device;
+    DROP TABLE IF EXISTS rust_device;
+
+    --
+    -- Create device tables.
+    --
+    CREATE TABLE "gnet_device" ("id" SERIAL PRIMARY KEY, "mac" varchar(17) NOT NULL, "firmware" varchar(10) NOT NULL);
+    CREATE TABLE "rust_device" ("id" SERIAL PRIMARY KEY, "mac" varchar(17) NOT NULL, "firmware" varchar(10) NOT NULL);
+    COMMIT;
+
+    VACUUM full;
