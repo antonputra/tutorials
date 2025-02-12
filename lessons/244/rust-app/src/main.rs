@@ -4,8 +4,8 @@ mod routes;
 use self::routes::{create_device, get_devices, health};
 
 use axum::{routing::get, routing::post, Router};
-use bb8::Pool;
-use bb8_postgres::PostgresConnectionManager;
+use deadpool_postgres::Runtime::Tokio1;
+use deadpool_postgres::{ManagerConfig, SslMode};
 use std::env::var;
 use tokio_postgres::NoTls;
 
@@ -16,15 +16,20 @@ async fn main() {
     let pwd = var("POSTGRES_PWD").expect("The `POSTGRES_PWD` env variable is missing");
     let db = var("POSTGRES_DB").expect("The `POSTGRES_DB` env variable is missing");
     let size_s = var("POSTGRES_POOL").expect("The `POSTGRES_POOL` env variable is missing");
-    let size = size_s.parse::<u32>().unwrap();
+    let size = size_s.parse::<usize>().unwrap();
 
-    let manager = PostgresConnectionManager::new_from_stringlike(
-        format!("postgresql://{}:{}@{}:{}/{}", user, pwd, host, "5432", db,),
-        NoTls,
-    )
-    .unwrap();
+    let pool_cfg = deadpool_postgres::PoolConfig::new(size);
+    let mut config = deadpool_postgres::Config::new();
+    config.pool = Some(pool_cfg);
+    config.port = Some(5432);
+    config.host = Some(host);
+    config.user = Some(user);
+    config.password = Some(pwd);
+    config.dbname = Some(db);
+    config.manager = Some(ManagerConfig::default());
+    config.ssl_mode = Some(SslMode::Disable);
 
-    let pool = Pool::builder().max_size(size).build(manager).await.unwrap();
+    let pool = config.create_pool(Some(Tokio1), NoTls).unwrap();
 
     let app = Router::new()
         .route("/healthz", get(health))

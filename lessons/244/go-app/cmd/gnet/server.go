@@ -90,7 +90,7 @@ func (hc *httpCodec) parse(data []byte) (int, []byte, error) {
 }
 
 func (hc *httpCodec) getContentLength() int {
-	if hc.contentLength != -1 {
+	if hc.contentLength > 0 {
 		return hc.contentLength
 	}
 
