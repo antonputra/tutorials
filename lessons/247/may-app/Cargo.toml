@@ -1,0 +1,25 @@
+[package]
+name = "may-app"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+mimalloc = { version = "0.1", default-features = false }
+may = { version = "0.3", default-features = false }
+may_minihttp = "0.1"
+may_postgres = { git = "https://github.com/Xudong-Huang/may_postgres.git", default-features = false }
+num_cpus = "1.16"
+serde = {version = "1.0", default-features = false }
+serde_json = {version = "1.0", default-features = false }
+yarte = { version = "0.15", features = ["bytes-buf", "json"] }
+buf-min = { version = "0.7", features = ["bytes"] }
+
+[profile.release]
+strip = "symbols"
+opt-level = 3
+codegen-units = 1
+panic = 'abort'
+lto = 'thin'
+debug = false
+incremental = false
+overflow-checks = false
