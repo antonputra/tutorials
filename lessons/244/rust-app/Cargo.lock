@@ -695,8 +695,10 @@ name = "rust-app"
 version = "0.1.0"
 dependencies = [
  "axum",
+ "bytes",
  "deadpool-postgres",
  "serde",
+ "serde_json",
  "tokio",
  "tokio-postgres",
 ]

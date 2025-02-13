@@ -1,8 +1,14 @@
 use serde::{Deserialize, Serialize};
 
+#[derive(Debug, Serialize)]
+pub struct Device<'a> {
+    pub id: i32,
+    #[serde(flatten)]
+    pub data: DeviceData<'a>,
+}
+
 #[derive(Debug, Serialize, Deserialize)]
-pub struct Device {
-    pub id: Option<i32>,
-    pub mac: Box<str>,
-    pub firmware: Box<str>,
+pub struct DeviceData<'a> {
+    pub mac: &'a str,
+    pub firmware: &'a str,
 }
