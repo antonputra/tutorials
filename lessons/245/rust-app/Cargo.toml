@@ -1,0 +1,15 @@
+[package]
+name = "rust-app"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+axum = "0.8.1"
+serde = { version = "1", features = ["derive"] }
+tokio = { version = "1", features = ["full"] }
+tokio-postgres = "0.7.13"
+deadpool-postgres = "0.14.1"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
