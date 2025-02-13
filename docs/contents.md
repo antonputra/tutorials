@@ -173,3 +173,4 @@
 - [242 - Rust vs. Go (Golang): Performance (Only Standard Library)](../lessons/242)
 - [243 - Rust vs. Go (Golang): Performance 2025](../lessons/243)
 - [244 - Rust vs. Go (Golang): Performance (Fastest Frameworks + PostgreSQL)](../lessons/244)
+- [245 - Rust vs C++ Performance](../lessons/245)
