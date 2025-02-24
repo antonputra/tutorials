@@ -1,6 +1,6 @@
-# New Video - https://youtu.be/WnMin9cf78g
+# New Video - https://youtu.be/FXVg2ckuKfs
 
-[<img src="assets/245.png?raw=true">](https://youtu.be/WnMin9cf78g)
+[<img src="assets/246.png?raw=true">](https://youtu.be/FXVg2ckuKfs)
 
 # Support
 
