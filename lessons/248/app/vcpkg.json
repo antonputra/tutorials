@@ -1,0 +1,15 @@
+{
+  "dependencies": [
+    "uwebsockets",
+    "zlib",
+    "libuv",
+    "openssl",
+    "boost-beast",
+    "boost-context",
+    "prometheus-cpp",
+    {
+      "name": "usockets",
+      "features": [ "ssl" ]
+    }
+  ]
+}
