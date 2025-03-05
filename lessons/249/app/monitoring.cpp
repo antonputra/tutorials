@@ -1,3 +1,4 @@
+#include <cstring>
 #include <chrono>
 #include "monitoring.hpp"
 #include <string>
@@ -16,30 +17,18 @@ long long monitoring::get_time()
 // Parse the timestamp from the payload.
 long long monitoring::parse_time(char buf[MAXDATASIZE])
 {
-    // Create an empty array to hold the timestamp.
-    char result[TIMESIZE];
-
-    // Iterate over the buffer and parse the timestamp.
-    for (int i = 0; i < TIMESIZE - 1; i++)
-    {
-        result[i] = buf[TIMESTART + i];
-    }
-
-    // Terminate the string with a NUL byte.
-    result[TIMESIZE - 1] = '\0';
-
     // Convert the string to a long long and return it to the client.
-    return std::stol(result);
+    return std::strtoll(buf + TIMESTART, NULL, 10);
 }
 
 // Generate a payload message with a timestamp to measure the duration.
-std::string monitoring::generate_payload()
+size_t monitoring::generate_payload(char buf[MAXDATASIZE])
 {
     // Take a timestamp and start measuring the time for processing a Trade event message.
     long long start = monitoring::get_time();
 
     // Prepare the message that we'll send over the wire.
-    return "{\"id\":66009,\"mac\":\"81-6E-79-DA-5A-B2\",\"firmware\":\"4.0.2\",\"create_at\":" + std::to_string(start) + "}";
+    return std::snprintf(buf, MAXDATASIZE, "{\"id\":66009,\"mac\":\"81-6E-79-DA-5A-B2\",\"firmware\":\"4.0.2\",\"create_at\":%lld}", start);
 }
 
 // Get interval buckets for Prometheus in nanoseconds.
