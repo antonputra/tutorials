@@ -8,7 +8,6 @@
 #include "monitoring.hpp"
 
 #define BACKLOG 20
-#define MAXDATASIZE 90
 #define PORT "8080"
 // #define ADDRESS "tcp-server.antonputra.pvt"
 #define ADDRESS "localhost"
@@ -18,8 +17,7 @@ using namespace prometheus;
 int main()
 {
     const char *enable_monitoring_env = std::getenv("ENABLE_MONITORING");
-
-    std::string enable_monitoring(enable_monitoring_env);
+    bool enable_monitoring = enable_monitoring_env && std::strcmp(enable_monitoring_env, "true") == 0;
 
     // Expose Prometheus metrics on port 9081.
     Exposer exposer{"0.0.0.0:9080"};
@@ -42,16 +40,13 @@ int main()
     exposer.RegisterCollectable(registry);
 
     // Buffer to store received data from the server.
-    char buf[MAXDATASIZE];
+    char buf[UDP_BUFSIZE + 1];
 
     // This variable hold file descriptor. We use them to read and write data.
     int client_fd, bytes_recv;
 
     // addrinfo is used to prepare the socket address structures.
     struct addrinfo hints, *servinfo;
-
-    // This variable is used to hold the client IP address.
-    struct sockaddr_storage client_addr;
 
     // Make sure the struct is empty.
     memset(&hints, 0, sizeof hints);
@@ -66,7 +61,12 @@ int main()
     hints.ai_flags = AI_PASSIVE;
 
     // Fill out the struct. Assign the address of of the server to the socket structure, etc.
-    getaddrinfo(ADDRESS, PORT, &hints, &servinfo);
+    int err;
+    if ((err = getaddrinfo(NULL, PORT, &hints, &servinfo)) != 0)
+    {
+        std::cerr << "getaddrinfo failed: " << gai_strerror(err) << std::endl;
+        return 1;
+    }
 
     // Create a socket for the client and return a file descriptor that we can use to receive data.
     client_fd = socket(servinfo->ai_family, servinfo->ai_socktype, servinfo->ai_protocol);
@@ -78,21 +78,32 @@ int main()
     if (connect_result != 0)
     {
         perror("connect failed");
-        exit(1);
+        return 1;
     }
 
     while (true)
     {
-        bytes_recv = recv(client_fd, buf, MAXDATASIZE - 1, MSG_WAITALL);
+        bytes_recv = recv(client_fd, buf, UDP_BUFSIZE, MSG_WAITALL);
 
-        tcp_counter.Increment();
+        buf[bytes_recv] = '\0';
 
-        if (enable_monitoring == "true")
+        for(char *pos = buf; pos != NULL; pos = std::strchr(pos, '{'))
         {
-            msg_duration.Observe(monitoring::get_time() - monitoring::parse_time(buf));
+            tcp_counter.Increment();
+
+            if (enable_monitoring)
+            {
+                msg_duration.Observe(monitoring::get_time() - monitoring::parse_time(buf));
+            }
+
+            // increment past the {
+            pos++;
         }
     }
 
+    // graceful shutdown. disable sending and recieving, empty the kernel buffer, then close.
+    shutdown(client_fd, SHUT_RDWR);
+    while(read(client_fd, buf, UDP_BUFSIZE) > 0) {}
     close(client_fd);
 
     return 0;
