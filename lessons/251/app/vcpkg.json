@@ -1,0 +1,9 @@
+{
+  "dependencies": ["prometheus-cpp"],
+  "overrides": [
+    {
+      "name": "prometheus-cpp",
+      "version": "1.3.0"
+    }
+  ]
+}
