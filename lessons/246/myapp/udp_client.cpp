@@ -12,7 +12,8 @@ using std::chrono::microseconds;
 using std::chrono::system_clock;
 
 #define PORT "8080"
-#define ADDRESS "udp-server.antonputra.pvt"
+// #define ADDRESS "udp-server.antonputra.pvt"
+#define ADDRESS "localhost"
 
 // Declare some variables for the test.
 int stage_count = 1;
