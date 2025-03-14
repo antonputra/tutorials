@@ -51,7 +51,7 @@ defmodule App.Router do
   post "/api/devices" do
     try do
       {:ok, body, conn} = Plug.Conn.read_body(conn)
-      body = Jason.decode!(body)
+      body = JSON.decode!(body)
       now = DateTime.utc_now()
 
       device =
@@ -84,7 +84,7 @@ defmodule App.Router do
   defp json(conn, status, payload) do
     conn
     |> put_resp_content_type("application/json")
-    |> send_resp(status, Jason.encode_to_iodata!(payload))
+    |> send_resp(status, JSON.encode_to_iodata!(payload))
     |> halt()
   end
 end
