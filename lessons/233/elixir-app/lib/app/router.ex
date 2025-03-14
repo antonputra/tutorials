@@ -52,7 +52,7 @@ defmodule App.Router do
     try do
       {:ok, body, conn} = Plug.Conn.read_body(conn)
       body = JSON.decode!(body)
-      now = DateTime.utc_now()
+      now = DateTime.utc_now() |> DateTime.to_string()
 
       device =
         App.Device.save(%App.Device{
