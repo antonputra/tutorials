@@ -25,11 +25,11 @@ defmodule App.MixProject do
 
   defp deps do
     [
-      {:ecto_sql, "3.12.1"},
-      {:postgrex, "0.19.3"},
-      {:telemetry_metrics, "1.0.0"},
-      {:bandit, "1.6.1"},
-      {:peep, "3.3.1"}
+      {:ecto_sql, "~> 3.12"},
+      {:postgrex, "~> 0.19"},
+      {:telemetry_metrics, "~> 1.0"},
+      {:bandit, "~> 1.6"},
+      {:peep, "~> 3.3"}
     ]
   end
 
