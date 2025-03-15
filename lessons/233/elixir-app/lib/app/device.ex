@@ -1,5 +1,5 @@
 defmodule App.Device do
-  @derive {Jason.Encoder, only: [:id, :uuid, :mac, :firmware, :created_at, :updated_at]}
+  @derive {JSON.Encoder, only: [:id, :uuid, :mac, :firmware, :created_at, :updated_at]}
   defstruct [:id, :uuid, :mac, :firmware, :created_at, :updated_at]
 
   def save(device) do
