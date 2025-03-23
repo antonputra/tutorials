@@ -178,3 +178,4 @@
 - [249 - TCP vs UDP Performance: HUGE Improvement!](../lessons/249)
 - [250 - Nginx vs. HAProxy vs. Traefik: Performance](../lessons/250)
 - [251 - TCP vs UDP performance (Round 3)](../lessons/251)
+- [252 - Nginx vs HAProxy Performance (HTTP/1 - HTTP/2 - HTTPS - Compression)](../lessons/252)
