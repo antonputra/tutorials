@@ -1,0 +1,17 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: pubsub-client
+  namespace: benchmark
+  labels:
+    prometheus: main
+spec:
+  namespaceSelector:
+    matchNames:
+    - benchmark
+  selector:
+    matchLabels:
+      app: pubsub-client
+  podMetricsEndpoints:
+  - port: metrics
