@@ -43,7 +43,10 @@ defmodule App.Telemetry.Bucket do
     elem(@buckets, index)
   end
 
-  defp binary_search(_value, low, high) when low >= high, do: high
+  defp binary_search(value, low, high) when value <= elem(@buckets, low), do: low
+  defp binary_search(value, low, high) when value >= elem(@buckets, high), do: high
+  defp binary_search(value, low, high) when low >= high, do: high
+
   defp binary_search(value, low, high) do
     mid = div(low + high, 2)
     mid_val = elem(@buckets, mid)
