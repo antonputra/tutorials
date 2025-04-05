@@ -1,5 +1,5 @@
 defmodule App.Device do
-  @fields [:id, :uuid, :mac, :firmware, :created_at, :updated_at]
+  defstruct  [:id, :uuid, :mac, :firmware, :created_at, :updated_at]
 
   def save({uuid, mac, firmware, created_at, updated_at} = _device) do
     %{rows: [[id]]} =
