@@ -1,17 +1,24 @@
 defmodule App.Device do
-  @derive {Jason.Encoder, only: [:id, :uuid, :mac, :firmware, :created_at, :updated_at]}
-  defstruct [:id, :uuid, :mac, :firmware, :created_at, :updated_at]
+  @fields [:id, :uuid, :mac, :firmware, :created_at, :updated_at]
 
-  def save(device) do
-    %{uuid: uuid, mac: mac, firmware: firmware, created_at: created_at, updated_at: updated_at} =
-      device
-
+  def save({uuid, mac, firmware, created_at, updated_at} = _device) do
     %{rows: [[id]]} =
       App.Repo.query!(
-        "INSERT INTO \"devices\" (uuid, mac, firmware, created_at, updated_at) VALUES ($1, $2, $3, $4, $5) RETURNING id",
+        "INSERT INTO devices (uuid, mac, firmware, created_at, updated_at) VALUES ($1, $2, $3, $4, $5) RETURNING id",
         [uuid, mac, firmware, created_at, updated_at]
       )
 
-    %{device | id: id}
+    {id, uuid, mac, firmware, created_at, updated_at}
+  end
+
+  def to_map({id, uuid, mac, firmware, created_at, updated_at}) do
+    %{
+      id: id,
+      uuid: uuid,
+      mac: mac,
+      firmware: firmware,
+      created_at: created_at,
+      updated_at: updated_at
+    }
   end
 end

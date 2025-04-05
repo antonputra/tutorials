@@ -57,16 +57,12 @@ defmodule App.Router do
       body = Jason.decode!(body)
       now = DateTime.utc_now() |> DateTime.to_iso8601()
 
-      device =
-        App.Device.save(%App.Device{
-          uuid: Ecto.UUID.generate(),
-          mac: body["mac"],
-          firmware: body["firmware"],
-          created_at: now,
-          updated_at: now
-        })
+      device_tuple =
+        {Ecto.UUID.generate(), body["mac"], body["firmware"], now, now}
+        |> App.Device.save()
 
-      json(conn, 201, device)
+      # Converte para mapa apenas na resposta
+      json(conn, 201, App.Device.to_map(device_tuple))
     rescue
       e ->
         json(conn, 400, %{message: Exception.message(e)})
