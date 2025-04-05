@@ -17,6 +17,8 @@ defmodule Peep.Buckets.CustomTuple do
       # Or: use Peep.Buckets.CustomTuple, buckets: [0.1, 5.0, 1.0] # Will be sorted
       # Or: use Peep.Buckets.CustomTuple, buckets: {0.1, 0.5, 1.0, 5.0} # Literal
     end
+
+    @author Matheus de Camargo Marques
   """
 
   defmacro __using__(opts) do
