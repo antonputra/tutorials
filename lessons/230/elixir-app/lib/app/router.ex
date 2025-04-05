@@ -53,7 +53,7 @@ defmodule App.Router do
 
   post "/api/devices" do
     try do
-      {:ok, body, conn} = Plug.Conn.read_body(conn)
+      {:ok, body, conn} = Plug.Conn.read_body(conn, length: 1_000)
       body = Jason.decode!(body)
       now = DateTime.utc_now() |> DateTime.to_iso8601()
 
