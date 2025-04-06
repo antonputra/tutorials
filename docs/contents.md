@@ -180,3 +180,4 @@
 - [251 - TCP vs UDP performance (Round 3)](../lessons/251)
 - [252 - Nginx vs HAProxy Performance (HTTP/1 - HTTP/2 - HTTPS - Compression)](../lessons/252)
 - [253 - Redis Streams vs Pub/Sub: Performance](../lessons/253)
+- [254 - Intel vs AMD vs Graviton: Performance & Price](../lessons/254)
