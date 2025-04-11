@@ -185,3 +185,4 @@ zig-out/
 zig-cache/
 
 .idea/
+build

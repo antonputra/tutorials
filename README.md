@@ -1,14 +1,17 @@
-# New Video - https://youtu.be/kV6YizoFuPU
+# New Video - https://youtu.be/kwq9EfELYII
 
-[<img src="assets/254-v2.png?raw=true">](https://youtu.be/kV6YizoFuPU)
+[<img src="assets/195.jpg?raw=true">](https://youtu.be/kwq9EfELYII)
 
 # Support
 
-🔴 - To support my channel, I'd like to offer Mentorship/On-the-Job Support/Consulting. (me@antonputra.com)
+💼 - Available for Hire: Mentorship, On-the-Job Support, Consulting – me@antonputra.com
 
 # Playlists
 
-👉 [Performance Benchmarks](https://youtube.com/playlist?list=PLiMWaCMwGJXmcDLvMQeORJ-j_jayKaLVn&si=p-UOaVM_6_SFx52H)
+📚 - [AWS EKS Kubernetes Tutorial [Full Course]](https://www.youtube.com/playlist?list=PLiMWaCMwGJXnKY6XmeifEpjIfkWRo9v2l)  
+📚 - [Argo CD Tutorials](https://www.youtube.com/playlist?list=PLiMWaCMwGJXkktZoHhmL6sbg7ELNjv9Xw)  
+📚 - [Kubernetes Tutorials](https://www.youtube.com/playlist?list=PLiMWaCMwGJXnHmccp2xlBENZ1xr4FpjXF)  
+📚 - [Benchmarks](https://www.youtube.com/playlist?list=PLiMWaCMwGJXmcDLvMQeORJ-j_jayKaLVn)
 
 # Contents
 
