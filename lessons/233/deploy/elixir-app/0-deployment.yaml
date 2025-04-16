@@ -44,16 +44,21 @@ spec:
             cpu: 1500m
           limits:
             memory: 4Gi
-            cpu: 2000m
+            # NOTE: Do not enable CPU Limits
+            # Avoid CPU Throlling that interfere with Erlang scheduler.
+            # Instead do:
+            # 1. Setup Node Groups.
+            # 2. Run one container per node.
+            # cpu: ....
         # TODO: Uncomment for use in production.
         # readinessProbe:
         #   httpGet:
         #     path: /healthz
         #     port: http
-        # livenessProbe:
-        #   httpGet:
-        #     path: /healthz
-        #     port: http
+        # NOTE: Do not enable livenessProbe
+        # You do not want to check livenessProbe using HTTP, or any kind of
+        # RPC (bin/app pid) that could end up in a timeout.
+        # livenessProbe: ...
       tolerations:
       - effect: NoSchedule
         operator: Exists
