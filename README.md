@@ -1,6 +1,6 @@
-# New Video - https://youtu.be/kwq9EfELYII
+# New Video - https://youtu.be/Qfg6hRY4Tq0
 
-[<img src="assets/195.jpg?raw=true">](https://youtu.be/kwq9EfELYII)
+[<img src="assets/255.jpg?raw=true">](https://youtu.be/Qfg6hRY4Tq0)
 
 # Support
 
@@ -8,6 +8,7 @@
 
 # Playlists
 
+📚 - [Terraform Tutorial on AWS [Full Course]](https://www.youtube.com/playlist?list=PLiMWaCMwGJXkGuVPyM2hTQumcaqnXEgHA)  
 📚 - [AWS EKS Kubernetes Tutorial [Full Course]](https://www.youtube.com/playlist?list=PLiMWaCMwGJXnKY6XmeifEpjIfkWRo9v2l)  
 📚 - [Argo CD Tutorials](https://www.youtube.com/playlist?list=PLiMWaCMwGJXkktZoHhmL6sbg7ELNjv9Xw)  
 📚 - [Kubernetes Tutorials](https://www.youtube.com/playlist?list=PLiMWaCMwGJXnHmccp2xlBENZ1xr4FpjXF)  
