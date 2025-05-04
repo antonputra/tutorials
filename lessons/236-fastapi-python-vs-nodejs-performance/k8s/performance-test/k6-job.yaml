@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: k6-load-test
+  namespace: performance-test
+spec:
+  template:
+    spec:
+      containers:
+      - name: k6
+        image: grafana/k6:latest
+        args:
+        - run
+        - /scripts/test.js
+        volumeMounts:
+        - name: k6-test-script
+          mountPath: /scripts
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+      volumes:
+      - name: k6-test-script
+        configMap:
+          name: k6-test-script
+      restartPolicy: Never
+  backoffLimit: 1 
