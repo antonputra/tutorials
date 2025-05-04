@@ -140,7 +140,7 @@
 - [229 - Fastest Go Web Framework](../lessons/229-go-golang-performance-benchmark-gnet-vs-fiber-vs-fasthttp-vs-nethttp)
 - [230 - Elixir vs Go Performance](../lessons/230-elixir-vs-go-golang-performance-latency-throughput-saturation-availability)
 - [232 - Python FastAPI vs Go Performance Round 2](../lessons/232-python-fastapi-vs-go-golang-performance-benchmark)
-- [233 - Elixir vs Go Performance Round 2](../lessons/233-elixir-vs-go-performance-benchmark-round-2)
+- [233 - Elixir vs Go Performance Round 2](../lessons/233-elixir-vs-go-golang-performance-benchmark-round-2)
 - [234 - PostgreSQL vs Amazon RDS Performance](../lessons/234-postgresql-vs-amazon-rds-performance-price)
 - [235 - Terraform GCP Tutorial](../lessons/235-terraform-gcp-tutorial-getting-started-with-google-cloud-platform)
 - [236 - FastAPI vs Node.js Performance](../lessons/236-fastapi-python-vs-nodejs-performance)
