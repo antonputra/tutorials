@@ -4,7 +4,7 @@
 
 # Support
 
-💼 - Available for Hire: Mentorship, On-the-Job Support, Consulting – me@antonputra.com
+👨‍💼📈 Mentorship/On-the-Job Support/Consulting - https://calendly.com/antonputra/youtube or me@antonputra.com
 
 # Playlists
 
