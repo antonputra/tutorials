@@ -1,10 +1,10 @@
-# New Video - https://youtu.be/9hDvWVJtljE
+# New Video - [YouTube](https://youtu.be/9hDvWVJtljE)
 
 [<img src="assets/258.png?raw=true">](https://youtu.be/9hDvWVJtljE)
 
-# Support
+# Consulting
 
-👨‍💼📈 Mentorship/On-the-Job Support/Consulting - https://calendly.com/antonputra/youtube or me@antonputra.com
+👨‍💼📈 Mentorship/On-the-Job Support/Consulting - [**Calendar**](https://calendly.com/antonputra/youtube) or **me@antonputra.com**
 
 # Playlists
 
