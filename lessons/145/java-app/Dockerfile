@@ -8,7 +8,7 @@ COPY src src
 
 RUN mvn clean package
 
-FROM amazoncorretto:19.0.1-alpine3.16
+FROM amazoncorretto:19.0.2-alpine3.16
 
 COPY --from=builder /app/target/*.jar /app/java-app.jar
 
