@@ -1,4 +1,4 @@
-FROM python:3.12.2-alpine3.19
+FROM python:3.13.1-alpine3.19
 
 RUN apk update && apk add curl
 
