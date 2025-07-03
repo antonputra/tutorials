@@ -1,0 +1,35 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: java-app-client
+  namespace: default
+spec:
+  template:
+    metadata:
+      labels:
+        app: java-app-client
+    spec:
+      restartPolicy: Never
+      # TODO: remove
+      nodeSelector:
+        kubernetes.io/hostname: node-03
+      containers:
+      - name: java-app-client
+        image: aputra/client-180:v14
+        command:
+        - /myapp
+        - -maxClients=1000
+        - -scaleInterval=1000
+        - -randomSleep=4000
+        - -target=http://java-app:8080/api/devices
+        ports:
+        - name: metrics
+          containerPort: 8081
+        resources:
+          requests:
+            memory: 3Gi
+            cpu: 1500m
+          limits:
+            memory: 3Gi
+            cpu: 1500m

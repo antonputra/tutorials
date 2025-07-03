@@ -1,0 +1,78 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-app
+  namespace: default
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: go-app
+  template:
+    metadata:
+      labels:
+        app: go-app
+    spec:
+      terminationGracePeriodSeconds: 0
+      initContainers:
+      - name: migration
+        image: postgres:16.4
+        command: ['sh', '-c', "psql -a -f /init.sql"]
+        env:
+        - name: PGUSER
+          value: postgres
+        - name: PGPASSWORD
+          value: devops123
+        - name: PGDATABASE
+          value: mydb
+        - name: PGHOST
+          value: my-postgres.antonputra.pvt
+        volumeMounts:
+        - name: sql
+          mountPath: /init.sql
+          subPath: init.sql
+      containers:
+      - name: go-app
+        image: aputra/go-app-210:v3
+        env:
+        - name: GOMAXPROCS
+          value: 1
+        ports:
+        - name: http
+          containerPort: 8080
+        - name: metrics
+          containerPort: 8081
+        resources:
+          requests:
+            memory: 256Mi
+            cpu: "2"
+          limits:
+            memory: 256Mi
+            cpu: "2"
+        volumeMounts:
+        - name: config
+          mountPath: /config.yaml
+          subPath: config.yaml
+      volumes:
+      - name: config
+        configMap:
+          name: go-app
+      - name: sql
+        configMap:
+          name: go-app-sql
+      tolerations:
+      - effect: NoSchedule
+        operator: Exists
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node
+                operator: In
+                values:
+                - node-00
+                - general

@@ -1,0 +1,12 @@
+---
+appPort: 8080
+db:
+  user: node_app
+  password: devops123
+  host: postgres.antonputra.pvt
+  database: mydb
+  maxConnections: 20
+cache:
+  host: memcache.antonputra.pvt
+  expirationS: 20
+  poolSize: 500

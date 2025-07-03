@@ -1,0 +1,17 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: fastapi-intel-client
+  namespace: benchmark
+  labels:
+    prometheus: main
+spec:
+  namespaceSelector:
+    matchNames:
+    - benchmark
+  selector:
+    matchLabels:
+      app: fastapi-intel-client
+  podMetricsEndpoints:
+  - port: metrics

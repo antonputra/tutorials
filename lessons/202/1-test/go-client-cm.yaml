@@ -1,0 +1,97 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: go-app-client
+  namespace: default
+data:
+  config.yaml: |
+    url: http://go-app:8080/api/devices
+    requestIntervalMs: 1000
+    stages:
+    - clients: 10
+      intervalMin: 5
+    - clients: 50
+      intervalMin: 5
+    - clients: 200
+      intervalMin: 5
+    - clients: 400
+      intervalMin: 5
+    - clients: 5
+      intervalMin: 5
+    - clients: 10
+      intervalMin: 5
+    - clients: 550
+      intervalMin: 5
+    - clients: 560
+      intervalMin: 5
+    - clients: 570
+      intervalMin: 5
+    - clients: 580
+      intervalMin: 5
+    - clients: 590
+      intervalMin: 5
+    - clients: 600
+      intervalMin: 5
+    - clients: 600
+      intervalMin: 5
+    - clients: 610
+      intervalMin: 5
+    - clients: 620
+      intervalMin: 5
+    - clients: 630
+      intervalMin: 5
+    - clients: 640
+      intervalMin: 5
+    - clients: 650
+      intervalMin: 5
+    - clients: 660
+      intervalMin: 5
+    - clients: 670
+      intervalMin: 5
+    - clients: 680
+      intervalMin: 5
+    - clients: 690
+      intervalMin: 5
+    - clients: 700
+      intervalMin: 5
+    - clients: 710
+      intervalMin: 5
+    - clients: 720
+      intervalMin: 5
+    - clients: 730
+      intervalMin: 5
+    - clients: 740
+      intervalMin: 5
+    - clients: 750
+      intervalMin: 5
+    - clients: 760
+      intervalMin: 5
+    - clients: 770
+      intervalMin: 5
+    - clients: 780
+      intervalMin: 5
+    - clients: 790
+      intervalMin: 5
+    - clients: 800
+      intervalMin: 5
+    - clients: 810
+      intervalMin: 5
+    - clients: 820
+      intervalMin: 5
+    - clients: 830
+      intervalMin: 5
+    - clients: 840
+      intervalMin: 5
+    - clients: 850
+      intervalMin: 5
+    - clients: 860
+      intervalMin: 5
+    - clients: 870
+      intervalMin: 5
+    - clients: 880
+      intervalMin: 5
+    - clients: 890
+      intervalMin: 5
+    - clients: 900
+      intervalMin: 5

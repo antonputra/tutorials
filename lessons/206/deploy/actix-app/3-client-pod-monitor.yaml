@@ -1,0 +1,17 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: actix-app-client
+  namespace: monitoring
+  labels:
+    prometheus: main
+spec:
+  namespaceSelector:
+    matchNames:
+    - api
+  selector:
+    matchLabels:
+      app: actix-app-client
+  podMetricsEndpoints:
+  - port: metrics

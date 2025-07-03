@@ -1,0 +1,41 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: go-app-client
+  namespace: default
+data:
+  config.yaml: |
+    url: http://go-app:8080/api/images
+    requestIntervalMs: 1000
+    stages:
+    - clients: 10
+      intervalMin: 5
+    - clients: 50
+      intervalMin: 5
+    - clients: 10
+      intervalMin: 5
+    - clients: 100
+      intervalMin: 5
+    - clients: 110
+      intervalMin: 5
+    - clients: 120
+      intervalMin: 5
+    - clients: 130
+      intervalMin: 5
+    - clients: 140
+      intervalMin: 5
+    - clients: 150
+      intervalMin: 5
+    - clients: 160
+      intervalMin: 5
+    - clients: 170
+      intervalMin: 5
+    - clients: 180
+      intervalMin: 5
+    - clients: 190
+      intervalMin: 5
+    - clients: 200
+      intervalMin: 5
+    - clients: 210
+      intervalMin: 5

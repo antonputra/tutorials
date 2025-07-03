@@ -1,0 +1,74 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: python-app
+  namespace: default
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: python-app
+  template:
+    metadata:
+      labels:
+        app: python-app
+    spec:
+      terminationGracePeriodSeconds: 0
+      containers:
+      - name: python-app
+        image: aputra/python-app-231:v6
+        ports:
+        - name: http
+          containerPort: 8000
+        env:
+        - name: MEMCACHED_HOST
+          value: "memcache.antonputra.pvt"
+        - name: POSTGRES_URI
+          value: "postgresql+asyncpg://python_app:devops123@postgres.antonputra.pvt/mydb"
+        - name: POSTGRES_POOL_SIZE
+          value: "500"
+        resources:
+          requests:
+            memory: 2Gi
+            cpu: 1500m
+          limits:
+            memory: 4Gi
+            cpu: 2000m
+        # TODO: Uncomment for use in production.
+        # readinessProbe:
+        #   httpGet:
+        #     path: /healthz
+        #     port: http
+        # livenessProbe:
+        #   httpGet:
+        #     path: /healthz
+        #     port: http
+      tolerations:
+      - effect: NoSchedule
+        operator: Exists
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - python-app
+            topologyKey: "kubernetes.io/hostname"
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node
+                operator: In
+                values:
+                - general
+            - matchExpressions:
+              - key: kubernetes.io/arch
+                operator: In
+                values:
+                - amd64

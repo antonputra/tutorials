@@ -1,0 +1,15 @@
+---
+appPort: 8080
+db:
+  user: node_app
+  password: devops123
+  host: postgres.antonputra.pvt
+  database: mydb
+  maxConnections: 250
+s3:
+  endpoint: http://minio.antonputra.pvt:9000
+  region: us-east-2
+  accessKeyId: admin
+  secretAccessKey: devops123
+  filePath: ../user.png
+  bucket: images

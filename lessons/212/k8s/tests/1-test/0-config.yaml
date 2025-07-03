@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-client
+  namespace: default
+data:
+  Tester.toml: |
+    [test]
+    request = "get"
+    min_clients = 1
+    max_clients = 1000
+    stage_interval_s = 30
+    request_delay_s = 0.04
+    request_timeout_s = 1

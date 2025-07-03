@@ -1,0 +1,16 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: root-app-of-apps
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  destination:
+    namespace: argocd
+    name: in-cluster
+  source:
+    path: lessons/200/argocd/project
+    repoURL: git@github.com:antonputra/tutorials.git
+    targetRevision: main

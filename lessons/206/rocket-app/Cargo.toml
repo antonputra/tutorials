@@ -1,0 +1,15 @@
+[package]
+name = "rocket-app"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+mimalloc = "0.1"
+rocket = { version = "0.5", features = ["json"] }
+
+[profile.release]
+debug = false
+lto = "fat"
+codegen-units = 1
+split-debuginfo = "off"
+panic = "abort"

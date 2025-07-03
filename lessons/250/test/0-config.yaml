@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-client
+  namespace: benchmark
+data:
+  Tester.toml: |
+    [test]
+    request = "get"
+    protocol = "http2"
+    min_clients = 1
+    max_clients = 1000
+    stage_interval_s = 20
+    request_delay_ms = 80
+    request_timeout_ms = 1000

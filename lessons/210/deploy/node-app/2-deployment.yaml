@@ -1,0 +1,76 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-app
+  namespace: default
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: node-app
+  template:
+    metadata:
+      labels:
+        app: node-app
+    spec:
+      terminationGracePeriodSeconds: 0
+      initContainers:
+      - name: migration
+        image: postgres:16.4
+        command: ['sh', '-c', "psql -a -f /init.sql"]
+        env:
+        - name: PGUSER
+          value: postgres
+        - name: PGPASSWORD
+          value: devops123
+        - name: PGDATABASE
+          value: mydb
+        - name: PGHOST
+          value: my-postgres.antonputra.pvt
+        volumeMounts:
+        - name: sql
+          mountPath: /init.sql
+          subPath: init.sql
+      containers:
+      - name: node-app
+        image: aputra/node-app-210:v3
+        ports:
+        - name: http
+          containerPort: 8080
+        env:
+        - name: NODE_ENV
+          value: production
+        resources:
+          requests:
+            memory: 256Mi
+            cpu: "2"
+          limits:
+            memory: 256Mi
+            cpu: "2"
+        volumeMounts:
+        - name: config
+          mountPath: /app/config.yaml
+          subPath: config.yaml
+      volumes:
+      - name: config
+        configMap:
+          name: node-app
+      - name: sql
+        configMap:
+          name: node-app-sql
+      tolerations:
+      - effect: NoSchedule
+        operator: Exists
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node
+                operator: In
+                values:
+                - node-01
+                - general

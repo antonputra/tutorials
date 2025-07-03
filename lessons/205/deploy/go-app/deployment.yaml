@@ -1,0 +1,83 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-app
+  namespace: default
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: go-app
+  template:
+    metadata:
+      labels:
+        app: go-app
+    spec:
+      nodeSelector:
+        node: node-00
+      containers:
+      - name: go-app
+        image: aputra/go-app-205:v4
+        imagePullPolicy: Always
+        env:
+        - name: GOGC
+          value: "300"
+        - name: GOMEMLIMIT
+          value: "200MiB"
+        - name: AWS_ACCESS_KEY_ID
+          value: admin
+        - name: AWS_SECRET_ACCESS_KEY
+          value: 867tfc1823fgujhwadf1231
+        ports:
+        - name: http
+          containerPort: 8080
+        - name: metrics
+          containerPort: 8081
+        resources:
+          requests:
+            memory: 256Mi
+            cpu: "2"
+          limits:
+            memory: 256Mi
+            cpu: "2"
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: http
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 2
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: http
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 2
+        volumeMounts:
+        - name: config
+          mountPath: /config.yaml
+          subPath: config.yaml
+        - name: my-volume
+          mountPath: /tmp
+      volumes:
+      - name: config
+        configMap:
+          name: go-app
+      - name: my-volume
+        hostPath:
+          path: /tmp
+          type: DirectoryOrCreate
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - go-app
+            topologyKey: "kubernetes.io/hostname"

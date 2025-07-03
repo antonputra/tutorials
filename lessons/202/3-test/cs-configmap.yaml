@@ -1,0 +1,32 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cs-app
+  namespace: default
+data:
+  appsettings.json: |
+    {
+      "S3": {
+        "region": "us-west-rack1",
+        "bucket": "images",
+        "endpoint": "http://192.168.50.212:9000",
+        "pathStyle": true,
+        "user": "admin",
+        "secret": "devops123",
+        "imgPath": "/tmp/thumbnail.png"
+      },
+      "Db": {
+        "host": "192.168.50.214",
+        "user": "csapp",
+        "password": "devops123",
+        "database": "mydb"
+      },
+      "Logging": {
+        "LogLevel": {
+          "Default": "Information",
+          "Microsoft.AspNetCore": "Warning"
+        }
+      },
+      "AllowedHosts": "*"
+    }

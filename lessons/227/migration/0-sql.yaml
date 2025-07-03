@@ -1,0 +1,43 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sql
+  namespace: default
+data:
+  init.sql: |
+    --
+    -- Mongodb buffers writes to journal every 100ms by default.
+    -- Set postgresql to do the same. 
+    --
+    ALTER SYSTEM SET synchronous_commit=OFF;
+    ALTER SYSTEM SET wal_writer_delay='100ms';
+
+    --
+    -- Create application users.
+    --
+    CREATE USER myapp WITH PASSWORD 'devops123' SUPERUSER CREATEDB CREATEROLE LOGIN;
+
+    --
+    -- Clean up idle connections.
+    --
+    WITH inactive_connections AS (SELECT pid, usename FROM pg_stat_activity WHERE usename = 'myapp') SELECT pg_terminate_backend(pid) FROM inactive_connections;
+
+    BEGIN;
+    --
+    -- Drop tables.
+    --
+    DROP TABLE IF EXISTS product;
+
+    COMMIT;
+
+    -- Create Tables
+
+    CREATE TABLE product (
+      id SERIAL PRIMARY KEY,
+      jdoc jsonb
+    );
+    
+    CREATE INDEX idx__product__price ON product using BTREE(((jdoc -> 'price')::NUMERIC));
+    
+    VACUUM full;

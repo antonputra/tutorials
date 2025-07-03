@@ -1,0 +1,98 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rails-app
+  namespace: default
+spec:
+  replicas: 2
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: rails-app
+  template:
+    metadata:
+      labels:
+        app: rails-app
+    spec:
+      terminationGracePeriodSeconds: 0
+      initContainers:
+      - name: migration
+        image: aputra/rails-app-220:v5
+        command: ['sh', '-c', "/rails/bin/rails db:migrate"]
+        volumeMounts:
+        - name: config
+          mountPath: /rails/config/database.yml
+          subPath: database.yml
+        env:
+        - name: RAILS_MASTER_KEY
+          valueFrom:
+            secretKeyRef:
+              name: rails
+              key: master-key
+      containers:
+      - name: rails-app
+        image: aputra/rails-app-220:v5
+        ports:
+        - name: http
+          containerPort: 8080
+        env:
+        - name: RAILS_MASTER_KEY
+          valueFrom:
+            secretKeyRef:
+              name: rails
+              key: master-key
+        - name: WORKERS_NUM
+          value: "2" # 0 for single-mode
+        - name: RAILS_MAX_THREADS
+          value: "20"
+        resources:
+          requests:
+            memory: 512Mi
+            cpu: 750m
+          limits:
+            memory: 512Mi
+            cpu: 1000m
+        readinessProbe:
+          httpGet:
+            path: /up
+            port: http
+        livenessProbe:
+          httpGet:
+            path: /up
+            port: http
+        volumeMounts:
+        - name: config
+          mountPath: /rails/config/database.yml
+          subPath: database.yml
+      volumes:
+      - name: config
+        configMap:
+          name: rails-app
+      tolerations:
+      - effect: NoSchedule
+        operator: Exists
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - rails-app
+            topologyKey: "kubernetes.io/hostname"
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node
+                operator: In
+                values:
+                - general
+            - matchExpressions:
+              - key: kubernetes.io/arch
+                operator: In
+                values:
+                - amd64

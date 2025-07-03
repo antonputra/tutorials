@@ -1,0 +1,5 @@
+---
+redis_pubsub_uri: tcp://127.0.0.1:6379
+redis_streams_uri: tcp://127.0.0.1:6379
+delay_us: 10000
+metrics_port: 9002

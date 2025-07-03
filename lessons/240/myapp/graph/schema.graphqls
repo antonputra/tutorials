@@ -1,0 +1,21 @@
+type Device {
+  id: ID!
+  uuid: String!
+  mac: String!
+  firmware: String!
+  createdAt: String!
+  updatedAt: String!
+}
+
+type Query {
+  device: [Device]
+}
+
+input NewDevice {
+  mac: String!
+  firmware: String!
+}
+
+type Mutation {
+  createDevice(input: NewDevice!): Device!
+}

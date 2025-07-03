@@ -1,0 +1,23 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rust-app
+  namespace: default
+data:
+  config.toml: |
+    [config]
+    port = 8080
+
+    [s3]
+    region = "us-west-rack1"
+    bucket = "images"
+    endpoint = "http://10.0.71.121:9000"
+    path_style = true
+    img_path = "/tmp/thumbnail-v2.png"
+
+    [db]
+    user = "rust"
+    password = "devops123"
+    host = "10.0.71.121"
+    database = "mydb"

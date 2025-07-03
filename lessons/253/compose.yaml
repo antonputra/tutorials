@@ -1,0 +1,11 @@
+---
+services:
+  redis:
+    image: redis:8.0-M04
+    ports:
+      - 6379:6379
+    networks:
+      - private
+
+networks:
+  private:

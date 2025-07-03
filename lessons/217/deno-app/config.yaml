@@ -1,0 +1,8 @@
+---
+appPort: 8080
+db:
+  user: deno
+  password: devops123
+  host: postgresql.antonputra.pvt
+  database: mydb
+  maxConnections: 20

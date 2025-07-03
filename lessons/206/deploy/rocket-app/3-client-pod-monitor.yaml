@@ -1,0 +1,17 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: rocket-app-client
+  namespace: monitoring
+  labels:
+    prometheus: main
+spec:
+  namespaceSelector:
+    matchNames:
+    - api
+  selector:
+    matchLabels:
+      app: rocket-app-client
+  podMetricsEndpoints:
+  - port: metrics

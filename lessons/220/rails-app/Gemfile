@@ -1,0 +1,12 @@
+source "https://rubygems.org"
+
+gem "falcon"
+gem "oj"
+gem "pg"
+gem "prometheus-client"
+gem "sqlite3" # For test
+
+gem "rails"
+
+# Reduces boot times through caching; required in config/boot.rb
+gem "bootsnap", require: false

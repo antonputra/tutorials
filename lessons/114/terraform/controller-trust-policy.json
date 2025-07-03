@@ -31,6 +31,12 @@
             "Effect": "Allow",
             "Resource": "*",
             "Sid": "ConditionalEC2Termination"
+        },
+        {
+            "Action": "pricing:GetProducts",
+            "Effect": "Allow",
+            "Resource": "*",
+            "Sid": "PricingAnalyst"
         }
     ],
     "Version": "2012-10-17"

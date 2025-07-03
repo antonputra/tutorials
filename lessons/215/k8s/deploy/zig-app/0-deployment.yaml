@@ -1,0 +1,61 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zig-app
+  namespace: default
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: zig-app
+  template:
+    metadata:
+      labels:
+        app: zig-app
+    spec:
+      terminationGracePeriodSeconds: 0
+      containers:
+      - name: zig-app
+        image: aputra/zzz-215:v1
+        ports:
+        - name: http
+          containerPort: 8080
+        resources:
+          requests:
+            memory: 512Mi
+            cpu: 1500m
+          limits:
+            memory: 512Mi
+            cpu: 2000m
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: http
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: http
+      tolerations:
+      - effect: NoSchedule
+        operator: Exists
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - zig-app
+            topologyKey: "kubernetes.io/hostname"
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node
+                operator: In
+                values:
+                - general

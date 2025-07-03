@@ -24,7 +24,7 @@ resource "aws_iam_role_policy_attachment" "demo_amazon_eks_cluster_policy" {
 
 resource "aws_eks_cluster" "demo_arm64" {
   name     = "demo-arm64"
-  version  = "1.24"
+  version  = "1.27"
   role_arn = aws_iam_role.demo.arn
 
   vpc_config {
@@ -41,7 +41,7 @@ resource "aws_eks_cluster" "demo_arm64" {
 
 resource "aws_eks_cluster" "demo_amd64" {
   name     = "demo-amd64"
-  version  = "1.24"
+  version  = "1.27"
   role_arn = aws_iam_role.demo.arn
 
   vpc_config {

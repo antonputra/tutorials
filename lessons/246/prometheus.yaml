@@ -1,0 +1,11 @@
+---
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+
+scrape_configs:
+- job_name: interface
+  metrics_path: /metrics
+  honor_labels: true
+  static_configs:
+  - targets: [ "localhost:9081", "localhost:9080" ]

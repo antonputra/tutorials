@@ -1,0 +1,13 @@
+[package]
+name = "actix-app"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+serde = { version = "1.0.209", features = ["derive"] }
+actix-web = { version = "4" , features = ["experimental-io-uring"] }
+
+[profile.release]
+lto = true
+codegen-units = 1
+panic = "abort"

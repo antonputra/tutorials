@@ -1,0 +1,52 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: valkey-client
+  namespace: benchmark
+spec:
+  parallelism: 28
+  template:
+    metadata:
+      labels:
+        app: valkey-client
+    spec:
+      restartPolicy: Never
+      terminationGracePeriodSeconds: 0
+      containers:
+      - name: valkey-client
+        image: quay.io/aputra/client-258:v2
+        ports:
+        - name: metrics
+          containerPort: 8081
+        env:
+        - name: REDIS_HOST
+          value: valkey.antonputra.pvt
+        - name: GOMAXPROCS
+          valueFrom:
+            resourceFieldRef:
+              resource: limits.cpu
+        resources:
+          requests:
+            memory: 256Mi
+            cpu: 1000m
+          limits:
+            memory: 256Mi
+            cpu: 1000m
+        volumeMounts:
+        - name: config
+          mountPath: /config.yaml
+          subPath: config.yaml
+      volumes:
+      - name: config
+        configMap:
+          name: client-config
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node
+                operator: In
+                values:
+                - clients

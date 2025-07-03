@@ -1,0 +1,55 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: streams-client
+  namespace: benchmark
+spec:
+  parallelism: 17
+  template:
+    metadata:
+      labels:
+        app: streams-client
+    spec:
+      restartPolicy: Never
+      terminationGracePeriodSeconds: 0
+      containers:
+      - name: streams-client
+        image: quay.io/aputra/client-253:v10
+        command: [ "/streams_client" ]
+        ports:
+        - name: metrics
+          containerPort: 9002
+        env:
+        - name: TOPIC
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        resources:
+          requests:
+            memory: 1Gi
+            cpu: 2000m
+          limits:
+            memory: 1Gi
+            cpu: 2000m
+        volumeMounts:
+        - name: config
+          mountPath: /config.yaml
+          subPath: config.yaml
+      volumes:
+      - name: config
+        configMap:
+          name: client-config
+      tolerations:
+      - key: node
+        value: general
+        effect: NoSchedule
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node
+                operator: In
+                values:
+                - general

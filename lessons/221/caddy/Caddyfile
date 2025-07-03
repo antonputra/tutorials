@@ -1,0 +1,33 @@
+www-caddy.antonputra.pvt {
+	# Set this path to your site's directory.
+	root * /data/my-website
+
+	# Enable compression.
+	encode {
+		gzip 3
+	}
+
+	# Provide certificate and a private key.
+	tls /etc/ssl/certs/caddy-antonputra-pvt.pem /etc/ssl/private/caddy-antonputra-pvt-key.pem
+
+	# Enable the static file server.
+	file_server
+
+	log {
+		format console
+		output file /var/log/caddy/access.log
+	}
+}
+
+api-caddy.antonputra.pvt {
+	# Configure upstream servers.
+	reverse_proxy api-caddy-0.antonputra.pvt:8080 api-caddy-1.antonputra.pvt:8080
+
+	# Provide certificate and a private key.
+	tls /etc/ssl/certs/caddy-antonputra-pvt.pem /etc/ssl/private/caddy-antonputra-pvt-key.pem
+
+	log {
+		format console
+		output file /var/log/caddy/access.log
+	}
+}

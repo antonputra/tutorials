@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: deno-app
+  namespace: default
+data:
+  config.yaml: |
+    appPort: 8080
+    db:
+      user: deno
+      password: devops123
+      host: postgresql.antonputra.pvt
+      database: mydb
+      maxConnections: 40

@@ -1,0 +1,19 @@
+[server]
+skip_name_resolve = 1
+innodb_redo_log_capacity = 3G
+innodb_buffer_pool_size = 12G
+innodb_buffer_pool_instances = 12
+innodb_flush_log_at_trx_commit = 2
+innodb_log_file_size = 2G
+innodb_log_buffer_size = 32M
+innodb_max_dirty_pages_pct = 90
+tmp_table_size= 128M
+max_heap_table_size= 128M
+
+[mysqld]
+max_connections = 300
+character_set_server = utf8mb4
+collation_server = utf8mb4_general_ci
+transaction_isolation = READ-COMMITTED
+binlog_format = ROW
+innodb_file_per_table=1

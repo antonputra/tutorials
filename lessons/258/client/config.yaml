@@ -1,0 +1,10 @@
+---
+metricsPort: 8081
+debug: true
+redis:
+  expirationS: 20
+test:
+  minClients: 1
+  maxClients: 1000
+  stageIntervalS: 30
+  requestDelayMs: 1000

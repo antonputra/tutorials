@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bun-app
+  namespace: default
+data:
+  config.yaml: |
+    appPort: 8080
+    db:
+      user: bun
+      password: devops123
+      host: my-postgres.antonputra.pvt
+      database: mydb
+      maxConnections: 20

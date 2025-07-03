@@ -1,0 +1,20 @@
+# Compiled using the following arguments:
+# CGO_ENABLED=0 GOARCH=amd64 GOOS=linux GOAMD64=v2 /usr/local/go/bin/go build -trimpath -tags osusergo,netgo -o server -a -ldflags="-s -w -buildid=" -gcflags="all=-m=0 -l=2 -dwarf=false" -installsuffix cgo
+[Unit]
+Description=Go App
+Wants=network-online.target
+After=network-online.target
+
+StartLimitIntervalSec=500
+StartLimitBurst=5
+
+[Service]
+User=root
+Group=root
+Type=simple
+Restart=on-failure
+RestartSec=5s
+ExecStart=/usr/local/bin/server -config=/etc/config.yaml
+
+[Install]
+WantedBy=multi-user.target

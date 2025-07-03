@@ -1,0 +1,20 @@
+[Unit]
+Description=Rust App
+Wants=network-online.target
+After=network-online.target
+
+StartLimitIntervalSec=500
+StartLimitBurst=5
+
+[Service]
+Environment="MODE=MULTI"
+Environment="THREAD_COUNT=4"
+User=root
+Group=root
+Type=simple
+Restart=on-failure
+RestartSec=5s
+ExecStart=/usr/local/bin/rust-app
+
+[Install]
+WantedBy=multi-user.target

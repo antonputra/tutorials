@@ -1,0 +1,16 @@
+---
+port: 8081
+db:
+  user: myapp
+  password: devops123
+  host: postgresql.antonputra.pvt
+  database: mydb
+  maxConnections: 20
+test:
+  db: pgx
+  op: write
+  minClients: 1
+  maxClients: 10
+  stageIntervalS: 30
+  requestDelayMs: 40
+  maxEventId: 1000

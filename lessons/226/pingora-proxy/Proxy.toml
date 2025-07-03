@@ -1,0 +1,5 @@
+[proxy]
+port = 7070
+upstreams = [ "app-0.antonputra.pvt:8080", "app-1.antonputra.pvt:8080", "app-2.antonputra.pvt:8080", "app-3.antonputra.pvt:8080"]
+tls_cert = "/Users/antonputra/devel/private-tests/tls/certs/pingora-antonputra-pvt.pem"
+tls_key = "/Users/antonputra/devel/private-tests/tls/certs/pingora-antonputra-pvt-key.pem"

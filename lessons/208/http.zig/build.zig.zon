@@ -1,0 +1,28 @@
+.{
+    .name = "http.zig",
+    .version = "0.0.0",
+    .dependencies = .{
+        .httpz = .{
+            // experimental branch that addresses overflow conditions and adds more tweaks
+            .url = "git+https://github.com/karlseguin/http.zig#tweaks",
+            .hash = "1220f5bf1a1b6d2df35859a32d1460b883bab0ec660c69eca5465e6a1b5fae80e44c",
+
+            // experimental branch that addresses overflow conditions
+            //.url = "git+https://github.com/karlseguin/http.zig#max_conn_handling",
+            //.hash = "1220c3984e8292abc9b6e87ccef998d237a832cbf1063f165ac039fd7120c38fa321",
+
+            // latest http.zig that has smaller ram requirements by default
+            // .url = "git+https://github.com/karlseguin/http.zig#master",
+            // .hash = "12205ee070aa4dae35c469b506f2335285b6ac3668f86d15a72bd1761ad1ce6e7f6e",
+
+            // original 1st test run that bombed
+            // .url = "git+https://github.com/karlseguin/http.zig?ref=master#dadc4f72b7137380df1c54324ca4c0fa7d333767",
+            // .hash = "12208fab56fa3082d207beb09b1d5134a447ce006e78026f6951d89dd8c1279bded5",
+        },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+}

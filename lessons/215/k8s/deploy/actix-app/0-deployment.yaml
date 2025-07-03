@@ -1,0 +1,61 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: actix-app
+  namespace: default
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: actix-app
+  template:
+    metadata:
+      labels:
+        app: actix-app
+    spec:
+      terminationGracePeriodSeconds: 0
+      containers:
+      - name: actix-app
+        image: aputra/actix-app-215:v3
+        ports:
+        - name: http
+          containerPort: 8080
+        resources:
+          requests:
+            memory: 512Mi
+            cpu: 1500m
+          limits:
+            memory: 512Mi
+            cpu: 2000m
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: http
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: http
+      tolerations:
+      - effect: NoSchedule
+        operator: Exists
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - actix-app
+            topologyKey: "kubernetes.io/hostname"
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node
+                operator: In
+                values:
+                - general

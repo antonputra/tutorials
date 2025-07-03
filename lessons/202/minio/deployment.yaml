@@ -1,0 +1,75 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minio
+  namespace: s3
+spec:
+  strategy:
+    type: Recreate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: minio
+  template:
+    metadata:
+      name: minio
+      labels:
+        app: minio
+        istio: monitor
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+      containers:
+      - name: minio
+        image: quay.io/minio/minio:RELEASE.2024-08-03T04-33-23Z
+        imagePullPolicy: IfNotPresent
+        command:
+        - "/bin/sh"
+        - "-ce"
+        - "/usr/bin/docker-entrypoint.sh minio server /data -S /etc/minio/certs/ --address :9000 --console-address :9001"
+        volumeMounts:
+        - name: minio-user
+          mountPath: "/tmp/credentials"
+          readOnly: true
+        - name: data
+          mountPath: /data
+        ports:
+        - name: http
+          containerPort: 9000
+        - name: http-console
+          containerPort: 9001
+        env:
+        - name: MINIO_ROOT_USER
+          valueFrom:
+            secretKeyRef:
+              name: minio
+              key: rootUser
+        - name: MINIO_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: minio
+              key: rootPassword
+        - name: MINIO_PROMETHEUS_AUTH_TYPE
+          value: "public"
+        resources:
+          requests:
+            cpu: 6000m
+            memory: 12Gi
+          limits:
+            cpu: 6000m
+            memory: 12Gi
+      volumes:
+      - name: data
+        hostPath:
+          path: /data
+          type: DirectoryOrCreate
+      - name: minio-user
+        secret:
+          secretName: minio
+      # TODO: remove
+      nodeSelector:
+        kubernetes.io/hostname: node-02

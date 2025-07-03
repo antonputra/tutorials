@@ -1,0 +1,18 @@
+---
+port: 8081
+db:
+  user: myapp
+  password: devops123
+  host: mysql.antonputra.pvt
+  # host: postgresql.antonputra.pvt
+  database: store
+  maxConnections: 20
+test:
+  db: mysql
+  # db: pgx
+  name: test2
+  minClients: 1
+  maxClients: 10
+  stageIntervalS: 30
+  requestDelayMs: 40
+  maxOrderId: 1000

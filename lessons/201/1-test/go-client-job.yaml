@@ -1,0 +1,35 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: go-app-client
+  namespace: default
+spec:
+  template:
+    metadata:
+      labels:
+        app: go-app-client
+    spec:
+      restartPolicy: Never
+      # TODO: remove
+      nodeSelector:
+        kubernetes.io/hostname: node-02
+      containers:
+      - name: go-app-client
+        image: aputra/client-180:v14
+        command:
+        - /myapp
+        - -maxClients=1000
+        - -scaleInterval=1000
+        - -randomSleep=4000
+        - -target=http://go-app:8080/api/devices
+        ports:
+        - name: metrics
+          containerPort: 8081
+        resources:
+          requests:
+            memory: 3Gi
+            cpu: 1500m
+          limits:
+            memory: 3Gi
+            cpu: 1500m

@@ -1,0 +1,15 @@
+[package]
+name = "axum-app-static"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+axum = "0.7.5"
+tokio = { version = "1.40.0", features = ["full"] }
+
+[profile.release]
+debug = false
+lto = "fat"
+codegen-units = 1
+split-debuginfo = "off"
+panic = "abort"

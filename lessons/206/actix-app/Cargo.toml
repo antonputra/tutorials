@@ -1,0 +1,16 @@
+[package]
+name = "actix-app"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+actix-web = "4"
+mimalloc = "0.1"
+serde = { version = "1", features = ["derive"] }
+
+[profile.release]
+debug = false
+lto = "fat"
+codegen-units = 1
+split-debuginfo = "off"
+panic = "abort"

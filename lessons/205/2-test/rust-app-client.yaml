@@ -1,0 +1,125 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: rust-app-client
+  namespace: default
+spec:
+  parallelism: 1
+  template:
+    metadata:
+      labels:
+        app: rust-app-client
+    spec:
+      restartPolicy: Never
+      nodeSelector:
+        node: node-01
+      tolerations:
+      - key: role
+        value: clients
+        effect: NoSchedule
+      containers:
+      - name: rust-app-client
+        imagePullPolicy: Always
+        image: aputra/utils-tester-amd64:v10
+        ports:
+        - name: metrics
+          containerPort: 8081
+        resources:
+          requests:
+            memory: 512Mi
+            cpu: 1400m
+          limits:
+            memory: 512Mi
+            cpu: 1400m
+        volumeMounts:
+        - name: config
+          mountPath: /config.yaml
+          subPath: config.yaml
+      volumes:
+      - name: config
+        configMap:
+          name: rust-app-client
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rust-app-client
+  namespace: default
+data:
+  config.yaml: |
+    type: main
+    url: http://rust-app:8080/api/images
+    requestIntervalMs: 300
+    requestTimeoutMs: 3000
+    stages:
+    - clients: 1
+      intervalMin: 3
+    - clients: 2
+      intervalMin: 3
+    - clients: 3
+      intervalMin: 3
+    - clients: 4
+      intervalMin: 3
+    - clients: 5
+      intervalMin: 3
+    - clients: 6
+      intervalMin: 3
+    - clients: 7
+      intervalMin: 3
+    - clients: 8
+      intervalMin: 3
+    - clients: 9
+      intervalMin: 3
+    - clients: 10
+      intervalMin: 3
+    - clients: 11
+      intervalMin: 3
+    - clients: 12
+      intervalMin: 3
+    - clients: 13
+      intervalMin: 3
+    - clients: 14
+      intervalMin: 3
+    - clients: 15
+      intervalMin: 3
+    - clients: 16
+      intervalMin: 3
+    - clients: 17
+      intervalMin: 3
+    - clients: 18
+      intervalMin: 3
+    - clients: 19
+      intervalMin: 3
+    - clients: 20
+      intervalMin: 3
+    - clients: 21
+      intervalMin: 3
+    - clients: 22
+      intervalMin: 3
+    - clients: 23
+      intervalMin: 3
+    - clients: 24
+      intervalMin: 3
+    - clients: 25
+      intervalMin: 3
+    - clients: 26
+      intervalMin: 3
+    - clients: 27
+      intervalMin: 3
+    - clients: 28
+      intervalMin: 3
+    - clients: 29
+      intervalMin: 3
+    - clients: 30
+      intervalMin: 3
+    - clients: 31
+      intervalMin: 3
+    - clients: 32
+      intervalMin: 3
+    - clients: 33
+      intervalMin: 3
+    - clients: 34
+      intervalMin: 3
+    - clients: 35
+      intervalMin: 3

@@ -1,0 +1,87 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elixir-app
+  namespace: default
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: elixir-app
+  template:
+    metadata:
+      labels:
+        app: elixir-app
+    spec:
+      terminationGracePeriodSeconds: 0
+      containers:
+      - name: elixir-app
+        image: aputra/elixir-app-233-amd64:v4
+        ports:
+        - name: http
+          containerPort: 8080
+        env:
+        # For reference, where are these values coming from
+        # https://github.com/antonputra/tutorials/pull/370#issuecomment-2537190415
+        - name: WEB_PORT
+          value: "8080"
+        - name: REPO_POOL_COUNT
+          value: "4"
+        - name: REPO_POOL_SIZE
+          value: "125"
+        - name: REPO_QUEUE_TARGET
+          value: "60000"
+        - name: REPO_QUEUE_INTERVAL
+          value: "60000"
+        - name: DATABASE_URL
+          value: postgresql://elixir:devops123@postgres.antonputra.pvt/mydb
+        resources:
+          requests:
+            memory: 2Gi
+            cpu: 1500m
+          limits:
+            memory: 4Gi
+            # NOTE: Do not enable CPU Limits
+            # Avoid CPU Throlling that interfere with Erlang scheduler.
+            # Instead do:
+            # 1. Setup Node Groups.
+            # 2. Run one container per node.
+            # cpu: ....
+        # TODO: Uncomment for use in production.
+        # readinessProbe:
+        #   httpGet:
+        #     path: /healthz
+        #     port: http
+        # NOTE: Do not enable livenessProbe
+        # You do not want to check livenessProbe using HTTP, or any kind of
+        # RPC (bin/app pid) that could end up in a timeout.
+        # livenessProbe: ...
+      tolerations:
+      - effect: NoSchedule
+        operator: Exists
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - elixir-app
+            topologyKey: "kubernetes.io/hostname"
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node
+                operator: In
+                values:
+                - general
+            - matchExpressions:
+              - key: kubernetes.io/arch
+                operator: In
+                values:
+                - amd64

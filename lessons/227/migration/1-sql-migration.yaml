@@ -1,0 +1,46 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: sql-migration
+  namespace: default
+spec:
+  parallelism: 1
+  ttlSecondsAfterFinished: 60
+  template:
+    metadata:
+      labels:
+        app: sql-migration
+    spec:
+      restartPolicy: Never
+      terminationGracePeriodSeconds: 0
+      containers:
+      - name: sql-migration
+        image: postgres:17.2
+        command: [ 'sh', '-c', "psql -a -f /init.sql" ]
+        env:
+        - name: PGUSER
+          value: postgres
+        - name: PGPASSWORD
+          value: devops123
+        - name: PGDATABASE
+          value: store
+        - name: PGHOST
+          value: postgres.antonputra.pvt
+        volumeMounts:
+        - name: sql
+          mountPath: /init.sql
+          subPath: init.sql
+      volumes:
+      - name: sql
+        configMap:
+          name: sql
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node
+                operator: In
+                values:
+                - clients
