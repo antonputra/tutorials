@@ -33,7 +33,7 @@ psycopg-pool==3.1.8
 psycopg2-binary==2.9.9
 python-dateutil==2.8.2
 PyYAML==6.0.1
-requests==2.31.0
+requests==2.32.4
 s3transfer==0.7.0
 six==1.16.0
 typing_extensions==4.8.0
