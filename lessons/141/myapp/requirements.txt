@@ -7,4 +7,4 @@ MarkupSafe==2.1.1
 Werkzeug==2.2.2
 
 # To run in production
-gunicorn==20.1.0
+gunicorn==23.0.0
