@@ -6,7 +6,7 @@ COPY . .
 
 RUN cargo build --release
 
-FROM debian:11.5-slim
+FROM debian:11.11-slim
 
 COPY --from=build /app/target/release/rust-app /rust-app
 
