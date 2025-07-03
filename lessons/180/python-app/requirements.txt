@@ -8,7 +8,7 @@ click==8.1.7
 Deprecated==1.2.14
 Flask==3.0.0
 googleapis-common-protos==1.61.0
-grpcio==1.59.0
+grpcio==1.59.5
 gunicorn==21.2.0
 idna==3.4
 importlib-metadata==6.8.0
