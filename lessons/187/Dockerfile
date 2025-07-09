@@ -9,7 +9,7 @@ COPY . .
 
 RUN cargo build --release
 
-FROM debian:11.6-slim
+FROM debian:11.11-slim
 
 COPY --from=build /app/target/release/server /server
 
