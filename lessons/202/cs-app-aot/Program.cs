@@ -1,109 +1,131 @@
-using Prometheus;
 using System.Diagnostics;
-using Npgsql;
-using cs_app;
 using System.Text.Json.Serialization;
+using cs_app_aot;
+using Npgsql;
+using NpgsqlTypes;
+using Prometheus;
+using Metrics = Prometheus.Metrics;
 
-// Initialize the Web App
 var builder = WebApplication.CreateSlimBuilder(args);
 
-// Configure JSON source generatino for AOT support
-builder.Services.ConfigureHttpJsonOptions(options =>
+// hard-off logging for benchmarks (no sinks)
+builder.Logging.ClearProviders();
+builder.Logging.SetMinimumLevel(LogLevel.None);
+
+// JSON source-gen for AOT; harmless on JIT
+builder.Services.ConfigureHttpJsonOptions(o =>
 {
-    options.SerializerOptions.TypeInfoResolverChain.Insert(0, AppJsonSerializerContext.Default);
+    o.SerializerOptions.TypeInfoResolverChain.Insert(0, AppJsonSerializerContext.Default);
 });
 
-// Load configuration
-var dbOptions = new DbOptions();
-builder.Configuration.GetSection(DbOptions.PATH).Bind(dbOptions);
+// config
+var cfg = new AppConfig(builder.Configuration);
+builder.Services.AddSingleton(cfg);
 
-var s3Options = new S3Options();
-builder.Configuration.GetSection(S3Options.PATH).Bind(s3Options);
+// AWS S3
+builder.Services.AddSingleton(new AmazonS3Uploader(cfg.User, cfg.Secret, cfg.S3Endpoint, cfg.Region));
 
-// Establish S3 session.
-using var amazonS3 = new AmazonS3Uploader(s3Options.User, s3Options.Secret, s3Options.Endpoint);
-
-// Create Postgre connection string
-var connString = $"Host={dbOptions.Host};Username={dbOptions.User};Password={dbOptions.Password};Database={dbOptions.Database}";
-
-Console.WriteLine(connString);
-
-// Establish Postgres connection
-await using var dataSource = new NpgsqlSlimDataSourceBuilder(connString).Build();
-
-// Counter variable is used to increment image id
-var counter = 0;
+// Npgsql (AOT/trimming friendly)
+var csb = new NpgsqlConnectionStringBuilder
+{
+    Host = cfg.DbHost,
+    Username = cfg.DbUser,
+    Password = cfg.DbPassword,
+    Database = cfg.DbDatabase,
+    Pooling = true,
+    MaxPoolSize = 256,
+    MinPoolSize = 16,
+    NoResetOnClose = true,
+    AutoPrepareMinUsages = 2,
+    MaxAutoPrepare = 32,
+    Multiplexing = true
+};
+builder.Services.AddSingleton(_ => new NpgsqlSlimDataSourceBuilder(csb.ConnectionString).Build());
 
 var app = builder.Build();
 
-// Create Summary Prometheus metric to measure latency of the requests.
-var summary = Metrics.CreateSummary("myapp_request_duration_seconds", "Duration of the request.", new SummaryConfiguration
-{
-    LabelNames = ["op"],
-    Objectives = [new QuantileEpsilonPair(0.9, 0.01), new QuantileEpsilonPair(0.99, 0.001)]
-});
-
-// Enable the /metrics page to export Prometheus metrics.
-app.MapMetrics();
-
-// Create endpoint that returns the status of the application.
-// Placeholder for the health check
-app.MapGet("/healthz", () => Results.Ok("OK"));
-
-// Create endpoint that returns a list of connected devices.
-app.MapGet("/api/devices", () =>
-{
-    Device[] devices = [
-        new("b0e42fe7-31a5-4894-a441-007e5256afea", "5F-33-CC-1F-43-82", "2.1.6"),
-        new("0c3242f5-ae1f-4e0c-a31b-5ec93825b3e7", "EF-2B-C4-F5-D6-34", "2.1.5"),
-        new("b16d0b53-14f1-4c11-8e29-b9fcef167c26", "62-46-13-B7-B3-A1", "3.0.0"),
-        new("51bb1937-e005-4327-a3bd-9f32dcf00db8", "96-A8-DE-5B-77-14", "1.0.1"),
-        new("e0a1d085-dce5-48db-a794-35640113fa67", "7E-3B-62-A6-09-12", "3.5.6")
-    ];
-
-    return Results.Ok(devices);
-});
-
-// Create endpoint that uoloades image to S3 and writes metadate to Postgres
-app.MapGet("/api/images", async () =>
-{
-    // Generate a new image.
-    var image = new Image($"cs-thumbnail-{counter}.png");
-
-    // Get the current time to record the duration of the S3 request.
-    var s3StartTime = Stopwatch.GetTimestamp();
-
-    // Upload the image to S3.
-    await amazonS3.Upload(s3Options.Bucket, image.ObjKey, s3Options.ImgPath);
-
-    // Record the duration of the request to S3.
-    summary.WithLabels(["s3"]).Observe(Stopwatch.GetElapsedTime(s3StartTime).TotalSeconds);
-
-    // Get the current time to record the duration of the Database request.
-    var dbStartTime = Stopwatch.GetTimestamp();
-
-    // Prepare the database query to insert a record.
-    const string sqlQuery = "INSERT INTO cs_image VALUES ($1, $2, $3)";
-
-    // Execute the query to create a new image record.
-    await using (var cmd = dataSource.CreateCommand(sqlQuery))
+// Prometheus Summary (prebind labels to skip tiny allocs)
+var summary = Metrics.CreateSummary("myapp_request_duration_seconds", "Duration of the request.",
+    new SummaryConfiguration
     {
-        cmd.Parameters.AddWithValue(image.ImageUuid);
-        cmd.Parameters.AddWithValue(image.ObjKey);
-        cmd.Parameters.AddWithValue(image.CreatedAt);
-        await cmd.ExecuteNonQueryAsync();
-    }
+        LabelNames = ["op"],
+        Objectives = [new QuantileEpsilonPair(0.9, 0.01), new QuantileEpsilonPair(0.99, 0.001)]
+    });
+var s3Dur = summary.WithLabels("s3");
+var dbDur = summary.WithLabels("db");
 
-    // Record the duration of the insert query.
-    summary.WithLabels(["db"]).Observe(Stopwatch.GetElapsedTime(dbStartTime).TotalSeconds);
+// endpoints
+app.MapMetrics();
+app.MapGet("/healthz", () => Results.Ok());
+app.MapGet("/api/devices", () => Results.Ok(StaticData.Devices));
 
-    // Increment the counter.
-    counter++;
+app.MapGet("/api/images",
+    async (HttpContext http,
+        AmazonS3Uploader s3,
+        NpgsqlDataSource dataSource) =>
+    {
+        var id = Interlocked.Increment(ref StaticData.Counter) - 1;
+        var image = new Image($"cs-thumbnail-{id}.png");
 
-    return Results.Ok("Saved!");
-});
+        // S3
+        var t0 = Stopwatch.GetTimestamp();
+        await s3.Upload(cfg.S3Bucket, image.ObjKey, cfg.S3ImgPath, http.RequestAborted);
+        s3Dur.Observe(Stopwatch.GetElapsedTime(t0).TotalSeconds);
+
+        // DB
+        var t1 = Stopwatch.GetTimestamp();
+        await using (var cmd = dataSource.CreateCommand(StaticData.ImageInsertSql))
+        {
+            cmd.Parameters.Add(new NpgsqlParameter<Guid> { NpgsqlDbType = NpgsqlDbType.Uuid, Value = image.ImageUuid });
+            cmd.Parameters.Add(new NpgsqlParameter<string> { NpgsqlDbType = NpgsqlDbType.Text, Value = image.ObjKey });
+            cmd.Parameters.Add(new NpgsqlParameter<DateTime>
+                { NpgsqlDbType = NpgsqlDbType.TimestampTz, Value = image.CreatedAt });
+            await cmd.ExecuteNonQueryAsync(http.RequestAborted);
+        }
+
+        dbDur.Observe(Stopwatch.GetElapsedTime(t1).TotalSeconds);
+        return Results.Ok();
+    });
 
 app.Run();
 
+// ---- app types ----
 [JsonSerializable(typeof(Device[]))]
 internal partial class AppJsonSerializerContext : JsonSerializerContext;
+
+public sealed class AppConfig(IConfiguration config)
+{
+    public string? DbDatabase = config.GetValue<string>("Db:database");
+    public string? DbHost = config.GetValue<string>("Db:host");
+    public string? DbPassword = config.GetValue<string>("Db:password");
+    public string? DbUser = config.GetValue<string>("Db:user");
+
+    public string? Region = config.GetValue<string>("S3:region");
+    public string? S3Bucket = config.GetValue<string>("S3:bucket");
+    public string? S3Endpoint = config.GetValue<string>("S3:endpoint");
+    public string? S3ImgPath = config.GetValue<string>("S3:imgPath");
+    public string? Secret = config.GetValue<string>("S3:secret");
+    public string? User = config.GetValue<string>("S3:user");
+}
+
+
+public sealed class Device
+{
+    public required string Uuid { get; init; }
+    public required string Mac { get; init; }
+    public required string Firmware { get; init; }
+}
+
+public readonly struct Image
+{
+    public string ObjKey { get; }
+    public Guid ImageUuid { get; }
+    public DateTime CreatedAt { get; }
+
+    public Image(string key)
+    {
+        ObjKey = key;
+        ImageUuid = Guid.NewGuid();
+        CreatedAt = DateTime.UtcNow;
+    }
+}

@@ -1,20 +1,18 @@
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0-jammy AS build
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:9.0-noble AS build
 ARG TARGETARCH
-WORKDIR /source
-
-# copy csproj and restore as distinct layers
-COPY *.csproj .
+WORKDIR /src
+COPY *.csproj ./
 RUN dotnet restore -a $TARGETARCH
-
-# copy everything else and build app
 COPY . .
-RUN dotnet publish -a $TARGETARCH --no-restore -o /app /p:AOT=true /p:UseAppHost=false
-RUN rm /app/*.dbg /app/*.Development.json
+# ensure assembly name (adjust if your project file name differs)
+RUN dotnet publish -c Release -a $TARGETARCH -r linux-x64 -o /app \
+    /p:PublishAot=true /p:StripSymbols=true /p:IlcGenerateStackTraceData=false \
+    /p:AssemblyName=cs-app-aot
 
-
-# final stage/image
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-jammy-chiseled
-EXPOSE 8080
+FROM mcr.microsoft.com/dotnet/runtime-deps:9.0-noble-chiseled
+ENV ASPNETCORE_URLS=http://+:8080 \
+    DOTNET_EnableDiagnostics=0
 WORKDIR /app
-COPY --from=build /app .
-ENTRYPOINT ["./cs-app"]
+COPY --from=build /app ./
+EXPOSE 8080
+ENTRYPOINT ["./cs-app-aot"]
