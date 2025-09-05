@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sbe:messageSchema xmlns:sbe="http://fixprotocol.io/2016/sbe" package="sbe" id="1">
+    <message name="Bbo" id="1" description="Best Bid and Offer">
+        <field id="1" name="symbol" type="symbol" semanticType="String"/>
+        <field id="2" name="bid_price" type="int64" semanticType="Price"/>
+        <field id="3" name="bid_volume" type="uint32" semanticType="Quantity"/>
+        <field id="4" name="ask_price" type="int64" semanticType="Price"/>
+        <field id="5" name="ask_volume" type="uint32" semanticType="Quantity"/>
+        <field id="6" name="ts_event" type="int64" semanticType="UTCTimestamp" unit="nanos"/>
+    </message>
+    <types>
+        <type name="symbol" primitiveType="char" length="30" characterEncoding="ASCII"/>
+        <composite name="messageHeader" description="Message identifiers and length of message root.">
+            <type name="blockLength" primitiveType="uint16"/>
+            <type name="templateId" primitiveType="uint16"/>
+            <type name="schemaId" primitiveType="uint16"/>
+            <type name="version" primitiveType="uint16"/>
+        </composite>
+    </types>
+</sbe:messageSchema>
