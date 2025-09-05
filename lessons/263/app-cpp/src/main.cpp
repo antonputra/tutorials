@@ -5,6 +5,8 @@
 #include <boost/json.hpp>
 #include <boost/json/src.hpp>
 
+#include <thread>
+
 namespace beast = boost::beast;
 namespace http = beast::http;
 namespace net = boost::asio;
@@ -120,7 +122,13 @@ int main() {
         }
     });
 
-    //TODO single thread for simplicity
+    constexpr auto threads = 2;
+
+    std::vector<std::thread> v;
+    v.reserve(threads - 1);
+    for (auto i = threads - 1; i > 0; --i)
+        v.emplace_back([&ioc] { ioc.run(); });
+
     ioc.run();
 
     return 0;
