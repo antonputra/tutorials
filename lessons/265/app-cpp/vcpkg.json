@@ -1,0 +1,19 @@
+{
+  "name": "app-cpp",
+  "version": "0.1.0",
+  "dependencies": ["boost-beast", "boost-json", "spdlog"],
+  "overrides": [
+    {
+      "name": "boost-beast",
+      "version": "1.88.0"
+    },
+    {
+      "name": "boost-json",
+      "version": "1.88.0"
+    },
+    {
+      "name": "spdlog",
+      "version": "1.15.3"
+    }
+  ]
+}
