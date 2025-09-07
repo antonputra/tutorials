@@ -186,3 +186,4 @@
 - [258 - Redis vs Valkey performance](../lessons/258)
 - [259 - Rust vs C++ Performance: Can Rust Actually Be Faster?](../lessons/259)
 - [260 - ZeroMQ vs Aeron: Best for Market Data? Performance (Latency & Throughput)](../lessons/260)
+- [265 - Rust vs C++ Performance: Can Rust Actually Be Faster? (Pt. 2)](../lessons/265)
