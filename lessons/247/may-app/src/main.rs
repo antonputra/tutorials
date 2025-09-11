@@ -208,7 +208,7 @@ mod __impl {
 
         may::config()
             .set_pool_capacity(10000)
-            .set_stack_size(0x1000);
+            .set_stack_size(256 * 1024);
 
         let connect_str = Box::leak(
             format!("postgresql://{}:{}@{}:5432/{}", user, pwd, host, db).into_boxed_str(),
