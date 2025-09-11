@@ -8,7 +8,7 @@ codegen-units = 1
 lto = "thin"
 
 [dependencies]
-ntex = { version = "2.11.0", features = ["tokio"] }
-serde = { version = "1.0.217", features = ["derive"] }
+ntex = { version = "2.16.0", features = ["tokio"] }
+serde = { version = "1.0.219", features = ["derive"] }
 deadpool-postgres = "0.14.1"
 tokio-postgres = "0.7.13"

@@ -15,11 +15,5 @@ yarte = { version = "0.15", features = ["bytes-buf", "json"] }
 buf-min = { version = "0.7", features = ["bytes"] }
 
 [profile.release]
-strip = "symbols"
-opt-level = 3
 codegen-units = 1
-panic = 'abort'
 lto = 'thin'
-debug = false
-incremental = false
-overflow-checks = false
