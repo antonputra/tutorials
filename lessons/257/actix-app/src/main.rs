@@ -3,6 +3,9 @@ mod routes;
 
 use actix_web::{App, HttpServer, web};
 
+#[global_allocator]
+static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
+
 const PORT: u16 = 8080;
 const THREADS: usize = 2;
 const API_PATH: &'static str = "/api/v3/ticker/bookTicker";

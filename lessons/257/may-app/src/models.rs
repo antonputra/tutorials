@@ -1,4 +1,4 @@
-use yarte::Serialize;
+use serde::Serialize;
 
 #[derive(Serialize)]
 pub(crate) struct Ticker {

@@ -5,6 +5,7 @@ edition = "2024"
 
 [dependencies]
 actix-web = "4"
+mimalloc = { version = "0.1.48", default-features = false }
 serde = { version = "1", features = ["derive"] }
 
 [profile.release]

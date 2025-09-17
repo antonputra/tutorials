@@ -4,7 +4,7 @@ pub(crate) struct Bench {}
 
 pub(crate) struct HttpServer {}
 
-pub(crate) fn get_tickers<'a>() -> Vec<Ticker> {
+pub(crate) fn get_tickers() -> Vec<Ticker> {
     // Preallocate vector with exact capacity same as C++ & other Rust frameworks.
     let mut tickers = Vec::with_capacity(2);
     tickers.push(Ticker {

@@ -6,6 +6,9 @@ use ntex::time::Seconds;
 use ntex::web::{App, HttpServer, get};
 use std::error::Error;
 
+#[global_allocator]
+static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
+
 const PORT: u16 = 8080;
 const THREADS: usize = 2;
 const API_PATH: &'static str = "/api/v3/ticker/bookTicker";

@@ -7,10 +7,7 @@ edition = "2024"
 axum = "0.8.4"
 serde = { version = "1", features = ["derive"] }
 tokio = { version = "1", features = ["full"] }
-tokio-postgres = "0.7.13"
-deadpool-postgres = "0.14.1"
-serde_json = "1.0.144"
-bytes = "1.10.1"
+mimalloc = { version = "0.1.48", default-features = false }
 
 [profile.release]
 opt-level = 3          # Highest optimization for speed (default in release, but explicit is fine).

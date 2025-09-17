@@ -6,6 +6,8 @@ edition = "2024"
 [dependencies]
 ntex = { version = "2.16.0", features = ["tokio"] }
 serde = { version = "1", features = ["derive"] }
+mimalloc = { version = "0.1.48", default-features = false }
+
 
 [profile.release]
 opt-level = 3          # Highest optimization for speed (default in release, but explicit is fine).

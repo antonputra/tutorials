@@ -8,10 +8,8 @@ mimalloc = { version = "0.1.48", default-features = false }
 may = { version = "0.3.51", default-features = false }
 may_minihttp = "0.1"
 num_cpus = "1.17.0"
-serde = { version = "1", default-features = false }
-serde_json = { version = "1", default-features = false }
-yarte = { version = "0.15", features = ["bytes-buf", "json"] }
-buf-min = { version = "0.7", features = ["bytes"] }
+serde = { version = "1" , features = ["derive"]}
+serde_json = { version = "1" }
 
 [profile.release]
 opt-level = 3          # Highest optimization for speed (default in release, but explicit is fine).
