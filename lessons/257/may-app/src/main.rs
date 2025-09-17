@@ -7,11 +7,10 @@ static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
 use crate::routes::{Bench, HttpServer};
 use may_minihttp::{HttpService, HttpServiceFactory, Request, Response};
 use std::io;
-use yarte::Serialize;
 
 const PORT: u16 = 8080;
 const THREADS: usize = 2;
-const API_PATH: &'static str = "/api/v3/ticker/bookTicker";
+const API_PATH: &str = "/api/v3/ticker/bookTicker";
 
 impl HttpService for Bench {
     fn call(&mut self, req: Request, rsp: &mut Response) -> io::Result<()> {
@@ -19,7 +18,9 @@ impl HttpService for Bench {
             API_PATH => {
                 rsp.header("Content-Type: application/json");
                 let tickers = routes::get_tickers();
-                tickers.to_bytes_mut(rsp.body_mut());
+
+                let json_bytes = serde_json::to_vec(&tickers).map_err(io::Error::other)?;
+                rsp.body_mut().extend_from_slice(&json_bytes);
             }
             _ => {
                 rsp.status_code(404, "Not Found");
