@@ -1,10 +1,11 @@
-# New Video - https://youtu.be/7gTxY5J2oqk
+# New Video - https://youtu.be/KOE_6QYQqA4
 
-[<img src="assets/257.png?raw=true">](https://youtu.be/7gTxY5J2oqk)
+[<img src="assets/268.png?raw=true">](https://youtu.be/KOE_6QYQqA4)
 
 # Consulting
 
-👨‍💼📈 Mentorship/On-the-Job Support/Consulting - [**Calendar**](https://calendly.com/antonputra/youtube) or **me@antonputra.com**
+👨‍💼 Mentorship/On-the-Job Support/Consulting - [**Calendar**](https://calendly.com/antonputra/youtube) or **me@antonputra.com**  
+👀 Check out [recommendations](https://www.linkedin.com/in/anton-putra/details/recommendations/) from my previous clients.
 
 # Playlists
 

@@ -1,0 +1,3 @@
+variable "tag" {
+  type = string
+}

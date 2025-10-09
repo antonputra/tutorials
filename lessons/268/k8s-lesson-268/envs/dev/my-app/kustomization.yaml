@@ -1,0 +1,10 @@
+---
+namespace: my-app
+replicas:
+- name: my-app
+  count: 2
+images:
+- name: 424432388155.dkr.ecr.us-east-1.amazonaws.com/antonputra/app-lesson-268
+  newTag: v0.1.1
+resources:
+- ../../../my-app-base
