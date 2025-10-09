@@ -1,3 +1,0 @@
-variable "tag" {
-  type = string
-}
