@@ -1,6 +1,6 @@
-# New Video - https://youtu.be/KOE_6QYQqA4
+# New Video - https://youtu.be/s6C-d3SDqoA
 
-[<img src="assets/268.png?raw=true">](https://youtu.be/KOE_6QYQqA4)
+[<img src="assets/269.png?raw=true">](https://youtu.be/s6C-d3SDqoA)
 
 # Consulting
 
