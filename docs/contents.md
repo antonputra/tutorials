@@ -185,6 +185,7 @@
 - [256 - Terraform AWS VPC Tutorial - Public, Private, and Isolated Subnets](../lessons/256)
 - [258 - Redis vs Valkey performance](../lessons/258)
 - [259 - Rust vs C++ Performance: Can Rust Actually Be Faster?](../lessons/259)
-- [260 - ZeroMQ vs Aeron: Best for Market Data? Performance (Latency & Throughput)](../lessons/260)
+- [260 - ZeroMQ vs Aeron: Best for Market Data? Performance (Latency & Throughput)](../lessons/264)
 - [265 - Rust vs C++ Performance: Can Rust Actually Be Faster? (Pt. 2)](../lessons/265)
 - [268 - Build a Secure AWS EKS CI/CD Pipeline: Step-by-Step Tutorial (ArgoCD + GitHub Actions)](../lessons/268)
+- [269 - Reduce AWS Latency by 200x: Drop from 7ms to 35μs](../lessons/269)

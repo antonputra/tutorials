@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sbe:messageSchema xmlns:mbx="https://github.com/antonputra/tutorials" xmlns:sbe="http://fixprotocol.io/2016/sbe"
+                   package="sbe" id="1">
+    <message name="Bbo" id="1" description="Best Bid and Offer">
+        <field id="1" name="symbol" type="symbol" semanticType="String"/>
+        <field id="2" name="price_exponent" type="exponent8"/>
+        <field id="3" name="qty_exponent" type="exponent8"/>
+        <field id="4" name="bid_price" type="mantissa64" mbx:exponent="price_exponent"/>
+        <field id="5" name="bid_qty" type="mantissa64" mbx:exponent="qty_exponent"/>
+        <field id="6" name="ask_price" type="mantissa64" mbx:exponent="price_exponent"/>
+        <field id="7" name="ask_qty" type="mantissa64" mbx:exponent="qty_exponent"/>
+        <field id="8" name="ts_event" type="int64" semanticType="UTCTimestamp" unit="nanos"/>
+    </message>
+    <types>
+        <type name="symbol" primitiveType="char" length="30" characterEncoding="ASCII"/>
+        <composite name="messageHeader" description="Message identifiers and length of message root.">
+            <type name="blockLength" primitiveType="uint16"/>
+            <type name="templateId" primitiveType="uint16"/>
+            <type name="schemaId" primitiveType="uint16"/>
+            <type name="version" primitiveType="uint16"/>
+        </composite>
+        <composite name="varString8" description="Variable length UTF-8 string.">
+            <type name="length" primitiveType="uint8"/>
+            <type name="varData" length="0" primitiveType="uint8" characterEncoding="UTF-8"/>
+        </composite>
+        <type name="mantissa64" primitiveType="int64" description="
+            64-bit mantissa for a decimal floating point number. The name of
+            the field containing the exponent value is specified in the
+            mbx:exponent attribute of the mantissa64 field. The exponent field
+            will always precede the mantissa field."
+        />
+        <type name="exponent8" primitiveType="int8" description="Exponent for a decimal floating point number."/>
+        <type name="updateId" primitiveType="int64"/>
+        <type name="utcTimestampUs" primitiveType="int64" description="UTC timestamp in microseconds"/>
+    </types>
+</sbe:messageSchema>
