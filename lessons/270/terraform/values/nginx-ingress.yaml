@@ -1,0 +1,7 @@
+---
+controller:
+  ingressClassResource:
+    name: internal-nginx
+  service:
+    annotations:
+      service.beta.kubernetes.io/aws-load-balancer-internal: "true"

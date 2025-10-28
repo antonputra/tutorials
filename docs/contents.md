@@ -189,3 +189,4 @@
 - [265 - Rust vs C++ Performance: Can Rust Actually Be Faster? (Pt. 2)](../lessons/265)
 - [268 - Build a Secure AWS EKS CI/CD Pipeline: Step-by-Step Tutorial (ArgoCD + GitHub Actions)](../lessons/268)
 - [269 - Reduce AWS Latency by 200x: Drop from 7ms to 35μs](../lessons/269)
+- [270 - How to Create a Fully Private AWS EKS Cluster? (Client VPN & Resolve Private Route 53 DNS Locally)](../lessons/270)

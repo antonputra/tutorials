@@ -1,0 +1,14 @@
+---
+adminUser: admin
+adminPassword: devops123
+
+deploymentStrategy:
+  type: Recreate
+
+ingress:
+  enabled: true
+  ingressClassName: internal-nginx
+  path: /
+  pathType: Prefix
+  hosts:
+  - grafana.example.pvt
