@@ -50,5 +50,5 @@ func (ms *MyServer) getHealth(w http.ResponseWriter, req *http.Request) {
 func (ms *MyServer) getDevices(w http.ResponseWriter, req *http.Request) {
 	device := Device{Id: 1, Mac: "EF-2B-C4-F5-D6-34", Firmware: "2.1.5"}
 
-	renderJSON(w, &device, 200)
+	renderJSON(w, device, 200)
 }
