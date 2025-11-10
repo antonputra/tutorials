@@ -1,0 +1,39 @@
+{
+  "name": "app",
+  "version": "0.1.0",
+  "builtin-baseline": "e3ed41868d5034bc608eaaa58383cd6ecdbb5ffb",
+  "dependencies": [
+    "uwebsockets",
+    "boost-beast",
+    "simdjson",
+    "nlohmann-json",
+    "spdlog",
+    "prometheus-cpp"
+  ],
+  "overrides": [
+    {
+      "name": "uwebsockets",
+      "version": "20.74.0"
+    },
+    {
+      "name": "boost-beast",
+      "version": "1.89.0"
+    },
+    {
+      "name": "spdlog",
+      "version": "1.16.0"
+    },
+    {
+      "name": "simdjson",
+      "version": "4.1.0"
+    },
+    {
+      "name": "nlohmann-json",
+      "version": "3.12.0#1"
+    },
+    {
+      "name": "prometheus-cpp",
+      "version": "1.3.0"
+    }
+  ]
+}
