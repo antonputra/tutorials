@@ -1,0 +1,38 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: websocket-client
+  namespace: benchmark
+spec:
+  parallelism: 102 # 59 max
+  template:
+    metadata:
+      labels:
+        app: websocket-client
+    spec:
+      restartPolicy: Never
+      terminationGracePeriodSeconds: 0
+      containers:
+      - name: websocket-client
+        image: quay.io/aputra/app-271:v7
+        command: [ "/websocket_client", "websocket-server", "2000" ]
+        ports:
+        - name: metrics
+          containerPort: 8082
+        resources:
+          requests:
+            memory: 256Mi
+            cpu: 250m
+          limits:
+            memory: 256Mi
+            cpu: 250m
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node
+                operator: In
+                values:
+                - clients
