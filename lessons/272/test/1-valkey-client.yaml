@@ -1,0 +1,38 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: valkey-client
+  namespace: benchmark
+spec:
+  parallelism: 650 # min 10, 25, 50, 75, 100, 150, 200, 250, 300, 350, 400, 450
+  template:
+    metadata:
+      labels:
+        app: valkey-client
+    spec:
+      restartPolicy: Never
+      terminationGracePeriodSeconds: 0
+      containers:
+      - name: valkey-client
+        image: aputra/app-272:v4
+        command: [ "/client", "-addr", "valkey.antonputra.pvt:6379", "-rate", "1000", "-pause", "5" ]
+        ports:
+        - name: metrics
+          containerPort: 8082
+        resources:
+          requests:
+            memory: 256Mi
+            cpu: 250m
+          limits:
+            memory: 256Mi
+            cpu: 250m
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node
+                operator: In
+                values:
+                - clients
