@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package market;
+
+message User {
+  uint64 user_id = 1;
+  string username = 2;
+  string full_name = 3;
+  string email = 4;
+  string phone = 5;
+  string bio = 6;
+  string timezone = 7;
+  string currency = 8;
+  int32 age = 9;
+  double height_cm = 10;
+  double weight_kg = 11;
+  double balance = 12;
+  double score = 13;
+  bool is_active = 14;
+  bool is_verified = 15;
+  bool is_premium = 16;
+  int64 created_at = 17;
+  int64 last_login = 18;
+}

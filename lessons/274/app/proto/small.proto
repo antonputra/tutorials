@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package market;
+
+message Quote {
+  string symbol = 1;
+  double price = 2;
+  int64 timestamp = 3;
+}

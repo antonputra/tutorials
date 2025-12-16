@@ -193,3 +193,4 @@
 - [271 - HTTP vs WebSockets: Performance (Latency - CPU - Memory - Network)](../lessons/271)
 - [272 - Redis vs Valkey: Performance & Comparison](../lessons/272)
 - [273 - Deno vs. Node.js vs. Bun: Performance Comparison](../lessons/273)
+- [274 - Protobuf vs JSON: Performance Benchmark & Size](../lessons/274)
