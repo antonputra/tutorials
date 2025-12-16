@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+message Quote {
+  string symbol = 1;
+  int64 price = 2;
+}
+
+// AAPL,280
+
+//message Quote {
+//  string symbol = 1;
+//  int64 price = 2;
+//  int64 quantity = 3;
+//}
+//
+//message Quote {
+//  string symbol = 1;
+//  int64 price = 2;
+//  int64 quantity = 3;
+//  int64 ts_event = 4;
+//}

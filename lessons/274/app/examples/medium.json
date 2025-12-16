@@ -1,0 +1,20 @@
+{
+  "userId": 9284715,
+  "username": "alex_river",
+  "fullName": "Alexander Rivero",
+  "email": "alex.rivero@example.com",
+  "phone": "+1-555-019-2827",
+  "age": 34,
+  "heightCm": 178.5,
+  "weightKg": 82.3,
+  "balance": 15420.75,
+  "score": 8.7,
+  "isActive": true,
+  "isVerified": false,
+  "isPremium": true,
+  "lastLogin": 1764806405440000002,
+  "createdAt": 1764806405440000000,
+  "bio": "Full-stack developer | React",
+  "timezone": "Europe/Madrid",
+  "currency": "EUR"
+}

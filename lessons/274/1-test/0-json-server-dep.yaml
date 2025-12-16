@@ -1,0 +1,45 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: json-server
+  namespace: benchmark
+spec:
+  strategy:
+    type: Recreate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: json-server
+  template:
+    metadata:
+      labels:
+        app: json-server
+    spec:
+      containers:
+      - name: json-server
+        image: aputra/app-274:v1
+        command: [ "/json", "medium" ]
+        ports:
+        - name: metrics
+          containerPort: 8082
+        resources:
+          requests:
+            memory: 2Gi
+            cpu: "1.5"
+          limits:
+            memory: 2Gi
+            cpu: "2"
+      tolerations:
+      - key: node
+        value: general
+        effect: NoSchedule
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node
+                operator: In
+                values:
+                - general

@@ -1,0 +1,24 @@
+{
+  "name": "app",
+  "version": "0.1.0",
+  "builtin-baseline": "74e6536215718009aae747d86d84b78376bf9e09",
+  "dependencies": [
+    "spdlog",
+    "glaze",
+    "prometheus-cpp"
+  ],
+  "overrides": [
+    {
+      "name": "spdlog",
+      "version": "1.16.0"
+    },
+    {
+      "name": "prometheus-cpp",
+      "version": "1.3.0"
+    },
+    {
+      "name": "glaze",
+      "version": "6.1.0"
+    }
+  ]
+}
