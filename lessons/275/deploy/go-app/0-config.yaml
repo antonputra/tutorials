@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: go-app
+  namespace: benchmark
+data:
+  config.yaml: |
+    ---
+    appPort: 8080
+    db:
+      user: go_app
+      password: devops123
+      host: go-postgres.antonputra.pvt
+      database: store
+      maxConnections: 250

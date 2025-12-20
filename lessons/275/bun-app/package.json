@@ -1,0 +1,19 @@
+{
+  "name": "bun-app",
+  "module": "app.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/js-yaml": "^4.0.9"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "scripts": {
+    "build": "bun build --compile --minify --sourcemap ./src/app.ts --outfile bun-app"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.1"
+  }
+}
