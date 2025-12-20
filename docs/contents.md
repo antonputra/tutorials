@@ -194,3 +194,4 @@
 - [272 - Redis vs Valkey: Performance & Comparison](../lessons/272)
 - [273 - Deno vs. Node.js vs. Bun: Performance Comparison](../lessons/273)
 - [274 - Protobuf vs JSON: Performance Benchmark & Size](../lessons/274)
+- [275 - Go (Golang) vs TypeScript: Performance Benchmark](../lessons/275)

@@ -1,0 +1,15 @@
+---
+services:
+  postgres:
+    image: postgres:18.1
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_DB: store
+      POSTGRES_PASSWORD: devops123
+    networks:
+      - private
+
+networks:
+  private:
