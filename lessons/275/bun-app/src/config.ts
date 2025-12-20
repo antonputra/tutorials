@@ -1,7 +1,7 @@
-import { readFileSync } from "fs";
 import { load } from "js-yaml";
 import type { Config } from "./types.ts";
 
-const config: Config = load(readFileSync("config.yaml", "utf8")) as Config;
+const config: Config = load(await Bun.file("config.yaml").text()) as Config;
 
+export type { Config } from './types.ts';
 export default config;
