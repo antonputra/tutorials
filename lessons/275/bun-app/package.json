@@ -11,7 +11,7 @@
     "typescript": "^5"
   },
   "scripts": {
-    "build": "bun build --compile --minify --sourcemap ./src/app.ts --outfile bun-app"
+    "build": "bun build --compile --minify --sourcemap --sql-preconnect ./src/app.ts --outfile bun-app"
   },
   "dependencies": {
     "js-yaml": "^4.1.1"
