@@ -1,10 +1,14 @@
 import config from "./config.ts";
 import { SQL } from "bun";
-import type { Config } from "./types.ts";
+
+const { db } = config;
 
 const sql = new SQL({
-  url: `postgres://${(config as Config).db.user}:${(config as Config).db.password}@${(config as Config).db.host}:5432/${(config as Config).db.database}`,
-  max: (config as Config).db.maxConnections,
+  url: `postgresql://${db.user}:${db.password}@${db.host}:5432/${db.database}`,
+  max: db.maxConnections,
+  idleTimeout: 60,
+  connectionTimeout: 30,
+  maxLifetime: 1800
 });
 
 export default sql;
