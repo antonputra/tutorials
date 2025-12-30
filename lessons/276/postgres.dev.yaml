@@ -1,0 +1,42 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  namespace: default
+spec:
+  serviceName: postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:18.1
+        env:
+        - name: POSTGRES_PASSWORD
+          value: devops123
+        - name: POSTGRES_USER
+          value: admin
+        - name: POSTGRES_DB
+          value: store
+        ports:
+        - containerPort: 5432
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: default
+spec:
+  clusterIP: None
+  ports:
+  - port: 5432
+    name: postgres
+  selector:
+    app: postgres

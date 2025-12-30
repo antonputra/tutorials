@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fastapi-app
+  namespace: benchmark
+data:
+  config.yaml: |
+    ---
+    appPort: 8080
+    db:
+      user: fastapi_app
+      password: devops123
+      host: fastapi-postgres.antonputra.pvt
+      database: store
+      maxConnections: 250

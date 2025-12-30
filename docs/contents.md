@@ -195,3 +195,4 @@
 - [273 - Deno vs. Node.js vs. Bun: Performance Comparison](../lessons/273)
 - [274 - Protobuf vs JSON: Performance Benchmark & Size](../lessons/274)
 - [275 - Go (Golang) vs TypeScript: Performance Benchmark](../lessons/275)
+- [276 - Python vs JavaScript Performance: Best Backend Language 2026 (FastAPI vs Bun)](../lessons/276)

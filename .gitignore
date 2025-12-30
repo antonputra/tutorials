@@ -21,6 +21,7 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
+.terraform.tfstate.lock.info
 
 ########## Node.gitignore ##########
 # Logs
@@ -179,3 +180,7 @@ zig-cache/
 
 .idea/
 build
+
+# Ignore temporary data directories for testing
+data
+
