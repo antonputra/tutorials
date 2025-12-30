@@ -1,0 +1,8 @@
+---
+appPort: 8080
+db:
+  user: fastapi_app
+  password: devops123
+  host: localhost
+  database: store
+  maxConnections: 100
