@@ -3,9 +3,8 @@ import logging
 from uuid6 import uuid7
 
 from asyncpg import PostgresError
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import ORJSONResponse, PlainTextResponse
-from pydantic import BaseModel
 
 from db import PostgresDep, lifespan
 
@@ -44,14 +43,18 @@ async def get_devices():
     return devices
 
 
-class UserRequest(BaseModel):
-    name: str
-    address: str
-    phone: str
-
-
 @app.post("/api/users", status_code=201, response_class=ORJSONResponse)
-async def create_user(user: UserRequest, conn: PostgresDep):
+async def create_user(request: Request, conn: PostgresDep):
+    data = await request.json()
+    try:
+        name = data["name"]
+        address = data["address"]
+        phone = data["phone"]
+
+    except KeyError:
+        logger.exception("Missing input")
+        raise HTTPException(status_code=422, detail="Incomplete payload: name / address / phone missing")
+
     try:
         now = datetime.datetime.now(datetime.timezone.utc)
 
@@ -61,18 +64,16 @@ async def create_user(user: UserRequest, conn: PostgresDep):
             RETURNING id;
             """
 
-        row = await conn.fetchrow(
-            insert_query, user.name, user.address, user.phone, now, now
-        )
+        row = await conn.fetchrow(insert_query, name, address, phone, now, now)
 
         if not row:
             raise HTTPException(status_code=500, detail="Failed to create user record")
 
         user_dict = {
             "id": row["id"],
-            "name": user.name,
-            "address": user.address,
-            "phone": user.phone,
+            "name": name,
+            "address": address,
+            "phone": phone,
             "created_at": now,
             "updated_at": now,
         }
