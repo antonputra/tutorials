@@ -22,4 +22,4 @@ COPY --from=build /usr/local/bin /usr/local/bin
 
 COPY ./src /app
 
-CMD ["gunicorn", "-w", "1", "-k", "uvicorn.workers.UvicornWorker", "--timeout", "10", "--graceful-timeout", "10",  "--log-level", "error", "main:app",  "--bind", "0.0.0.0:8080"]
+CMD ["granian", "--interface", "asgi", "--host", "0.0.0.0", "--port", "8080", "--workers", "1", "--log-level", "error", "--workers-kill-timeout", "10", "main:app"]
