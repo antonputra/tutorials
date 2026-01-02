@@ -22,7 +22,7 @@ RUN addgroup --system app && adduser --system --ingroup app app
 
 COPY --from=build /usr/local/lib/python3.14/site-packages /usr/local/lib/python3.14/site-packages
 
-COPY --from=build /usr/local/bin/gunicorn /usr/local/bin/gunicorn
+COPY --from=build /usr/local/bin/granian /usr/local/bin/granian
 
 COPY ./src /app
 COPY ./config.yaml /app/config.yaml
@@ -34,4 +34,4 @@ ENV MALLOC_ARENA_MAX=2
 
 USER app
 
-CMD ["gunicorn", "-w", "1", "-k", "uvicorn.workers.UvicornWorker", "--preload", "--timeout", "10", "--graceful-timeout", "5", "--log-level", "error", "main:app", "--bind", "0.0.0.0:8080"]
+CMD ["granian", "--port", "8080", "--interface", "asgi", "--host", "0.0.0.0", "--process-name", "fastapi speedrun", "main:app"]

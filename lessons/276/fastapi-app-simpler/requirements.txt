@@ -11,7 +11,7 @@ fastapi[standard]==0.127.1
 fastapi-cli==0.0.20
 fastapi-cloud-cli==0.8.0
 fastar==0.8.0
-gunicorn==23.0.0
+granian[pname]==2.6.0
 h11==0.16.0
 httpcore==1.0.9
 httptools==0.7.1
@@ -45,7 +45,6 @@ typing-inspection==0.4.2
 typing_extensions==4.15.0
 urllib3==2.6.2
 uuid6==2025.0.1
-uvicorn==0.40.0
 uvloop==0.22.1
 watchfiles==1.1.1
 websockets==15.0.1
