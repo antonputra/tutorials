@@ -1,5 +1,13 @@
 ---
 services:
+  app:
+    build: ./fastapi-app-simpler
+    ports:
+      - 8080:8080
+    depends_on:
+      - postgres
+    networks:
+      - private
   postgres:
     image: postgres:18.1
     ports:
@@ -8,6 +16,7 @@ services:
       POSTGRES_USER: admin
       POSTGRES_DB: store
       POSTGRES_PASSWORD: devops123
+    command: postgres -c 'max_connections=1000'
     networks:
       - private
 

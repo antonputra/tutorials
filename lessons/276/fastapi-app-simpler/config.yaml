@@ -1,0 +1,9 @@
+---
+appPort: 8080
+db:
+  user: admin
+  password: devops123
+  host: postgres
+  port: 5432
+  database: store
+  maxConnections: 100
