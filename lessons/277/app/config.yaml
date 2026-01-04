@@ -1,0 +1,113 @@
+---
+metrics_port: 8080
+postgres:
+  user: postgres
+  password: devops123
+  host: /var/run/postgresql
+  database: store
+  max_connections: 100
+sqlite:
+  database: /data/store.db
+  journal: WAL
+  sync: OFF
+  foreign_keys: 1
+test:
+  interval_s: 30
+  delay_us: 0
+  step_us: 1000
+
+# Sample Customer Data
+customers:
+  - id: 1
+    username: vmartin
+    first_name: Victor
+    last_name: Martin
+    address: "994 Lowndes Hill Park Road"
+  - id: 2
+    username: chauk
+    first_name: Christopher
+    last_name: Hauk
+    address: "4505 Cunningham Court"
+  - id: 3
+    username: hyoung
+    first_name: Howard
+    last_name: Young
+    address: "2001 Fairfax Drive"
+  - id: 4
+    username: jballard
+    first_name: John
+    last_name: Ballard
+    address: "1034 Ethels Lane"
+  - id: 5
+    username: jevans
+    first_name: James
+    last_name: Evans
+    address: "4669 Keyser Ridge Road"
+  - id: 6
+    username: egonzalez
+    first_name: Edgar
+    last_name: Gonzalez
+    address: "841 Marietta Street"
+  - id: 7
+    username: rbrumbelow
+    first_name: Ronald
+    last_name: Brumbelow
+    address: "4168 Rhapsody Street"
+  - id: 8
+    username: rharris
+    first_name: Raphael
+    last_name: Harris
+    address: "26 Red Bud Lane"
+  - id: 9
+    username: tfanning
+    first_name: Terry
+    last_name: Fanning
+    address: "2864 Bungalow Road"
+  - id: 10
+    username: ckelley
+    first_name: Claude
+    last_name: Kelley
+    address: "4896 Jarvisville Road"
+
+# Sample Product Data
+products:
+  - id: 1
+    name: "Shampoo"
+    price: 7.90
+    stock_quantity: 100
+  - id: 2
+    name: "Hairspray"
+    price: 12.30
+    stock_quantity: 100
+  - id: 3
+    name: "Nail clippers"
+    price: 19.00
+    stock_quantity: 100
+  - id: 4
+    name: "Towels"
+    price: 32.80
+    stock_quantity: 100
+  - id: 5
+    name: "Conditioner"
+    price: 8.80
+    stock_quantity: 100
+  - id: 6
+    name: "Detangler"
+    price: 12.90
+    stock_quantity: 100
+  - id: 7
+    name: "Body wash"
+    price: 10.10
+    stock_quantity: 100
+  - id: 8
+    name: "Toilet paper"
+    price: 6.70
+    stock_quantity: 100
+  - id: 9
+    name: "Plunger"
+    price: 23.90
+    stock_quantity: 100
+  - id: 10
+    name: "Mousse"
+    price: 13.50
+    stock_quantity: 100
