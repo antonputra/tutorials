@@ -197,3 +197,4 @@
 - [275 - Go (Golang) vs TypeScript: Performance Benchmark](../lessons/275)
 - [276 - Python vs JavaScript Performance: Best Backend Language 2026 (FastAPI vs Bun)](../lessons/276)
 - [277 - SQLite vs PostgreSQL Performance & Comparison (2026)](../lessons/277)
+- [278 - Zig vs Rust Performance Benchmark 2026](../lessons/278)

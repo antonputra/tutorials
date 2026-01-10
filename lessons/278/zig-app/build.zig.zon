@@ -1,0 +1,18 @@
+.{
+    .name = .zig_app,
+    .version = "0.0.1",
+    .fingerprint = 0x74dc13fdfa03867e,
+    .minimum_zig_version = "0.15.2",
+    .dependencies = .{
+        .zzz = .{
+            // At this time, support for Zig 0.15.2 is not merged.
+            .url = "git+https://github.com/bernardassan/zzz?ref=zig-0.15.2#0cdb4b7c33e3a2c74498915fb412b53586884ada",
+            .hash = "zzz-0.3.0-4HoaJuFSAgB3kZuiFVDMNvuwFW71wPq8dpo-2PLUPgdY",
+        },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+}
