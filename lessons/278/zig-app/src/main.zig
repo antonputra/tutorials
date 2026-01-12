@@ -1,6 +1,7 @@
 const zig_app = @import("zig_app");
 const std = @import("std");
 const zzz = @import("zzz");
+const builtin = @import("builtin");
 
 const http = zzz.HTTP;
 
@@ -29,9 +30,17 @@ pub fn main() !void {
     const host: []const u8 = "0.0.0.0";
     const port: u16 = 8080;
 
-    var gpa = std.heap.GeneralPurposeAllocator(.{ .thread_safe = true }){};
-    const allocator = gpa.allocator();
-    defer _ = gpa.deinit();
+    var gpa_debug = std.heap.GeneralPurposeAllocator(.{ .thread_safe = true }){};
+
+    const allocator, const is_debug = gpa: {
+        break :gpa switch (builtin.mode) {
+            .Debug, .ReleaseSafe => .{ gpa_debug.allocator(), true },
+            .ReleaseFast, .ReleaseSmall => .{ std.heap.smp_allocator, false },
+        };
+    };
+    defer if (is_debug) {
+        _ = gpa_debug.deinit();
+    };
 
     var t = try Tardy.init(allocator, .{ .threading = .{ .multi = 2 } });
     defer t.deinit();
