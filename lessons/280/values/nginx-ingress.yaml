@@ -1,0 +1,4 @@
+---
+controller:
+  ingressClassResource:
+    name: external

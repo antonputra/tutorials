@@ -1,0 +1,24 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: catalog
+  annotations:
+    cert-manager.io/cluster-issuer: http-01
+spec:
+  ingressClassName: external
+  rules:
+    - host: catalog.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: catalog
+                port:
+                  number: 8080
+  tls:
+    - hosts:
+        catalog.example.com
+      secretName: catalog-example-com

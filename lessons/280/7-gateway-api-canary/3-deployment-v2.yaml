@@ -1,0 +1,21 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-v2
+spec:
+  replicas:
+  selector:
+    matchLabels:
+      app: order-v2
+  template:
+    metadata:
+      labels:
+        app: order-v2
+    spec:
+      containers:
+        - name: order-v2
+          image: aputra/myapp-280:v2
+          ports:
+          - name: http
+            containerPort: 8080

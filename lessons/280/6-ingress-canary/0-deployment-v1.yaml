@@ -1,0 +1,21 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalog-v1
+spec:
+  replicas:
+  selector:
+    matchLabels:
+      app: catalog-v1
+  template:
+    metadata:
+      labels:
+        app: catalog-v1
+    spec:
+      containers:
+        - name: catalog-v1
+          image: aputra/myapp-280:v1
+          ports:
+          - name: http
+            containerPort: 8080
