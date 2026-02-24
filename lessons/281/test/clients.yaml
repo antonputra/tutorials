@@ -1,0 +1,94 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: redis-client
+  namespace: benchmark
+spec:
+  parallelism: ${REPLICAS}
+  template:
+    metadata:
+      labels:
+        app: redis-client
+    spec:
+      restartPolicy: Never
+      terminationGracePeriodSeconds: 0
+      containers:
+        - name: redis-client
+          image: aputra/app-281:v6
+          command:
+            [
+              "/client",
+              "-addr",
+              "redis.antonputra.pvt:6379",
+              "-rate",
+              "1000",
+              "-pause",
+              "5",
+            ]
+          ports:
+            - name: metrics
+              containerPort: 8082
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 250m
+            limits:
+              memory: 256Mi
+              cpu: 250m
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: node
+                    operator: In
+                    values:
+                      - clients
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: valkey-client
+  namespace: benchmark
+spec:
+  parallelism: ${REPLICAS}
+  template:
+    metadata:
+      labels:
+        app: valkey-client
+    spec:
+      restartPolicy: Never
+      terminationGracePeriodSeconds: 0
+      containers:
+        - name: valkey-client
+          image: aputra/app-281:v6
+          command:
+            [
+              "/client",
+              "-addr",
+              "valkey.antonputra.pvt:6379",
+              "-rate",
+              "1000",
+              "-pause",
+              "5",
+            ]
+          ports:
+            - name: metrics
+              containerPort: 8082
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 250m
+            limits:
+              memory: 256Mi
+              cpu: 250m
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: node
+                    operator: In
+                    values:
+                      - clients
