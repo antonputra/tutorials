@@ -1,5 +1,22 @@
 # Contents
 
+## Finding Benchmark Assets
+
+Many lesson folders include more than the short `README.md` next to the video link. Supporting files often live in sibling directories such as:
+
+- `client/` or `tests/` for workload generators and benchmark clients
+- `monitoring/`, Grafana dashboards, or Prometheus manifests for metrics and dashboards
+- `terraform/`, `ansible/`, `docker-compose.yaml`, or deploy scripts for environment setup
+- `app/`, `api/`, or `server/` directories for the application source code used in the lesson
+
+Examples:
+
+- [135 - How to monitor Containers in Kubernetes using Prometheus & cAdvisor?](../lessons/135) includes monitoring manifests and dashboards.
+- [149 - gRPC vs REST performance benchmark](../lessons/149) includes `tests/`, `ansible/`, `terraform/`, and `monitoring/` assets.
+- [228 - Redis vs Dragonfly Performance](../lessons/228) includes a `client/` implementation and monitoring manifests.
+
+If you want to reproduce a lesson locally, start in the lesson directory and inspect the folders next to `README.md`. On GitHub, searching within a lesson for names like `client`, `tests`, `monitoring`, `terraform`, or `docker-compose` is usually the fastest way to find the relevant files.
+
 - [069 - How to Create GKE Cluster Using TERRAFORM from Scratch?](../lessons/069)
 - [070 - EKS Cluster Auto Scaling](../lessons/070)
 - [071 - Kubernetes Horizontal Pod Autoscaler](../lessons/071)
