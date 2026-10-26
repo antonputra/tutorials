@@ -1,0 +1,25 @@
+# Database indexes lab (Anton Putra, "How Database Indexes Actually Work"): PostgreSQL 18 with an online store's
+# 10 million orders, generated on the first start. `docker compose up -d --wait` returns once they are ready: the health
+# check uses TCP, which the image's temporary setup server never listens on. Nothing is exposed outside the container:
+# connect with `docker compose exec db psql -U postgres -d store`. A lab only: no password, no published port.
+services:
+  db:
+    image: postgres:18.6
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_DB: store
+      TZ: UTC
+    command: ["postgres", "-c", "timezone=UTC", "-c", "shared_buffers=512MB", "-c", "max_wal_size=4GB"]
+    shm_size: 1g
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U postgres -d store"]
+      interval: 2s
+      timeout: 3s
+      retries: 5
+      start_period: 15m
+    volumes:
+      - ./initdb:/docker-entrypoint-initdb.d:ro
+      - ./lab:/lab:ro
+      - pgdata:/var/lib/postgresql
+volumes:
+  pgdata:
