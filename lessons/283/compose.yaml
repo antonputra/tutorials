@@ -1,0 +1,98 @@
+# The exercise for Anton Putra's video "Authentication Explained": Harbor's Status API and a terminal to call it.
+#
+#   docker compose up -d --wait          start; returns once everything is ready
+#   docker compose exec toolbox bash      the terminal the exercise uses: curl, base64 and the harbor helpers
+#   docker compose down -v               stop and delete everything, the signing key included
+#
+# Nothing is published on your computer: every request goes from the toolbox to the gateway inside Docker.
+# Lab values only: a fictional user (maya / demo-only), a fictional API key and token.
+name: harbor-exercise
+
+x-harbor: &harbor
+  # Built from ./services by the init service below when this tag is missing, never pulled from a registry, and never
+  # rebuilt on a later start. The tag is a fingerprint of ./services (tests/image_tag.py): an exercise with changed
+  # code builds an image of its own.
+  image: harbor-exercise/services:32a0d04fa01b
+  pull_policy: never
+  environment:
+    HARBOR_ISSUER: http://login.harbor.localhost:8080/realms/harbor
+    HARBOR_STATUS_API: http://api.harbor.localhost:8080
+    JOB_API_KEY: job_demo_4Kx9Qe2mVt7Lp1Zr8Ws3
+    DASHBOARD_API_TOKEN: hbr_opaque_7Fq2Lk9xPz4Tn6Vw1Ry8
+    TZ: UTC
+
+x-ready: &ready
+  test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8000/health"]
+  interval: 2s
+  timeout: 3s
+  retries: 30
+
+services:
+  # Lab only: makes Harbor Sign-in's signing key on the first start and publishes its public half.
+  init:
+    <<: *harbor
+    build:
+      context: ./services
+    command: ["python", "lab_init.py"]
+    network_mode: none
+    volumes:
+      - signing-key:/lab-keys
+      - published-keys:/published
+
+  status-api:
+    <<: *harbor
+    command: ["uvicorn", "status_api:app", "--host", "0.0.0.0", "--port", "8000"]
+    depends_on:
+      init:
+        condition: service_completed_successfully
+    healthcheck: *ready
+    networks: [harbor]
+
+  gateway:
+    image: caddy:2.11.9-alpine@sha256:003a97808e781aa9f7e75cc2f43d34d461099031faf5e20faefb9f61126836f0
+    volumes:
+      - ./gateway/Caddyfile:/etc/caddy/Caddyfile:ro
+      - published-keys:/srv/published:ro
+    depends_on:
+      status-api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+    networks:
+      harbor:
+        aliases:
+          - api.harbor.localhost
+          - login.harbor.localhost
+
+  # Your terminal: curl and the harbor helpers. It shares the gateway's network, because curl, like a browser,
+  # sends every *.localhost name to 127.0.0.1: here that is the gateway.
+  toolbox:
+    <<: *harbor
+    command: ["sleep", "infinity"]
+    init: true
+    network_mode: "service:gateway"
+    volumes:
+      - signing-key:/lab-keys:ro
+    depends_on:
+      gateway:
+        condition: service_healthy
+
+  # Checks, not part of the exercise: every step's outcome (docker compose --profile tests run --rm tests).
+  tests:
+    <<: *harbor
+    profiles: ["tests"]
+    command: ["python", "-u", "/tests/exercise.py"]
+    network_mode: "service:gateway"
+    volumes:
+      - signing-key:/lab-keys:ro
+      - ./tests:/tests:ro
+
+volumes:
+  signing-key: {}
+  published-keys: {}
+
+networks:
+  harbor: {}

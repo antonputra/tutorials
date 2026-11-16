@@ -1,0 +1,27 @@
+# Every Python package in the lab's image, at the versions the lab was tested with (pip freeze, 14 Nov 2026).
+# requirements.txt names what the lab uses; this file pins what those pull in too, so a later build gets the same.
+annotated-doc==0.0.6
+annotated-types==0.8.0
+anyio==4.16.0
+argon2-cffi==25.1.0
+argon2-cffi-bindings==26.2.0
+certifi==2026.10.23
+cffi==2.1.1
+click==8.5.1
+cryptography==50.0.2
+fastapi==0.162.7
+h11==0.16.0
+httpcore==1.0.9
+httpx==0.28.1
+idna==3.20
+opentelemetry-api==1.45.2
+pycparser==3.12
+pydantic==2.14.3
+pydantic_core==2.50.4
+PyJWT==2.15.1
+python-multipart==0.0.33
+starlette==1.10.0
+typing-inspection==0.4.5
+typing_extensions==4.16.0
+uvicorn==0.54.0
+valkey==6.2.0

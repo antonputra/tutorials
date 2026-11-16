@@ -1,0 +1,39 @@
+# Every lab address on one port: 8080, or HARBOR_PORT from compose.yaml (a file named .env sets it).
+{
+	admin off
+	auto_https off
+}
+
+# Harbor Sign-in (Keycloak).
+http://login.harbor.localhost:{$HARBOR_PORT:8080} {
+	reverse_proxy keycloak:8080
+}
+
+# Harbor's Status API.
+http://api.harbor.localhost:{$HARBOR_PORT:8080} {
+	reverse_proxy status-api:8000
+}
+
+# Harbor's dashboard: two servers that share one session store, taken in turn.
+http://dashboard.harbor.localhost:{$HARBOR_PORT:8080} {
+	reverse_proxy dashboard-a:8000 dashboard-b:8000 {
+		lb_policy round_robin
+	}
+}
+
+# The partner's reporting application.
+http://reports.partner.localhost:{$HARBOR_PORT:8080} {
+	reverse_proxy partner:8000
+}
+
+# Another website: the coupons page from section 03 (its form names the dashboard's port, filled in by templates).
+http://coupons.localhost:{$HARBOR_PORT:8080} {
+	root * /srv/coupons
+	templates
+	file_server
+}
+
+# Anything else on this port: where the lab's addresses are.
+:{$HARBOR_PORT:8080} {
+	respond "The Harbor lab: open http://dashboard.harbor.localhost:{$HARBOR_PORT:8080} or http://reports.partner.localhost:{$HARBOR_PORT:8080}" 200
+}

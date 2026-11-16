@@ -200,3 +200,4 @@
 - [278 - Zig vs Rust Performance Benchmark 2026](../lessons/278)
 - [279 - 6 SQL Joins you MUST know! (Animated + Practice)](../lessons/279)
 - [282 - How Database Indexes Actually Work (Try It Yourself)](../lessons/282)
+- [283 - Authentication Explained: Sessions, JWT & OAuth (Try It Yourself)](../lessons/283)
