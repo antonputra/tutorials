@@ -1,0 +1,28 @@
+# Harbor's addresses inside the exercise. Nothing is published on your computer: the toolbox shares this gateway's
+# network, so curl there sends every *.localhost name to 127.0.0.1, which is this gateway.
+{
+	admin off
+	auto_https off
+}
+
+# Harbor's Status API.
+http://api.harbor.localhost:8080 {
+	reverse_proxy status-api:8000
+}
+
+# Harbor Sign-in isn't running in the exercise. What an API needs from it is here: its published public keys, at the
+# address the Status API fetches them from. The full lab runs Harbor Sign-in itself (Keycloak).
+http://login.harbor.localhost:8080 {
+	handle /realms/harbor/protocol/openid-connect/certs {
+		root * /srv/published
+		rewrite * /jwks.json
+		header Content-Type application/json
+		file_server
+	}
+	respond "Harbor Sign-in runs in the full lab; this exercise publishes only its keys." 404
+}
+
+# Anything else on this port.
+:8080 {
+	respond "The Harbor exercise: curl http://api.harbor.localhost:8080/api/status/tracking" 200
+}

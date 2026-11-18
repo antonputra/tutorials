@@ -1,0 +1,188 @@
+# The Harbor lab (Anton Putra, "Authentication Explained"): Harbor Sign-in, Harbor's services and a toolbox.
+#
+# Keycloak 26.8.2 plays Harbor Sign-in behind a Caddy gateway that answers every *.localhost name on 127.0.0.1:8080:
+# the same address from the learner's browser and from inside the Docker network, where the gateway carries those
+# names as aliases. A lab only: a fictional user, known lab secrets and a known admin password, so the only port is
+# bound to 127.0.0.1.
+#
+#   docker compose up -d --wait            start; returns once everything is ready
+#   docker compose exec toolbox bash        the terminal the missions use (curl, jq and the harbor helpers)
+#   docker compose down -v                 stop and delete everything, the lab's signing key included
+#
+# Port 8080 taken on your computer? Put HARBOR_PORT=8081 (or any free port) in a file named .env next to this one,
+# then start the lab again: every address uses that port, inside the lab and in the browser.
+name: harbor-lab
+
+x-harbor: &harbor
+  # Built from ./services by the init service below when this tag is missing, never pulled from a registry, and never
+  # rebuilt on a later start. The tag is a fingerprint of ./services (tests/image_tag.py): a lab with changed code
+  # builds an image of its own.
+  image: harbor-lab/services:4b2de0e858f7
+  pull_policy: never
+  environment: &env
+    HARBOR_ISSUER: http://login.harbor.localhost:${HARBOR_PORT:-8080}/realms/harbor
+    HARBOR_STATUS_API: http://api.harbor.localhost:${HARBOR_PORT:-8080}
+    HARBOR_DASHBOARD: http://dashboard.harbor.localhost:${HARBOR_PORT:-8080}
+    HARBOR_PARTNER: http://reports.partner.localhost:${HARBOR_PORT:-8080}
+    HARBOR_PORT: ${HARBOR_PORT:-8080}
+    JOB_API_KEY: job_demo_4Kx9Qe2mVt7Lp1Zr8Ws3
+    DASHBOARD_API_TOKEN: hbr_opaque_7Fq2Lk9xPz4Tn6Vw1Ry8
+    DASHBOARD_CLIENT_SECRET: dashboard-lab-secret
+    PARTNER_CLIENT_SECRET: partner-lab-secret
+    STATUS_API_SECRET: status-api-lab-secret
+    TZ: UTC
+
+x-ready: &ready
+  test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8000/health"]
+  interval: 2s
+  timeout: 3s
+  retries: 30
+
+services:
+  # Lab only: makes Harbor Sign-in's signing key on the first start and puts it into the realm Keycloak imports.
+  init:
+    <<: *harbor
+    build:
+      context: ./services
+    command: ["python", "lab_init.py"]
+    network_mode: none
+    volumes:
+      - ./keycloak/harbor-realm.json:/harbor/realm/harbor-realm.json:ro
+      - lab-keys:/lab-keys
+      - realm-import:/realm-import
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.8.2@sha256:c68e286cacd87b942ac1939a0a1481461109d6acd3a57dc496969a319a76bbf0
+    command: ["start-dev", "--import-realm"]
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_HOSTNAME: http://login.harbor.localhost:${HARBOR_PORT:-8080}
+      KC_HTTP_ENABLED: "true"
+      KC_PROXY_HEADERS: xforwarded
+      KC_HEALTH_ENABLED: "true"
+      TZ: UTC
+    volumes:
+      - realm-import:/opt/keycloak/data/import:ro
+    mem_limit: 1g
+    depends_on:
+      init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/9000 && printf 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && grep -q UP <&3"]
+      interval: 3s
+      timeout: 3s
+      retries: 100
+      start_period: 180s
+    networks: [harbor]
+
+  # The shared session store both dashboard servers consult.
+  valkey:
+    image: valkey/valkey:9.0.7-alpine@sha256:2d04268dfa26ab31cfa3fdc538866e76438b2d00e41db41b8cb86d780ac5a416
+    command: ["valkey-server", "--save", "", "--appendonly", "no"]
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+    networks: [harbor]
+
+  status-api:
+    <<: *harbor
+    command: ["uvicorn", "status_api:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers", "--forwarded-allow-ips", "*"]
+    healthcheck: *ready
+    networks: [harbor]
+
+  dashboard-a:
+    <<: *harbor
+    command: ["uvicorn", "dashboard:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers", "--forwarded-allow-ips", "*"]
+    environment:
+      <<: *env
+      HARBOR_SERVER: dashboard-a
+    depends_on:
+      valkey:
+        condition: service_healthy
+    healthcheck: *ready
+    networks: [harbor]
+
+  dashboard-b:
+    <<: *harbor
+    command: ["uvicorn", "dashboard:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers", "--forwarded-allow-ips", "*"]
+    environment:
+      <<: *env
+      HARBOR_SERVER: dashboard-b
+    depends_on:
+      valkey:
+        condition: service_healthy
+    healthcheck: *ready
+    networks: [harbor]
+
+  partner:
+    <<: *harbor
+    command: ["uvicorn", "partner:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers", "--forwarded-allow-ips", "*"]
+    healthcheck: *ready
+    networks: [harbor]
+
+  gateway:
+    image: caddy:2.11.9-alpine@sha256:003a97808e781aa9f7e75cc2f43d34d461099031faf5e20faefb9f61126836f0
+    environment:
+      HARBOR_PORT: ${HARBOR_PORT:-8080}
+    volumes:
+      - ./gateway/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./gateway/coupons:/srv/coupons:ro
+    ports:
+      - "127.0.0.1:${HARBOR_PORT:-8080}:${HARBOR_PORT:-8080}"
+    depends_on:
+      keycloak:
+        condition: service_healthy
+      status-api:
+        condition: service_healthy
+      dashboard-a:
+        condition: service_healthy
+      dashboard-b:
+        condition: service_healthy
+      partner:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:${HARBOR_PORT:-8080}/"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+    networks:
+      harbor:
+        aliases:
+          - login.harbor.localhost
+          - dashboard.harbor.localhost
+          - api.harbor.localhost
+          - reports.partner.localhost
+          - coupons.localhost
+
+  # The learner's terminal: curl, jq and the harbor helpers. It shares the gateway's network, because curl, like a
+  # browser, sends every *.localhost name to 127.0.0.1: here that is the gateway, as it is on the learner's computer.
+  toolbox:
+    <<: *harbor
+    command: ["sleep", "infinity"]
+    init: true
+    network_mode: "service:gateway"
+    volumes:
+      - lab-keys:/lab-keys:ro
+    depends_on:
+      gateway:
+        condition: service_healthy
+
+  # Checks, not part of the lab: every mission's HTTP outcomes (docker compose --profile tests run --rm tests).
+  tests:
+    <<: *harbor
+    profiles: ["tests"]
+    command: ["python", "-u", "/tests/missions.py"]
+    network_mode: "service:gateway"
+    volumes:
+      - lab-keys:/lab-keys:ro
+      - ./tests:/tests:ro
+
+volumes:
+  lab-keys: {}
+  realm-import: {}
+
+networks:
+  harbor: {}

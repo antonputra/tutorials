@@ -1,0 +1,6 @@
+# Every text file keeps LF line endings, a Windows checkout too: the lab's files run inside Linux containers.
+* text=auto eol=lf
+# Left out of the copy in the tutorials repository (and of git archive): the maintainers' notes and the trial day's raw results.
+BUILD.md export-ignore
+HANDOFF.md export-ignore
+trial export-ignore
