@@ -1,5 +1,7 @@
 # Docker: Try It Yourself
 
+You can find tutorial [here](https://youtu.be/I4GVDkxQRDI).
+
 This is the exercise for my video about how Docker containers work. You build the status page app from the video into an image, from nothing but its own files, and run it with Docker. Then you look inside its container, row by row, and watch Linux stop it at its 64 MB limit. It takes about 10 minutes.
 
 You need Docker (start Docker Desktop first, or the Docker service on Linux), about 1 GB of free disk space and ports 8080 and 8082 free on 127.0.0.1. Run the commands in a terminal: Terminal on a Mac, your shell on Linux, and on Windows a WSL terminal, such as Ubuntu, with Docker Desktop's WSL integration turned on. On Linux, put `sudo` in front of `docker` unless you are in the `docker` group.
