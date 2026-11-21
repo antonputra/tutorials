@@ -201,3 +201,4 @@
 - [279 - 6 SQL Joins you MUST know! (Animated + Practice)](../lessons/279)
 - [282 - How Database Indexes Actually Work (Try It Yourself)](../lessons/282)
 - [283 - Authentication Explained: Sessions, JWT & OAuth (Try It Yourself)](../lessons/283)
+- [284 - Docker Explained: How Containers Actually Work (Try It Yourself)](../lessons/284)
