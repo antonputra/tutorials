@@ -1,0 +1,130 @@
+# Juniper Market lab: the working example behind "How AI Agents Actually Work: Build One From Scratch".
+# One command brings it up:      docker compose up -d --build --wait
+# One command removes all of it: docker compose down -v --rmi local
+# No port is published. Every command runs inside a container: docker compose exec lab ...
+name: juniper-lab
+
+x-lab: &lab
+  image: juniper-lab:local
+  build: .
+
+x-env: &env
+  # The model. The scripted stand-in speaks the OpenAI-compatible Chat Completions API.
+  # A real run changes only these three values (keep a real key out of this file).
+  MODEL_BASE_URL: ${MODEL_BASE_URL:-http://fake-model:8080/v1}
+  MODEL_NAME: ${MODEL_NAME:-scripted-1}
+  MODEL_API_KEY: ${MODEL_API_KEY:-not-a-key}
+  # Only for the scripted stand-in: where to set its log folder and its delay. Leave empty with a real model.
+  FAKE_MODEL_CONTROL: ${FAKE_MODEL_CONTROL-http://fake-model:8080/control}
+  # Three databases on one Postgres server. LangGraph takes the plain form of the URL.
+  JUNIPER_DB_URL: postgresql://postgres@postgres:5432/juniper
+  RECEIVING_DB_URL: postgresql://postgres@postgres:5432/receiving
+  AGENT_DB_URL: postgresql://postgres@postgres:5432/agent
+  RECEIVING_AGENT_URL: http://receiving-agent:8000
+  # The payables agent as a service, and the token its callers must send. A lab value, not a secret.
+  PAYABLES_AGENT_URL: http://payables-agent:8000
+  SERVICE_TOKEN: ${SERVICE_TOKEN:-lab-token-not-a-secret}
+  # Only for the lab's memory test with a small local model: 1 adds a firmer instruction of our own.
+  MEMORY_FIRM: ${MEMORY_FIRM:-0}
+  # Traces are off. tools/traced.sh turns them on for one command: it reads the key from a file outside this
+  # repository and sets these from the environment. A key never belongs in this file.
+  LANGSMITH_TRACING: ${LANGSMITH_TRACING:-false}
+  LANGSMITH_API_KEY: ${LANGSMITH_API_KEY:-}
+  LANGSMITH_ENDPOINT: ${LANGSMITH_ENDPOINT:-https://api.smith.langchain.com}   # the US region; other regions have their own
+  # Where the traces go: a project's name, or an agent's ID and environment in an agent-based workspace. Never both.
+  LANGSMITH_PROJECT: ${LANGSMITH_PROJECT:-}
+  LANGSMITH_AGENT_ID: ${LANGSMITH_AGENT_ID:-}
+  LANGSMITH_AGENT_ENVIRONMENT: ${LANGSMITH_AGENT_ENVIRONMENT:-}
+  # Only with traces on: 1 also prices each call's tokens at price-list.json, so a free model's calls show dollars.
+  PRICE_TRACES: ${PRICE_TRACES:-0}
+  # The policy's embeddings. Empty: a stand-in that matches words, with nothing to download. For a real, free embedding
+  # model on Ollama set both: Ollama's own address, such as http://host.docker.internal:11434, and the model's name.
+  EMBEDDING_BASE_URL: ${EMBEDDING_BASE_URL:-}
+  EMBEDDING_MODEL: ${EMBEDDING_MODEL:-}
+
+services:
+  postgres:
+    image: pgvector/pgvector:0.8.7-pg18-trixie@sha256:ab49524d18df7200b74ac9a475e1db6297fc1eb57da4c214c63d10ecc4b754fa
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust   # lab only: no password exists, and no port is published
+    volumes:
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+
+  seed:
+    <<: *lab
+    command: ["python", "-m", "seed.seed"]
+    environment: *env
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  fake-model:
+    <<: *lab
+    command: ["python", "-m", "fake_model.server"]
+    environment:
+      LOG_DIR: /logs
+    volumes:
+      - modellog:/logs
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/health')"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+
+  receiving-agent:
+    <<: *lab
+    command: ["uvicorn", "app.receiving_service:app", "--host", "0.0.0.0", "--port", "8000", "--log-level", "warning"]
+    environment:
+      <<: *env
+      RECEIVING_A2A_SECONDS: "2"   # the A2A answer takes two seconds, so a send that does not wait has something to wait for
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+    depends_on:
+      seed:
+        condition: service_completed_successfully
+      fake-model:
+        condition: service_healthy
+
+  payables-agent:
+    <<: *lab
+    command: ["uvicorn", "app.payables_service:app", "--host", "0.0.0.0", "--port", "8000", "--log-level", "warning"]
+    environment: *env
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+    depends_on:
+      seed:
+        condition: service_completed_successfully
+      fake-model:
+        condition: service_healthy
+      receiving-agent:
+        condition: service_healthy
+
+  lab:
+    <<: *lab
+    command: ["sleep", "infinity"]
+    init: true
+    environment: *env
+    volumes:
+      - modellog:/logs:ro
+      - workspace:/workspace
+    depends_on:
+      seed:
+        condition: service_completed_successfully
+      fake-model:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  modellog:
+  workspace:

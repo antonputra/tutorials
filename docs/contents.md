@@ -202,3 +202,4 @@
 - [282 - How Database Indexes Actually Work (Try It Yourself)](../lessons/282)
 - [283 - Authentication Explained: Sessions, JWT & OAuth (Try It Yourself)](../lessons/283)
 - [284 - Docker Explained: How Containers Actually Work (Try It Yourself)](../lessons/284)
+- [285 - How AI Agents Actually Work: Build One From Scratch (Try It Yourself)](../lessons/285)

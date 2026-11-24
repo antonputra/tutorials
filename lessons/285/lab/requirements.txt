@@ -1,0 +1,14 @@
+# Free and open source only. Every version is pinned; constraints.txt pins what these pull in.
+langchain==1.5.2
+langchain-core==1.8.4
+langgraph==1.2.24
+langgraph-checkpoint-postgres==3.2.1
+deepagents==0.7.41
+langchain-postgres==0.0.19
+langchain-openai==1.8.5
+langchain-ollama==1.1.0
+langsmith==0.16.0
+a2a-sdk[http-server]==1.3.1
+fastapi==0.165.0
+uvicorn==0.54.0
+psycopg[binary,pool]==3.3.9

@@ -1,0 +1,12 @@
+{
+  "what": "A public list price. The lab uses it to say what a free model's tokens would cost at a hosted model. It is never a bill.",
+  "model": "gpt-6-luna",
+  "provider": "OpenAI",
+  "tier": "Standard processing, a request of 272,000 input tokens or fewer",
+  "usd_per_million_input_tokens": "0.10",
+  "usd_per_million_output_tokens": "0.50",
+  "usd_per_million_cached_input_tokens": "0.01",
+  "cached_input": "Never applied to a call: the lab's free models report no cached tokens, so every input token is priced at the full input price. tools/price.py uses it for one line only, the lowest a sum could be if every input token were billed as cached.",
+  "source": "https://developers.openai.com/api/docs/pricing",
+  "read": "2026-11-21"
+}
